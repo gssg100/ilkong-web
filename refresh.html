@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>일콩 기록 업데이트</title>
+  <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fbf8f3;color:#312c27;font-family:system-ui,-apple-system,sans-serif}.card{padding:32px;text-align:center}.leaf{font-size:36px}p{color:#746b60}</style>
+</head>
+<body>
+  <main class="card" aria-live="polite"><div class="leaf">🌱</div><h1>최신 화면으로 갱신 중</h1><p>잠시만 기다려 줘.</p></main>
+  <script>
+  (function(){
+    var target=new URL('./',location.href).href+'?updated=4.0.2';
+    var finished=false;
+    function finish(){ if(finished) return; finished=true; setTimeout(function(){ location.replace(target); },180); }
+    if(!('serviceWorker' in navigator)){ finish(); return; }
+    navigator.serviceWorker.addEventListener('controllerchange',finish,{once:true});
+    navigator.serviceWorker.register('./sw.js?v=4.0.2',{scope:'./',updateViaCache:'none'})
+      .then(function(reg){ return reg.update().catch(function(){}); })
+      .then(function(){ setTimeout(finish,2500); })
+      .catch(finish);
+  })();
+  </script>
+</body>
+</html>
