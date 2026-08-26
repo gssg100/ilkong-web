@@ -414,7 +414,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '3.9.2';
+      var VERSION = '3.9.3';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -4609,7 +4609,9 @@
       }
 
       function callApi(name,args,timeout){
-        if(SUPABASE_READ_ROLLOUT&&name==='apiLoginV221') return callSupabaseLogin(args,timeout);
+        // 로그인은 이미 운영에서 검증된 GAS 브리지로만 처리한다. Supabase는 로그인 뒤
+        // 조회 가속을 맡으므로 Edge 연결 상태가 PIN 인증 자체를 막지 않는다.
+        if(name==='apiLoginV221') return callLegacyApi(name,args,timeout);
         if(SUPABASE_READ_ROLLOUT&&(name==='apiGetHomeV221'||name==='apiGetImagesBatchV285')){
           return callSupabaseRead(name,args,timeout).catch(function(error){
             // A staging read failure must never take the existing app offline.
