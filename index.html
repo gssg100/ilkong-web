@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v3.9.2 — 즐겨찾기 즉시 반영 수정 + 버튼 반응 디테일 개선 -->
+<!-- 일콩 기록 v4.0.0 — Supabase 단일 쓰기 전환, GAS 로그인·PIN 보존, 안전 롤백 보호 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -414,7 +414,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '3.9.4';
+      var VERSION = '4.0.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -4485,8 +4485,8 @@
       var SUPABASE_READ_ROLLOUT=!!(window.location&&(window.location.hostname==='127.0.0.1'||window.location.hostname==='localhost'||window.location.hostname==='gssg100.github.io'));
       // 쓰기 전환 코드는 배포해 두되, GAS 차단 보호막과 최종 대조 전까지는 켜지 않는다.
       // 이 값이 true가 되는 배포와 서버 write_mode 전환은 반드시 같은 컷오버 절차로 처리한다.
-      var SUPABASE_DIRECT_ROLLOUT=false;
-      var SUPABASE_PRIMARY_WRITE_CUTOVER=false;
+      var SUPABASE_DIRECT_ROLLOUT=true;
+      var SUPABASE_PRIMARY_WRITE_CUTOVER=true;
       var SUPABASE_API_EXEC='https://areyvrdvnaccebqbigyy.supabase.co/functions/v1/ilkong-api';
       var SUPABASE_PUBLIC_KEY='sb_publishable_x7UeQcviY3DopGGcucV9hg_vpnDcL5c';
       var supabaseToken='';
@@ -4641,12 +4641,12 @@
         apiCheckUpdatesV240:true,apiGetCapsulesV310:true,apiGetCheckupNotesV310:true,apiGetChecklistV320:true,
         apiExportBookV310:true,apiExportDataV370:true,apiSetCheckupV291:true,apiSetBirthV289:true,apiSetTripV380:true,
         apiStartPostV221:true,apiUploadPostImageV221:true,apiFinishPostV221:true,apiDeletePostV221:true,apiUpdatePostV280:true,
-        apiRestorePostV280:true,apiSetFavoriteV280:true,apiAddCommentV230:true,apiAddCommentV280:true,apiDeleteCommentV230:true,
+        apiRestorePostV280:true,apiSetFavoriteV280:true,apiGetImageDataV221:true,apiGetImageDataV280:true,apiGetImageDataV281:true,apiGetImageDataV282:true,apiGetImageDataV283:true,apiAddCommentV230:true,apiAddCommentV280:true,apiDeleteCommentV230:true,
         apiEditCommentV370:true,apiMarkCommentsReadV260:true,apiMarkCommentsReadV280:true,apiToggleReactionV230:true,apiSetReactionV280:true,
         apiAddCapsuleV310:true,apiDeleteCapsuleV310:true,apiSaveCheckupNoteV310:true,apiDeleteCheckupNoteV310:true,
         apiAddChecklistItemV320:true,apiToggleChecklistItemV320:true,apiDeleteChecklistItemV320:true,apiAddPhotosV370:true
       };
-      var SUPABASE_DIRECT_READS={apiCheckUpdatesV240:true,apiGetCapsulesV310:true,apiGetCheckupNotesV310:true,apiGetChecklistV320:true,apiExportBookV310:true,apiExportDataV370:true};
+      var SUPABASE_DIRECT_READS={apiCheckUpdatesV240:true,apiGetImageDataV221:true,apiGetImageDataV280:true,apiGetImageDataV281:true,apiGetImageDataV282:true,apiGetImageDataV283:true,apiGetCapsulesV310:true,apiGetCheckupNotesV310:true,apiGetChecklistV320:true,apiExportBookV310:true,apiExportDataV370:true};
 
       function callSupabaseDirect(name,args,timeout){
         return ensureSupabaseSession().then(function(token){
