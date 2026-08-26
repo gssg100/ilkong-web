@@ -414,7 +414,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '3.9.3';
+      var VERSION = '3.9.4';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -981,9 +981,10 @@
             restorePendingSave(session.user.id);
             el('pin').value='';
             enterAppImmediately(session.user);
-            // The Edge Function decides whether the verified Supabase snapshot
-            // is fresh or whether this request must use live GAS data.
-            loadHome({source:'login',force:true});
+            // GAS 로그인 응답에 이미 첫 화면 데이터가 있으므로 먼저 즉시 그린다.
+            // 이어지는 조회만 Supabase로 보내 최신 상태를 조용히 맞춘다.
+            if(data.home&&typeof data.home==='object') applyHome(data.home,{source:'login-cache',force:true});
+            loadHome({source:'login-refresh',force:true});
           })
           .catch(function(error){
             setLoginStatus(errorMessage(error));
@@ -4563,7 +4564,9 @@
           supabaseToken=String(state.session.token);
           return Promise.resolve(supabaseToken);
         }
-        return supabaseRequest({op:'exchange',legacyToken:state.session.token},15000).then(function(response){
+        // 로그인 직후 GAS가 차가운 상태면 세션 교환만 조금 더 기다린다.
+        // 화면은 이미 GAS 로그인 응답으로 그려져 있으므로 사용자는 빈 화면을 보지 않는다.
+        return supabaseRequest({op:'exchange',legacyToken:state.session.token},60000).then(function(response){
           var data=response&&response.data;
           if(!data||!data.token||Number(data.expiresAt)<=Date.now()) throw new Error('Supabase 세션을 만들지 못했어.');
           supabaseToken=String(data.token);
