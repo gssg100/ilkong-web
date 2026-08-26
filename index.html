@@ -4606,10 +4606,15 @@
       }
 
       function callSupabaseRead(name,args,timeout){
+        var stage='session';
         return ensureSupabaseSession().then(function(token){
+          stage='read';
           if(name==='apiGetHomeV221') return supabaseRequest({op:'home',token:token,offset:args&&args[1]||0,limit:args&&args[2]||PAGE_SIZE},timeout);
           if(name==='apiGetImagesBatchV285') return supabaseRequest({op:'images_batch',token:token,requests:args&&args[1]||[]},timeout);
           throw new Error('Supabase read mapping missing: '+name);
+        }).catch(function(error){
+          if(error&&typeof error==='object') error.ilkongStage=stage;
+          throw error;
         });
       }
 
@@ -4622,7 +4627,7 @@
             // A staging read failure must never take the existing app offline.
             // 운영 로그인·기록 내용은 노출하지 않고 전환 경로의 실패 유형만 남긴다.
             // 이 로그는 Supabase 읽기 전환이 안정화되면 제거한다.
-            if(typeof console!=='undefined'&&console.warn) console.warn('[ilkong] supabase-read-fallback',error&&error.code||'',errorMessage(error));
+            if(typeof console!=='undefined'&&console.warn) console.warn('[ilkong] supabase-read-fallback',error&&error.ilkongStage||'',error&&error.code||'',errorMessage(error));
             supabaseToken='';
             return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
           });
