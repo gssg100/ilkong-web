@@ -3462,7 +3462,7 @@
         try{
           if(navigator.serviceWorker&&window.isSecureContext){
             window.addEventListener('load',function(){
-              navigator.serviceWorker.register('sw.js').catch(function(){});
+              navigator.serviceWorker.register('sw.js?v=4.0.2',{updateViaCache:'none'}).catch(function(){});
             });
           }
         }catch(swError){}
@@ -4482,11 +4482,14 @@
       var APPS_SCRIPT_EXEC='https://script.google.com/macros/s/AKfycbw52QS-sM2MqwCGOstDd5NhQDl2l3ovk36lt-ASguBwJywaS0fZMnpLbhej9F1d7Tja/exec';
       // Supabase read path is deliberately off until staging parity is signed off.
       // Existing Apps Script remains the live fallback and the write path.
-      var SUPABASE_READ_ROLLOUT=!!(window.location&&(window.location.hostname==='127.0.0.1'||window.location.hostname==='localhost'||window.location.hostname==='gssg100.github.io'));
+      // GitHub Pages가 운영 원본이다. 이 주소가 아닌 구형 앱/내장 화면은 GAS만
+      // 사용하므로, 오래된 화면이 "Supabase rollout disabled"를 사용자에게 노출하지 않는다.
+      var IS_PRIMARY_WEB_ORIGIN=!!(window.location&&window.location.hostname==='gssg100.github.io');
+      var SUPABASE_READ_ROLLOUT=IS_PRIMARY_WEB_ORIGIN;
       // 쓰기 전환 코드는 배포해 두되, GAS 차단 보호막과 최종 대조 전까지는 켜지 않는다.
       // 이 값이 true가 되는 배포와 서버 write_mode 전환은 반드시 같은 컷오버 절차로 처리한다.
-      var SUPABASE_DIRECT_ROLLOUT=true;
-      var SUPABASE_PRIMARY_WRITE_CUTOVER=true;
+      var SUPABASE_DIRECT_ROLLOUT=IS_PRIMARY_WEB_ORIGIN;
+      var SUPABASE_PRIMARY_WRITE_CUTOVER=IS_PRIMARY_WEB_ORIGIN;
       var SUPABASE_API_EXEC='https://areyvrdvnaccebqbigyy.supabase.co/functions/v1/ilkong-api';
       var SUPABASE_PUBLIC_KEY='sb_publishable_x7UeQcviY3DopGGcucV9hg_vpnDcL5c';
       var supabaseToken='';
@@ -4583,7 +4586,7 @@
       }
 
       function ensureSupabaseSession(){
-        if(!SUPABASE_READ_ROLLOUT) return Promise.reject(new Error('Supabase rollout disabled'));
+        if(!SUPABASE_READ_ROLLOUT) return Promise.reject(new Error('현재 화면은 이전 버전이야. 운영 주소에서 새로고침해 줘.'));
         if(supabaseToken) return Promise.resolve(supabaseToken);
         if(!state.session||!state.session.token) return Promise.reject(new Error('legacy session missing'));
         if(state.session.supabase===true){

@@ -1,9 +1,9 @@
 /*
- * 일콩 기록 서비스워커 v4.0.1
+ * 일콩 기록 서비스워커 v4.0.2
  * 화면(껍데기)을 기기에 저장해 인터넷이 없어도 앱이 열리게 한다.
  * 데이터는 브리지(script.google.com)로 오가며, 그건 절대 캐시하지 않는다.
  */
-var CACHE = 'ilkong-shell-v4.0.1';
+var CACHE = 'ilkong-shell-v4.0.2';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function (event) {
@@ -33,7 +33,23 @@ self.addEventListener('fetch', function (event) {
   // 서버 통신(브리지)은 항상 네트워크로 — 오래된 데이터를 보여주지 않는다.
   if (url.origin !== self.location.origin) return;
 
-  // 화면은 캐시를 먼저 보여주고(즉시 실행), 뒤에서 조용히 최신본을 받아 다음 실행에 반영한다.
+  // 화면 진입은 네트워크 우선이다. 이전 서비스워커가 오래된 index.html을 계속
+  // 제공하면 전환 플래그와 API 경로가 엇갈릴 수 있으므로, 연결된 상태에서는 항상
+  // 최신 운영 코드를 받는다. 오프라인일 때만 마지막 정상 화면으로 되돌린다.
+  if (request.mode === 'navigate' || /\/ilkong-web\/(?:index\.html)?$/.test(url.pathname)) {
+    event.respondWith(
+      fetch(request).then(function (response) {
+        if (response && response.status === 200 && response.type === 'basic') {
+          var copy = response.clone();
+          caches.open(CACHE).then(function (cache) { cache.put(request, copy); }).catch(function () {});
+        }
+        return response;
+      }).catch(function () { return caches.match(request, { ignoreSearch: true }); })
+    );
+    return;
+  }
+
+  // 정적 아이콘 등 나머지 화면 자산은 캐시 우선으로 빠르게 연다.
   event.respondWith(
     caches.match(request, { ignoreSearch: true }).then(function (cached) {
       var network = fetch(request).then(function (response) {
