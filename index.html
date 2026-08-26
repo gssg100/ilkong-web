@@ -3845,12 +3845,32 @@
         bookBusy=true; el('makeBook').disabled=true; el('bookResult').innerHTML='';
         text(el('bookStatus'),'책을 만드는 중… 사진이 많으면 2~3분 걸릴 수 있어. 화면을 켜둔 채 기다려 줘 📖');
         callApi('apiExportBookV310',[state.session.token,from,to],290000).then(unwrap).then(function(data){
+          if(data&&data.kind==='supabase_print'){
+            var html=buildPrintableBook(data), blob=new Blob([html],{type:'text/html;charset=utf-8'}), objectUrl=URL.createObjectURL(blob);
+            text(el('bookStatus'),'미리보기를 열어 인쇄하면 PDF로 저장할 수 있어. 기록 '+((data.posts&&data.posts.length)||0)+'개 · 사진 '+(data.images||0)+'장');
+            var printLink=document.createElement('a'); printLink.className='book-link'; printLink.href=objectUrl; printLink.target='_blank'; printLink.rel='noopener';
+            printLink.textContent='📖 책 미리보기 열기 — 인쇄에서 PDF로 저장';
+            el('bookResult').appendChild(printLink);
+            return;
+          }
           text(el('bookStatus'),'완성! 기록 '+(data&&data.posts||0)+'개 · 사진 '+(data&&data.images||0)+'장을 엮었어.');
           var link=document.createElement('a'); link.className='book-link'; link.href=String(data&&data.url||''); link.target='_blank'; link.rel='noopener';
           link.textContent='📖 '+(data&&data.name||'PDF')+' — 눌러서 열기·저장';
           el('bookResult').appendChild(link);
         }).catch(function(error){ text(el('bookStatus'),'만들지 못했어: '+errorMessage(error)); })
         .then(function(){ bookBusy=false; el('makeBook').disabled=false; });
+      }
+
+      function htmlEscape(value){ return String(value==null?'':value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+      function buildPrintableBook(data){
+        var posts=Array.isArray(data&&data.posts)?data.posts:[];
+        var sections=[];
+        for(var i=0;i<posts.length;i++){
+          var post=posts[i]||{}, images=Array.isArray(post.images)?post.images:[], imageHtml=[];
+          for(var j=0;j<images.length;j++) imageHtml.push('<img src="'+htmlEscape(images[j])+'" alt="기록 사진">');
+          sections.push('<article><p class="meta">'+htmlEscape(post.date)+' · '+htmlEscape(post.authorName)+(post.mood?' · '+htmlEscape(post.mood):'')+'</p>'+(post.title?'<h2>'+htmlEscape(post.title)+'</h2>':'')+'<div class="body">'+htmlEscape(post.body).replace(/\n/g,'<br>')+'</div>'+(imageHtml.length?'<div class="photos">'+imageHtml.join('')+'</div>':'')+'</article>');
+        }
+        return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>'+htmlEscape((data&&data.babyName)||'일콩')+' 기록 책</title><style>body{max-width:760px;margin:0 auto;padding:32px;font-family:system-ui,-apple-system,sans-serif;color:#312c27;line-height:1.65}.cover{text-align:center;padding:54px 0;border-bottom:1px solid #ddd}.cover h1{font-size:32px;margin:0 0 10px}article{padding:28px 0;border-bottom:1px solid #e8e1d8}.meta{color:#746b60;font-size:14px}h2{font-size:22px;margin:8px 0}.body{white-space:normal}.photos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.photos img{width:100%;max-height:360px;object-fit:contain;border-radius:8px;background:#f5f2ed}@media print{body{max-width:none;padding:0}.cover{page-break-after:always}article{break-inside:avoid}}</style></head><body><section class="cover"><h1>우리 둘과 '+htmlEscape((data&&data.babyName)||'일콩')+'의 기록</h1><p>'+htmlEscape((data&&data.from)||'')+' ~ '+htmlEscape((data&&data.to)||'')+'</p><p>인쇄 메뉴에서 PDF로 저장할 수 있어요.</p></section>'+sections.join('')+'</body></html>';
       }
 
       function openComposer(){
@@ -4463,6 +4483,10 @@
       // Supabase read path is deliberately off until staging parity is signed off.
       // Existing Apps Script remains the live fallback and the write path.
       var SUPABASE_READ_ROLLOUT=!!(window.location&&(window.location.hostname==='127.0.0.1'||window.location.hostname==='localhost'||window.location.hostname==='gssg100.github.io'));
+      // 쓰기 전환 코드는 배포해 두되, GAS 차단 보호막과 최종 대조 전까지는 켜지 않는다.
+      // 이 값이 true가 되는 배포와 서버 write_mode 전환은 반드시 같은 컷오버 절차로 처리한다.
+      var SUPABASE_DIRECT_ROLLOUT=false;
+      var SUPABASE_PRIMARY_WRITE_CUTOVER=false;
       var SUPABASE_API_EXEC='https://areyvrdvnaccebqbigyy.supabase.co/functions/v1/ilkong-api';
       var SUPABASE_PUBLIC_KEY='sb_publishable_x7UeQcviY3DopGGcucV9hg_vpnDcL5c';
       var supabaseToken='';
@@ -4606,15 +4630,28 @@
       }
 
       function callSupabaseRead(name,args,timeout){
-        var stage='session';
         return ensureSupabaseSession().then(function(token){
-          stage='read';
           if(name==='apiGetHomeV221') return supabaseRequest({op:'home',token:token,offset:args&&args[1]||0,limit:args&&args[2]||PAGE_SIZE},timeout);
           if(name==='apiGetImagesBatchV285') return supabaseRequest({op:'images_batch',token:token,requests:args&&args[1]||[]},timeout);
           throw new Error('Supabase read mapping missing: '+name);
-        }).catch(function(error){
-          if(error&&typeof error==='object') error.ilkongStage=stage;
-          throw error;
+        });
+      }
+
+      var SUPABASE_DIRECT_FUNCTIONS={
+        apiCheckUpdatesV240:true,apiGetCapsulesV310:true,apiGetCheckupNotesV310:true,apiGetChecklistV320:true,
+        apiExportBookV310:true,apiExportDataV370:true,apiSetCheckupV291:true,apiSetBirthV289:true,apiSetTripV380:true,
+        apiStartPostV221:true,apiUploadPostImageV221:true,apiFinishPostV221:true,apiDeletePostV221:true,apiUpdatePostV280:true,
+        apiRestorePostV280:true,apiSetFavoriteV280:true,apiAddCommentV230:true,apiAddCommentV280:true,apiDeleteCommentV230:true,
+        apiEditCommentV370:true,apiMarkCommentsReadV260:true,apiMarkCommentsReadV280:true,apiToggleReactionV230:true,apiSetReactionV280:true,
+        apiAddCapsuleV310:true,apiDeleteCapsuleV310:true,apiSaveCheckupNoteV310:true,apiDeleteCheckupNoteV310:true,
+        apiAddChecklistItemV320:true,apiToggleChecklistItemV320:true,apiDeleteChecklistItemV320:true,apiAddPhotosV370:true
+      };
+      var SUPABASE_DIRECT_READS={apiCheckUpdatesV240:true,apiGetCapsulesV310:true,apiGetCheckupNotesV310:true,apiGetChecklistV320:true,apiExportBookV310:true,apiExportDataV370:true};
+
+      function callSupabaseDirect(name,args,timeout){
+        return ensureSupabaseSession().then(function(token){
+          // 첫 번째 인자는 기존 GAS 세션이라 Edge에 절대 전달하지 않는다.
+          return supabaseRequest({op:'direct_call',token:token,fn:name,args:(args||[]).slice(1)},timeout);
         });
       }
 
@@ -4625,11 +4662,19 @@
         if(SUPABASE_READ_ROLLOUT&&(name==='apiGetHomeV221'||name==='apiGetImagesBatchV285')){
           return callSupabaseRead(name,args,timeout).catch(function(error){
             // A staging read failure must never take the existing app offline.
-            // 운영 로그인·기록 내용은 노출하지 않고 전환 경로의 실패 유형만 남긴다.
-            // 이 로그는 Supabase 읽기 전환이 안정화되면 제거한다.
-            if(typeof console!=='undefined'&&console.warn) console.warn('[ilkong] supabase-read-fallback',error&&error.ilkongStage||'',error&&error.code||'',errorMessage(error));
             supabaseToken='';
             return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
+          });
+        }
+        if(SUPABASE_DIRECT_ROLLOUT&&SUPABASE_DIRECT_FUNCTIONS[name]){
+          return callSupabaseDirect(name,args,timeout).catch(function(error){
+            // 조회는 언제든 기존 서버로 되돌릴 수 있다. 쓰기는 컷오버 전 MODE 응답에서만
+            // 되돌리고, 컷오버 뒤 애매한 네트워크 오류를 GAS에 재전송해 중복 기록을 만들지 않는다.
+            if(SUPABASE_DIRECT_READS[name]||!SUPABASE_PRIMARY_WRITE_CUTOVER||(error&&error.code==='MODE')){
+              supabaseToken='';
+              return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
+            }
+            throw error;
           });
         }
         if(SUPABASE_READ_ROLLOUT&&state.session&&state.session.supabase===true) return callSupabaseLegacyApi(name,args,timeout);
