@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v3.9.1 — 아이폰 홈 화면 아이콘 표시 수정 -->
+<!-- 일콩 기록 v3.9.2 — 즐겨찾기 즉시 반영 수정 + 버튼 반응 디테일 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -163,6 +163,10 @@
     .tab{position:relative}
     .tab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
     @keyframes ilkpop{0%{transform:scale(1)}40%{transform:scale(1.24)}100%{transform:scale(1)}}
+    .post.leaving{opacity:0;transform:scale(.97);transition:opacity .22s ease,transform .22s ease}
+    .post-action.pop{animation:ilkpop .3s ease}
+    .post-action.favorite[aria-pressed="true"]{color:#d8a11f}
+    .post-action.busy{opacity:.45;pointer-events:none}
     .reaction-btn.pop{animation:ilkpop .28s ease}
     .reaction-btn:active,.comment-send:active,.comment-toggle:active,.seg:active,.more-item:active,.primary:active,.save:active,.user-btn:active,.mood-btn:active{transform:scale(.96)}
     button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -274,7 +278,7 @@
           <label style="display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px"><input id="notifyQuiet" type="checkbox" style="width:20px;height:20px"> 밤에는 조용히 (23시~7시)</label>
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p></div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v3.9.1 · 아이폰 아이콘 수정 · 서버 v3.9.0</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v3.9.2 · 즐겨찾기 즉시 반영 · 서버 v3.9.0</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -410,7 +414,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '3.9.1';
+      var VERSION = '3.9.2';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -436,7 +440,7 @@
       var PULL_THRESHOLD = 72;
       var state = {
         selectedUser:'', session:null, home:null, images:[], saving:false,
-        openComments:{}, sheetReturn:{}, commentDrafts:{}, replyTargets:{}, commentOperations:{}, engagementBusy:{}, commentReadMarking:{}, commentUnreadSeen:{}, pendingEngagementUpdates:{}, refreshing:false, refreshPromise:null,
+        openComments:{}, sheetReturn:{}, favoriteBusy:{}, commentDrafts:{}, replyTargets:{}, commentOperations:{}, engagementBusy:{}, commentReadMarking:{}, commentUnreadSeen:{}, pendingEngagementUpdates:{}, refreshing:false, refreshPromise:null,
         revision:'', homeFingerprint:'', autoRefreshTimer:null, lastRefreshAt:0,
         lastInteractionAt:0, autoRefreshFailures:0, lastAutoCheckAt:0, checkingUpdates:false, commentComposing:false, imeComposing:false, compositionTarget:null, compositionSerial:0, compositionWatchdogTimer:null, draftSaveTimer:null, draftSavePending:false, searchApplyTimer:null, searchApplyPending:false, pendingFeedRender:null, pendingFeedRenderTimer:null, homeApplyGeneration:0, pullStartY:0, pullDistance:0, pulling:false,
         hasMore:false, nextOffset:0, loadedCount:PAGE_SIZE, loadingMore:false, loadingAll:false, selectedMood:'', saveAttempt:null,
@@ -744,6 +748,7 @@
         storageRemove(LEGACY_SESSION_KEY);
         storageRemove(OLDER_SESSION_KEY);
         nativeClearSession();
+        supabaseToken='';
         state.session=null;
         return Promise.all([
           idbRemove(SESSION_KEY).catch(function(){}),
@@ -776,6 +781,7 @@
 
       function activateStoredSession(session){
         state.session=session;
+        supabaseToken='';
         saveSession(session);
         restoreDraft(session.user.id);
         enterAppImmediately(session.user);
@@ -839,7 +845,7 @@
         });
         el('loadMore').addEventListener('click',loadMorePosts);
         el('searchInput').addEventListener('input',function(e){ state.lastInteractionAt=Date.now(); if(e.isComposing||isImeComposing(this)) return; scheduleSearchApply(this); });
-        el('viewFilter').addEventListener('change',function(){ state.catFilter=this.value.indexOf('CAT:')===0?this.value:''; if(state.catFilter) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); });
+        el('viewFilter').addEventListener('change',function(){ state.catFilter=this.value.indexOf('CAT:')===0?this.value:''; if(state.catFilter) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); scrollFeedTop(); });
         el('monthFilter').addEventListener('change',function(){ state.monthFilter=this.value; if(this.value) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); });
         function applyRange(){ state.rangeFrom=el('rangeFrom').value||''; state.rangeTo=el('rangeTo').value||''; if(state.rangeFrom||state.rangeTo) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); }
         el('rangeFrom').addEventListener('change',applyRange);
@@ -969,12 +975,15 @@
             }
             var session=data.session;
             state.session=session;
+            supabaseToken=session.supabase===true?String(session.token):'';
             saveSession(session);
             restoreDraft(session.user.id);
             restorePendingSave(session.user.id);
             el('pin').value='';
             enterAppImmediately(session.user);
-            if(data.home){ applyHome(data.home); state.lastRefreshAt=Date.now(); } else loadHome({source:'login',force:true});
+            // The Edge Function decides whether the verified Supabase snapshot
+            // is fresh or whether this request must use live GAS data.
+            loadHome({source:'login',force:true});
           })
           .catch(function(error){
             setLoginStatus(errorMessage(error));
@@ -1958,7 +1967,7 @@
         var titleHtml=shownTitle?'<h3>'+escapeHtml(shownTitle)+'</h3>':'';
         var bodyHtml=String(post.body||'').trim()?'<div class="post-text">'+escapeHtml(post.body)+'</div>':'';
         var mine=state.session&&state.session.user.id===post.authorId;
-        var actions='<div class="post-actions"><button class="post-action favorite'+(post.favorite?' active':'')+'" type="button" aria-label="즐겨찾기">'+(post.favorite?'★':'☆')+'</button>'+(mine?'<button class="post-action edit-post" type="button" aria-label="기록 수정">✎</button><button class="post-action delete-post" type="button" aria-label="기록 삭제">🗑</button>':'')+'</div>';
+        var actions='<div class="post-actions"><button class="post-action favorite'+(post.favorite?' active':'')+'" type="button" aria-pressed="'+(post.favorite?'true':'false')+'" aria-label="'+(post.favorite?'즐겨찾기 해제':'즐겨찾기에 담기')+'">'+(post.favorite?'★':'☆')+'</button>'+(mine?'<button class="post-action edit-post" type="button" aria-label="기록 수정">✎</button><button class="post-action delete-post" type="button" aria-label="기록 삭제">🗑</button>':'')+'</div>';
         card.innerHTML='<div class="post-head"><div class="author"><div class="avatar">'+emoji+'</div><div class="meta"><strong>'+escapeHtml(post.authorName)+'</strong><span>'+escapeHtml(date)+(timeText?' · '+escapeHtml(timeText):'')+(post.edited?'<em class="edited">수정됨</em>':'')+'</span></div></div>'+actions+'</div>'+ 
           '<div class="post-body"><div class="badges">'+(isTripPost(post)?'<span class="badge trip">✈️ '+escapeHtml((tripInfo()&&tripInfo().name)||'여행')+'</span>':'')+'<span class="badge">'+escapeHtml(post.category||'일상')+'</span>'+(post.mood?'<span class="badge">'+escapeHtml(post.mood)+'</span>':'')+'</div>'+titleHtml+bodyHtml+'</div>';
 
@@ -1978,8 +1987,13 @@
           card.appendChild(grid);
         }
         card.appendChild(buildEngagement(post));
-        var favorite=card.querySelector('.favorite'); if(favorite) favorite.addEventListener('click',function(){ setFavoriteAction(post,!post.favorite); });
-        var edit=card.querySelector('.edit-post'); if(edit) edit.addEventListener('click',function(){ openEditComposer(post); });
+        var favorite=card.querySelector('.favorite');
+        if(favorite) favorite.addEventListener('click',function(){
+          // v3.9.2: 오래된 카드 데이터가 아니라 항상 현재 기록 상태를 기준으로 토글한다.
+          var current=findPost(post.id)||post;
+          setFavoriteAction(String(post.id),!current.favorite);
+        });
+        var edit=card.querySelector('.edit-post'); if(edit) edit.addEventListener('click',function(){ openEditComposer(findPost(post.id)||post); });
         var del=card.querySelector('.delete-post'); if(del) del.addEventListener('click',function(){ if(confirm('이 기록을 삭제할까? 30초 안에는 되돌릴 수 있어.')) deletePost(post.id); });
         return card;
       }
@@ -2922,6 +2936,10 @@
         syncSegUI();
         ensureAllPostsForLibrary();
         if(state.home) renderPosts(state.home.posts||[]);
+        scrollFeedTop();
+      }
+      function scrollFeedTop(){
+        try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(scrollError){ try{ window.scrollTo(0,0); }catch(e){} }
       }
       function openWeeklyAnswer(question){
         openComposer();
@@ -4217,7 +4235,59 @@
         callApi('apiDeletePostV221',[state.session.token,postId],18000).then(unwrap).then(function(){ toast('기록을 삭제했어.','되돌리기',function(){ restorePostAction(postId); },30000); return loadHome({source:'delete',force:true}); }).catch(function(error){ toast(errorMessage(error)); });
       }
       function restorePostAction(postId){ invalidateHomeResponses(); callApi('apiRestorePostV280',[state.session.token,postId],18000).then(unwrap).then(function(){toast('기록을 되돌렸어 🌿');return loadHome({source:'restore',force:true});}).catch(function(error){toast(errorMessage(error));}); }
-      function setFavoriteAction(post,enabled){ invalidateHomeResponses(); callApi('apiSetFavoriteV280',[state.session.token,post.id,enabled],16000).then(unwrap).then(function(data){post.favorite=enabled;if(data&&data.revision)state.revision=String(data.revision);state.homeFingerprint=fingerprintHome(state.home);renderPosts(state.home.posts||[]);toast(enabled?'즐겨찾기에 담았어 ★':'즐겨찾기에서 뺐어.');}).catch(function(error){toast(errorMessage(error));}); }
+      // v3.9.2: 즐겨찾기는 누르는 즉시 별이 바뀌고(낙관적 반영), 실패하면 되돌린다.
+      function favoriteButtonFor(postId){
+        var card=el('feed').querySelector('[data-post-id="'+cssEscape(String(postId))+'"]');
+        return card?card.querySelector('.favorite'):null;
+      }
+      function paintFavorite(postId,enabled,pop){
+        var button=favoriteButtonFor(postId);
+        if(!button) return;
+        button.textContent=enabled?'★':'☆';
+        button.classList.toggle('active',!!enabled);
+        button.setAttribute('aria-pressed',enabled?'true':'false');
+        button.setAttribute('aria-label',enabled?'즐겨찾기 해제':'즐겨찾기에 담기');
+        if(pop){ button.classList.remove('pop'); void button.offsetWidth; button.classList.add('pop'); }
+      }
+      function setFavoriteAction(postId,enabled){
+        postId=String(postId||'');
+        if(!postId||!state.session) return;
+        if(state.favoriteBusy[postId]) return; // 연타 방지
+        state.favoriteBusy[postId]=true;
+        var post=findPost(postId);
+        var previous=post?!!post.favorite:!enabled;
+        if(post) post.favorite=enabled;
+        paintFavorite(postId,enabled,true);
+        var button=favoriteButtonFor(postId);
+        if(button) button.classList.add('busy');
+        state.homeFingerprint=fingerprintHome(state.home);
+        invalidateHomeResponses();
+        callApi('apiSetFavoriteV280',[state.session.token,postId,enabled],16000).then(unwrap)
+          .then(function(data){
+            if(data&&data.revision) state.revision=String(data.revision);
+            state.homeFingerprint=fingerprintHome(state.home);
+            toast(enabled?'즐겨찾기에 담았어 ★':'즐겨찾기에서 뺐어.');
+            // 즐겨찾기 목록을 보는 중에 해제했다면 카드가 조용히 빠진다.
+            if(!enabled&&state.viewFilter==='FAVORITE'){
+              var card=el('feed').querySelector('[data-post-id="'+cssEscape(postId)+'"]');
+              if(card){
+                card.classList.add('leaving');
+                setTimeout(function(){ renderPosts(state.home&&state.home.posts||[],{force:true}); },230);
+              } else renderPosts(state.home&&state.home.posts||[]);
+            }
+          })
+          .catch(function(error){
+            if(post) post.favorite=previous;
+            paintFavorite(postId,previous,false);
+            state.homeFingerprint=fingerprintHome(state.home);
+            toast('즐겨찾기를 바꾸지 못했어: '+errorMessage(error));
+          })
+          .then(function(){
+            state.favoriteBusy[postId]=false;
+            var done=favoriteButtonFor(postId);
+            if(done) done.classList.remove('busy');
+          });
+      }
 
       function openSettings(){
         renderSessionInfo();
@@ -4328,8 +4398,11 @@
           throw typeError;
         }
         if(response.ok!==true){
-          var apiError=new Error(response.error||'서버 요청을 처리하지 못했어.');
+          var rawError=response.error;
+          var message=typeof rawError==='string'?rawError:(rawError&&typeof rawError.message==='string'?rawError.message:'서버 요청을 처리하지 못했어.');
+          var apiError=new Error(message);
           apiError.code=response.code||'SERVER';
+          apiError.detail=rawError;
           throw apiError;
         }
         return response.data;
@@ -4386,6 +4459,12 @@
       // v3.9.0: 화면이 앱스 스크립트 밖(예: GitHub Pages)에 올라가 있을 때는
       // 보이지 않는 브리지 창을 통해 기존 서버 함수를 그대로 호출한다(CORS 없이 동작).
       var APPS_SCRIPT_EXEC='https://script.google.com/macros/s/AKfycbw52QS-sM2MqwCGOstDd5NhQDl2l3ovk36lt-ASguBwJywaS0fZMnpLbhej9F1d7Tja/exec';
+      // Supabase read path is deliberately off until staging parity is signed off.
+      // Existing Apps Script remains the live fallback and the write path.
+      var SUPABASE_READ_ROLLOUT=!!(window.location&&(window.location.hostname==='127.0.0.1'||window.location.hostname==='localhost'||window.location.hostname==='gssg100.github.io'));
+      var SUPABASE_API_EXEC='https://areyvrdvnaccebqbigyy.supabase.co/functions/v1/ilkong-api';
+      var SUPABASE_PUBLIC_KEY='sb_publishable_x7UeQcviY3DopGGcucV9hg_vpnDcL5c';
+      var supabaseToken='';
       var HAS_GAS=!!(window.google&&window.google.script&&window.google.script.run);
       var USE_BRIDGE=!HAS_GAS&&!NATIVE_RPC;
       var bridge={frame:null,target:null,ready:false,pending:{},queue:[],loading:false,failedAt:0};
@@ -4452,7 +4531,97 @@
         });
       }
 
+      function supabaseRequest(body,timeout){
+        var controller=window.AbortController?new AbortController():null;
+        var timer=controller?setTimeout(function(){ controller.abort(); },timeout||18000):null;
+        return fetch(SUPABASE_API_EXEC,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLIC_KEY,'Authorization':'Bearer '+SUPABASE_PUBLIC_KEY},
+          body:JSON.stringify(body||''),
+          credentials:'omit',
+          signal:controller?controller.signal:undefined
+        }).then(function(response){
+          return response.json().catch(function(){ return {ok:false,code:'FORMAT',error:'Supabase 응답을 해석하지 못했어.'}; }).then(function(payload){
+            if(!response.ok||!payload||payload.ok!==true){
+              var rawError=payload&&payload.error;
+              var message=typeof rawError==='string'?rawError:(rawError&&typeof rawError.message==='string'?rawError.message:'Supabase 요청을 처리하지 못했어.');
+              var error=new Error(message);
+              error.code=payload&&payload.code||'SERVER';
+              error.detail=rawError;
+              throw error;
+            }
+            return payload;
+          });
+        }).finally(function(){ if(timer) clearTimeout(timer); });
+      }
+
+      function ensureSupabaseSession(){
+        if(!SUPABASE_READ_ROLLOUT) return Promise.reject(new Error('Supabase rollout disabled'));
+        if(supabaseToken) return Promise.resolve(supabaseToken);
+        if(!state.session||!state.session.token) return Promise.reject(new Error('legacy session missing'));
+        if(state.session.supabase===true){
+          supabaseToken=String(state.session.token);
+          return Promise.resolve(supabaseToken);
+        }
+        return supabaseRequest({op:'exchange',legacyToken:state.session.token},15000).then(function(response){
+          var data=response&&response.data;
+          if(!data||!data.token||Number(data.expiresAt)<=Date.now()) throw new Error('Supabase 세션을 만들지 못했어.');
+          supabaseToken=String(data.token);
+          return supabaseToken;
+        });
+      }
+
+      function callSupabaseLogin(args,timeout){
+        return supabaseRequest({op:'login',userId:args&&args[0]||'',pin:args&&args[1]||''},timeout).then(function(response){
+          var data=response&&response.data;
+          if(!data||!data.session||!data.session.token) throw new Error('Supabase 로그인 서버가 세션을 주지 않았어.');
+          supabaseToken=String(data.session.token);
+          return response;
+        });
+      }
+
+      function callSupabaseLegacyApi(name,args,timeout){
+        return ensureSupabaseSession().then(function(token){
+          return supabaseRequest({op:'legacy_call',token:token,fn:name,args:(args||[]).slice(1)},timeout).then(function(response){
+            var nested=response&&response.data;
+            if(nested&&typeof nested==='object'&&Object.prototype.hasOwnProperty.call(nested,'ok')){
+              if(nested.ok!==true){
+                var rawError=nested.error;
+                var message=typeof rawError==='string'?rawError:(rawError&&typeof rawError.message==='string'?rawError.message:'서버 요청을 처리하지 못했어.');
+                var nestedError=new Error(message);
+                nestedError.code=nested.code||'SERVER';
+                nestedError.detail=rawError;
+                throw nestedError;
+              }
+              return {ok:true,data:nested.data===undefined?null:nested.data,code:nested.code||'',version:nested.version||''};
+            }
+            return response;
+          });
+        });
+      }
+
+      function callSupabaseRead(name,args,timeout){
+        return ensureSupabaseSession().then(function(token){
+          if(name==='apiGetHomeV221') return supabaseRequest({op:'home',token:token,offset:args&&args[1]||0,limit:args&&args[2]||PAGE_SIZE},timeout);
+          if(name==='apiGetImagesBatchV285') return supabaseRequest({op:'images_batch',token:token,requests:args&&args[1]||[]},timeout);
+          throw new Error('Supabase read mapping missing: '+name);
+        });
+      }
+
       function callApi(name,args,timeout){
+        if(SUPABASE_READ_ROLLOUT&&name==='apiLoginV221') return callSupabaseLogin(args,timeout);
+        if(SUPABASE_READ_ROLLOUT&&(name==='apiGetHomeV221'||name==='apiGetImagesBatchV285')){
+          return callSupabaseRead(name,args,timeout).catch(function(error){
+            // A staging read failure must never take the existing app offline.
+            supabaseToken='';
+            return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
+          });
+        }
+        if(SUPABASE_READ_ROLLOUT&&state.session&&state.session.supabase===true) return callSupabaseLegacyApi(name,args,timeout);
+        return callLegacyApi(name,args,timeout);
+      }
+
+      function callLegacyApi(name,args,timeout){
         if(NATIVE_RPC) return callNative(name,args,timeout);
         if(USE_BRIDGE) return callBridge(name,args,timeout);
         return new Promise(function(resolve,reject){
@@ -4541,7 +4710,16 @@
       }
 
       function errorMessage(error){
-        return String(error&&error.message?error.message:error||'알 수 없는 오류').replace(/^Exception:\s*/,'');
+        var value=error;
+        if(error&&typeof error==='object'){
+          if(typeof error.message==='string'&&error.message) value=error.message;
+          else if(typeof error.error==='string'&&error.error) value=error.error;
+          else if(error.detail&&typeof error.detail.message==='string') value=error.detail.message;
+          else {
+            try { value=JSON.stringify(error); } catch(e) { value='알 수 없는 오류'; }
+          }
+        }
+        return String(value==null?'알 수 없는 오류':value).replace(/^Exception:\s*/,'');
       }
       function toast(message,actionLabel,action,delay){
         var t=el('toast'); text(el('toastText'),message); var button=el('toastAction');
