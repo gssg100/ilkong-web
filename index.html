@@ -414,7 +414,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.0.2';
+      var VERSION = '4.0.3';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -2546,6 +2546,14 @@
         variant=variant||'thumbnail';
         box.setAttribute('data-image-id',imageId);
         box.setAttribute('data-image-variant',variant);
+        // renderPost가 아직 조립 중일 때는 카드가 문서에 붙어 있지 않다. 이때
+        // 대기열이 isConnected 검사에서 그냥 끝나면 사진이 영원히 "준비 중"으로
+        // 남는다. 다음 프레임에 실제 화면에 붙은 카드만 다시 등록한다.
+        if(!box.isConnected){
+          var schedule=window.requestAnimationFrame||function(fn){ return setTimeout(fn,0); };
+          schedule(function(){ if(box.isConnected) observeImage(imageId,box,variant); });
+          return;
+        }
         var key=imageRequestKey(imageId,variant);
         if(state.imageCache[key]){ displayImage(box,state.imageCache[key],imageId,variant,0); return; }
 
