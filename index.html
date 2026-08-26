@@ -4651,7 +4651,17 @@
       function callSupabaseDirect(name,args,timeout){
         return ensureSupabaseSession().then(function(token){
           // 첫 번째 인자는 기존 GAS 세션이라 Edge에 절대 전달하지 않는다.
-          return supabaseRequest({op:'direct_call',token:token,fn:name,args:(args||[]).slice(1)},timeout);
+          var requestBody={op:'direct_call',token:token,fn:name,args:(args||[]).slice(1)};
+          function send(){ return supabaseRequest(requestBody,timeout); }
+          // 직접 저장은 요청번호/인자 해시로 멱등 처리된다. 그래서 게이트웨이·일시 네트워크
+          // 오류만 한 번 재시도해도 같은 기록이 두 번 생기지 않는다.
+          return send().catch(function(error){
+            var code=String(error&&error.code||'');
+            var message=String(error&&error.message||'');
+            var retryable=code==='SERVER'||code==='FORMAT'||!code||/fetch|network|gateway|abort/i.test(message);
+            if(!retryable) throw error;
+            return new Promise(function(resolve){ setTimeout(resolve,450); }).then(send);
+          });
         });
       }
 
