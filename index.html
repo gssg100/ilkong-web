@@ -4537,7 +4537,9 @@
         var timer=controller?setTimeout(function(){ controller.abort(); },timeout||18000):null;
         return fetch(SUPABASE_API_EXEC,{
           method:'POST',
-          headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLIC_KEY,'Authorization':'Bearer '+SUPABASE_PUBLIC_KEY},
+          // 이 함수는 JWT가 아니라 서버에서 검증하는 일회성 앱 세션을 쓴다.
+          // Authorization 헤더를 제거해 GitHub Pages → Edge 사전검사 경로를 단순화한다.
+          headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLIC_KEY},
           body:JSON.stringify(body||''),
           credentials:'omit',
           signal:controller?controller.signal:undefined
