@@ -4620,6 +4620,9 @@
         if(SUPABASE_READ_ROLLOUT&&(name==='apiGetHomeV221'||name==='apiGetImagesBatchV285')){
           return callSupabaseRead(name,args,timeout).catch(function(error){
             // A staging read failure must never take the existing app offline.
+            // 운영 로그인·기록 내용은 노출하지 않고 전환 경로의 실패 유형만 남긴다.
+            // 이 로그는 Supabase 읽기 전환이 안정화되면 제거한다.
+            if(typeof console!=='undefined'&&console.warn) console.warn('[ilkong] supabase-read-fallback',error&&error.code||'',errorMessage(error));
             supabaseToken='';
             return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
           });
