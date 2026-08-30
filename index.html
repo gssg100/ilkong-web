@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.0.0 — Supabase 단일 쓰기 전환, GAS 로그인·PIN 보존, 안전 롤백 보호 -->
+<!-- 일콩 기록 v4.1.0 — Supabase 단일 쓰기 전환, GAS 로그인·PIN 보존, 안전 롤백 보호 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -71,6 +71,7 @@
     #birthDateInput,#checkupDateInput{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;margin:6px 0 10px;background:#fff}#birthConfirm,#checkupSave{width:100%}#birthRevert,#checkupClear{margin-top:8px;width:100%}
     .week-guide{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}.wg-toggle{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}.wg-emoji{font-size:26px;line-height:1}.wg-title{min-width:0}.wg-title strong{display:block;font-size:14.5px;letter-spacing:-.02em}.wg-size{display:block;color:var(--muted);font-size:12px;margin-top:2px}.wg-chevron{margin-left:auto;color:var(--muted);font-size:11px}.wg-preview{margin:9px 0 0;color:#5d5348;font-size:13px;line-height:1.6}.wg-detail{margin-top:9px}.wg-detail p{margin:0 0 8px;font-size:13px;line-height:1.65;color:#5d5348}.wg-note{color:var(--muted);font-size:11px;margin-bottom:0 !important}
     .quick{margin:0 16px 12px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;display:flex;gap:10px;align-items:center}.quick-main{flex:1;border:0;background:transparent;text-align:left;color:var(--muted);padding:12px}.photo-quick{width:48px;height:48px;border:0;border-radius:15px;background:var(--accent2);font-size:22px}
+    .home-summary{margin:0 16px 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.summary-card{min-width:0;border:1px solid var(--line);border-radius:17px;background:var(--card);padding:12px 10px;text-align:left;color:var(--ink);box-shadow:0 5px 14px rgba(66,52,40,.045)}.summary-card>span{display:block;font-size:19px;margin-bottom:6px}.summary-card strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;letter-spacing:-.02em}.summary-card small{display:block;min-height:30px;margin-top:4px;overflow:hidden;color:var(--muted);font-size:10.5px;line-height:1.42}.summary-card:active{transform:scale(.97)}
     .status-card{margin:12px 16px;border:1px solid var(--line);border-radius:18px;padding:15px;background:var(--card);color:var(--muted);font-size:13px;line-height:1.55}.status-card.error{border-color:#e4b2ae;background:#fff8f7;color:#8c403b}.status-card button{margin-top:10px;border:0;border-radius:12px;padding:9px 12px;background:var(--ink);color:white}
     .feed{padding:0 16px 128px;display:grid;gap:13px}.post{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 7px 20px rgba(66,52,40,.06)}
     .feed-more{padding:0 16px 138px;margin-top:-80px;text-align:center}.feed-more button{width:100%;min-height:48px;border:1px solid var(--line);border-radius:15px;background:var(--card);color:var(--ink);font-weight:800}.feed-more button:disabled{color:var(--muted);opacity:.7}
@@ -136,6 +137,7 @@
     .more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px}
     .more-item{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px 13px;text-align:left;color:var(--ink);font-weight:700;font-size:14px;min-height:70px}
     .more-item span{display:block;font-size:25px;margin-bottom:7px}
+    .memory-tools{display:flex;align-items:center;gap:9px;margin-bottom:12px}.memory-tools input{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:10px 11px;color:var(--ink)}.memory-tools span{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap}.memory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.memory-card{position:relative;min-width:0;aspect-ratio:1;border:0;border-radius:13px;overflow:hidden;background:#e8e0d6;padding:0;color:white}.memory-image{display:grid;width:100%;height:100%;place-items:center;background:#e7dfd5;color:var(--muted)}.memory-image img{width:100%;height:100%;object-fit:cover;display:block}.memory-meta{position:absolute;right:5px;bottom:5px;border-radius:999px;background:rgba(30,25,21,.64);padding:3px 6px;color:#fff;font-size:10px;font-weight:800;line-height:1}.memory-empty{grid-column:1/-1;border:1px dashed var(--line);border-radius:15px;padding:25px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.65}html[data-theme="dark"] .memory-card,html[data-theme="dark"] .memory-image{background:#241f1a}
     .badge.trip{background:linear-gradient(135deg,#cfe3f5,#e6ece1);color:#3c5468;font-weight:800}
     html[data-theme="dark"] .badge.trip{background:linear-gradient(135deg,#2f4356,#37402f);color:#cfe3f5}
     .trip-banner{margin-top:10px;background:linear-gradient(135deg,#d7e9fb,#e8f1e2);border-radius:13px;padding:10px 13px;font-size:13px;font-weight:700;color:#33536b;text-align:center}
@@ -186,7 +188,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v3.2.0</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.1.0</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -202,13 +204,18 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v3.2.0</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.1.0</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div>
       <div id="offlineBanner" class="offline-banner hidden" role="status"><span id="offlineText">인터넷이 끊겨서 기록을 이 기기에 보관 중이야.</span><button id="offlineRetry" type="button">지금 보내기</button></div>
       <div id="recoveryBanner" class="recovery hidden"><div><strong>저장 중 멈춘 기록이 있어</strong><span id="recoveryText">사진과 글을 이 기기에 안전하게 보관하고 있어.</span></div><div class="recovery-actions"><button id="resumePending" class="resume" type="button">이어쓰기</button><button id="discardPending" class="discard" type="button">버리기</button></div></div>
       <div id="quickBar" class="quick"><button id="quickWrite" class="quick-main" type="button">오늘 무슨 일이 있었어?</button><button id="quickPhoto" class="photo-quick" type="button" aria-label="사진으로 빠르게 기록하기">📷</button><button id="quickKick" class="photo-quick hidden" type="button" aria-label="태동 세기">👣</button></div>
+      <section id="homeSummary" class="home-summary" aria-label="오늘의 빠른 기록과 준비 현황">
+        <button id="openCheckin" class="summary-card" type="button"><span aria-hidden="true">☀️</span><strong id="summaryCheckinTitle">오늘 한 줄</strong><small id="summaryCheckinDesc">가볍게 마음을 남겨봐</small></button>
+        <button id="summaryCheckup" class="summary-card" type="button"><span aria-hidden="true">🏥</span><strong id="summaryCheckupTitle">다음 검진</strong><small id="summaryCheckupDesc">일정을 확인해봐</small></button>
+        <button id="summaryChecklist" class="summary-card" type="button"><span aria-hidden="true">🍼</span><strong id="summaryChecklistTitle">출산 준비</strong><small id="summaryChecklistDesc">준비물을 확인해봐</small></button>
+      </section>
       <div id="recordsSeg" class="segbar hidden"><button class="seg active" data-seg="ALL" type="button">전체</button><button class="seg" data-seg="JISU" type="button">🌿 지수</button><button class="seg" data-seg="HAKONG" type="button">🌼 하콩</button><button class="seg" data-seg="FAVORITE" type="button">★ 즐겨찾기</button><button id="segTrip" class="seg hidden" data-seg="TRIP" type="button">✈️ 여행</button></div>
       <div id="questionHead" class="question-head hidden"></div>
       <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div style="grid-column:1/-1;display:flex;gap:7px;align-items:center"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">지우기</button></div><div id="libraryCount" class="library-count"></div></div>
@@ -250,6 +257,19 @@
     </div>
   </div>
 
+  <div id="checkin" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkinTitle">
+    <div class="sheet">
+      <div class="sheet-head"><button id="closeCheckin" class="icon" type="button" aria-label="오늘 한 줄 닫기">✕</button><h2 id="checkinTitle">오늘 한 줄 ☀️</h2><button id="saveCheckin" class="save" type="button">남기기</button></div>
+      <div class="form">
+        <p class="upload-note" style="margin:0 0 12px">사진 없이도 지금의 마음을 가볍게 남길 수 있어. 입력한 내용은 저장 전에도 이 기기에 보관돼.</p>
+        <div class="field"><span id="checkinMoodLabel" class="upload-note">오늘 기분 · 선택</span><div id="checkinMoodChoices" class="moods" role="group" aria-labelledby="checkinMoodLabel"><button class="mood-btn checkin-mood" type="button" data-checkin-mood="🥰">🥰 좋아요</button><button class="mood-btn checkin-mood" type="button" data-checkin-mood="😴">😴 피곤해요</button><button class="mood-btn checkin-mood" type="button" data-checkin-mood="🥹">🥹 뭉클해요</button><button class="mood-btn checkin-mood" type="button" data-checkin-mood="😟">😟 걱정돼요</button></div></div>
+        <div class="field"><span id="checkinConditionLabel" class="upload-note">오늘의 컨디션 · 선택</span><div id="checkinConditionChoices" class="moods" role="group" aria-labelledby="checkinConditionLabel"><button class="mood-btn checkin-condition" type="button" data-checkin-condition="편안함">편안함</button><button class="mood-btn checkin-condition" type="button" data-checkin-condition="입덧">입덧</button><button class="mood-btn checkin-condition" type="button" data-checkin-condition="태동">태동</button><button class="mood-btn checkin-condition" type="button" data-checkin-condition="휴식 필요">휴식 필요</button></div></div>
+        <div class="field"><label for="checkinNote">오늘의 한 줄 · 선택</label><textarea id="checkinNote" maxlength="1000" placeholder="예) 오늘은 유난히 고마운 하루였어."></textarea></div>
+        <div id="checkinStatus" class="upload-note" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="kickCounter" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="kickTitle">
     <div class="sheet">
       <div class="sheet-head"><button id="closeKick" class="icon" type="button" aria-label="태동 세기 닫기">✕</button><h2 id="kickTitle">태동 세기 👣</h2><button id="saveKick" class="save" type="button">기록 저장</button></div>
@@ -278,7 +298,7 @@
           <label style="display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px"><input id="notifyQuiet" type="checkbox" style="width:20px;height:20px"> 밤에는 조용히 (23시~7시)</label>
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p></div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v3.9.2 · 즐겨찾기 즉시 반영 · 서버 v3.9.0</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v4.1.0 · Supabase 기본 저장 · 사진 복구 경로 점검</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -319,6 +339,7 @@
       <div class="form">
         <div class="more-grid">
           <button id="openTimelapse" class="more-item" type="button"><span>🤰</span>배 타임랩스</button>
+          <button id="openMemories" class="more-item" type="button"><span>🖼️</span>사진 추억함</button>
           <button id="openCapsule" class="more-item" type="button"><span>💌</span>타임캡슐 편지</button>
           <button id="openCheckupNotes" class="more-item" type="button"><span>🏥</span>검진노트</button>
           <button id="openChecklist" class="more-item" type="button"><span>🍼</span>출산 준비물</button>
@@ -352,6 +373,17 @@
         <div style="display:flex;gap:7px"><input id="checkItemInput" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:11px 12px;color:var(--ink);outline:none" maxlength="200" placeholder="예) 배냇저고리 3벌"><button id="addCheckItem" class="save" type="button">추가</button></div>
         <div id="checklistStatus" class="upload-note" style="margin-top:8px"></div>
         <div id="checklistList" class="note-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="memories" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="memoriesTitle">
+    <div class="sheet">
+      <div class="sheet-head"><button id="closeMemories" class="icon" type="button" aria-label="사진 추억함 닫기">✕</button><h2 id="memoriesTitle">사진 추억함 🖼️</h2><span></span></div>
+      <div class="form">
+        <p class="upload-note" style="margin:0 0 12px">기록에 남긴 사진을 날짜순으로 모았어. 사진을 누르면 크게 볼 수 있어.</p>
+        <div class="memory-tools"><input id="memoryMonth" type="month" aria-label="사진 월별 보기"><span id="memoryCount"></span></div>
+        <div id="memoryGrid" class="memory-grid"></div>
       </div>
     </div>
   </div>
@@ -414,12 +446,13 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.0.3';
+      var VERSION = '4.1.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
       var DRAFT_KEY = 'ilkong_v28_draft';
       var PENDING_SAVE_KEY = 'ilkong_v28_pending';
+      var CHECKIN_DRAFT_KEY = 'ilkong_v41_checkin';
       var PREVIOUS_DRAFT_KEY = 'ilkong_v22_draft';
       var LEGACY_DRAFT_KEY = 'ilkong_v21_draft';
       var OLDER_DRAFT_KEY = 'ilkong_v2_draft';
@@ -448,7 +481,8 @@
         imagePersistentReads:{}, imagePersistentKnown:{}, imagePersistChain:Promise.resolve(), imageCacheReady:false,
         imageLoadQueue:[], imageLoadActive:0, imageLoadSerial:0, imageFallbackTimers:{},
         imageQueueRunning:false, imageBatchSupport:null, composerMode:'create', editingPostId:'', editExistingPhotoCount:0, offlineQueued:false, offlineFlushTimer:null, pendingRestored:false,
-        searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false
+        searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false,
+        checkinMood:'', checkinCondition:'', checkinAttempt:null, checkinBusy:false, homeSummaryChecklist:[], homeSummaryChecklistAt:0, homeSummaryChecklistLoading:false, memoryMonth:''
       };
 
       function el(id){ return document.getElementById(id); }
@@ -474,8 +508,10 @@
         if(!target) return;
         var draftTarget=target.id==='postBody'||target.id==='postTitle';
         var searchTarget=target.id==='searchInput';
+        var checkinTarget=target.id==='checkinNote';
         if(draftTarget) scheduleDraftSave();
         else if(searchTarget) scheduleSearchApply(target,0);
+        else if(checkinTarget) persistCheckinDraft();
         else if(target.classList&&target.classList.contains('comment-input')){
           limitCommentInput(target);
           rememberCommentDraft(target);
@@ -632,6 +668,7 @@
       function currentUserId(){ return state.session&&state.session.user&&state.session.user.id?String(state.session.user.id):''; }
       function draftKey(userId){ return DRAFT_KEY+'_'+String(userId||'').toUpperCase(); }
       function pendingSaveKey(userId){ return PENDING_SAVE_KEY+'_'+String(userId||'').toUpperCase(); }
+      function checkinDraftKey(userId){ return CHECKIN_DRAFT_KEY+'_'+String(userId||'').toUpperCase(); }
 
       function nativeGetSession(){
         try {
@@ -799,6 +836,17 @@
         el('loginButton').addEventListener('click',login);
         el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') login(); });
         el('quickWrite').addEventListener('click',openComposer);
+        el('openCheckin').addEventListener('click',openCheckin);
+        el('summaryCheckup').addEventListener('click',openSettings);
+        el('summaryChecklist').addEventListener('click',openChecklist);
+        el('closeCheckin').addEventListener('click',function(){ if(!state.checkinBusy){ persistCheckinDraft(); closeOverlaySheet('checkin'); } });
+        el('checkin').addEventListener('click',function(e){ if(e.target===el('checkin')&&!state.checkinBusy){ persistCheckinDraft(); closeOverlaySheet('checkin'); } });
+        el('saveCheckin').addEventListener('click',saveCheckin);
+        var checkinMoodButtons=document.querySelectorAll('.checkin-mood');
+        for(var cm=0;cm<checkinMoodButtons.length;cm++) checkinMoodButtons[cm].addEventListener('click',function(){ state.checkinMood=this.getAttribute('data-checkin-mood')||''; renderCheckinChoices(); persistCheckinDraft(); });
+        var checkinConditionButtons=document.querySelectorAll('.checkin-condition');
+        for(var cc=0;cc<checkinConditionButtons.length;cc++) checkinConditionButtons[cc].addEventListener('click',function(){ state.checkinCondition=this.getAttribute('data-checkin-condition')||''; renderCheckinChoices(); persistCheckinDraft(); });
+        el('checkinNote').addEventListener('input',function(e){ if(e.isComposing||isImeComposing(this)) return; persistCheckinDraft(); });
         el('quickKick').addEventListener('click',openKickCounter);
         el('closeKick').addEventListener('click',closeKickCounter);
         el('kickTap').addEventListener('click',kickTap);
@@ -855,6 +903,10 @@
         el('discardPending').addEventListener('click',discardPendingSave);
         el('offlineRetry').addEventListener('click',function(){ toast('지금 올려볼게…'); flushOfflineQueue(); });
         el('openTimelapse').addEventListener('click',openTimelapse);
+        el('openMemories').addEventListener('click',openMemories);
+        el('closeMemories').addEventListener('click',function(){ closeOverlaySheet('memories'); });
+        el('memories').addEventListener('click',function(e){ if(e.target===el('memories')) closeOverlaySheet('memories'); });
+        el('memoryMonth').addEventListener('change',function(){ state.memoryMonth=this.value||''; renderMemories(); });
         el('closeLapse').addEventListener('click',function(){ stopLapsePlay(); closeOverlaySheet('lapseViewer'); });
         el('lapsePrev').addEventListener('click',function(){ stopLapsePlay(); moveLapse(-1); });
         el('lapseNext').addEventListener('click',function(){ stopLapsePlay(); moveLapse(1); });
@@ -908,7 +960,7 @@
         el('closeMore').addEventListener('click',function(){ closeOverlaySheet('moreSheet'); });
         el('moreSheet').addEventListener('click',function(e){ if(e.target===el('moreSheet')) closeOverlaySheet('moreSheet'); });
         el('openSettingsMore').addEventListener('click',function(){ hide(el('moreSheet')); openSettings(); state.sheetReturn.settings='moreSheet'; });
-        var moreTargets={openTimelapse:'lapseViewer',openCapsule:'capsule',openCheckupNotes:'checkupNotes',openChecklist:'checklist',openBook:'bookMaker'};
+        var moreTargets={openTimelapse:'lapseViewer',openMemories:'memories',openCapsule:'capsule',openCheckupNotes:'checkupNotes',openChecklist:'checklist',openBook:'bookMaker'};
         Object.keys(moreTargets).forEach(function(id){
           el(id).addEventListener('click',function(){
             hide(el('moreSheet'));
@@ -1551,6 +1603,8 @@
         renderPregProgress(pregnancy);
         renderTripBanner();
         renderTripSegment();
+        renderHomeSummary(pregnancy);
+        refreshHomeSummaryChecklist();
         if(state.activeTab==='question') renderQuestionHead();
         if(!options.fromSnapshot) persistHomeSnapshot(home);
         setTimeout(pushWidgetState,50);
@@ -1562,6 +1616,65 @@
         }
         renderLoadMore();
         return changed;
+      }
+
+      function hasTodayRecordForCurrentUser(){
+        var userId=String(currentUserId()||'').toUpperCase();
+        var posts=state.home&&Array.isArray(state.home.posts)?state.home.posts:[];
+        for(var i=0;i<posts.length;i++){
+          var post=posts[i]||{};
+          if(String(post.recordDate||'')!==today()) continue;
+          if(post.mine===true||String(post.authorId||'').toUpperCase()===userId) return true;
+        }
+        return false;
+      }
+
+      function renderHomeSummary(pregnancy){
+        if(!el('homeSummary')) return;
+        var wroteToday=hasTodayRecordForCurrentUser();
+        text(el('summaryCheckinTitle'),wroteToday?'오늘 기록 완료':'오늘 한 줄');
+        text(el('summaryCheckinDesc'),wroteToday?'오늘 마음을 남겼어':'가볍게 마음을 남겨봐');
+
+        var checkupDate=pregnancy&&pregnancy.valid!==false?String(pregnancy.checkupDate||''):'';
+        var checkupDday=pregnancy?Number(pregnancy.checkupDday):NaN;
+        if(checkupDate&&isFinite(checkupDday)&&checkupDday>=0){
+          text(el('summaryCheckupTitle'),checkupDday===0?'오늘 검진':'검진 D-'+checkupDday);
+          text(el('summaryCheckupDesc'),formatKoreanDate(checkupDate));
+        }else{
+          text(el('summaryCheckupTitle'),'다음 검진');
+          text(el('summaryCheckupDesc'),'일정을 정해두면 알려줄게');
+        }
+
+        var items=Array.isArray(state.homeSummaryChecklist)?state.homeSummaryChecklist:[];
+        var remaining=[];
+        for(var i=0;i<items.length;i++) if(!items[i].done) remaining.push(items[i]);
+        if(remaining.length){
+          text(el('summaryChecklistTitle'),'남은 준비 '+remaining.length+'개');
+          text(el('summaryChecklistDesc'),String(remaining[0].content||'준비물 확인하기'));
+        }else if(items.length){
+          text(el('summaryChecklistTitle'),'준비 완료');
+          text(el('summaryChecklistDesc'),'목록을 다시 확인해봐');
+        }else if(state.homeSummaryChecklistLoading){
+          text(el('summaryChecklistTitle'),'출산 준비');
+          text(el('summaryChecklistDesc'),'준비물 확인 중…');
+        }else{
+          text(el('summaryChecklistTitle'),'출산 준비');
+          text(el('summaryChecklistDesc'),'첫 준비물을 적어봐');
+        }
+      }
+
+      function refreshHomeSummaryChecklist(force){
+        if(!state.session||state.homeSummaryChecklistLoading) return;
+        if(!force&&state.homeSummaryChecklistAt&&Date.now()-state.homeSummaryChecklistAt<90000) return;
+        var requestToken=state.session.token;
+        state.homeSummaryChecklistLoading=true;
+        renderHomeSummary(state.home&&state.home.app&&state.home.app.pregnancy);
+        callApi('apiGetChecklistV320',[requestToken],16000).then(unwrap).then(function(data){
+          if(!state.session||state.session.token!==requestToken) return;
+          state.homeSummaryChecklist=Array.isArray(data&&data.items)?data.items:[];
+          state.homeSummaryChecklistAt=Date.now();
+          renderHomeSummary(state.home&&state.home.app&&state.home.app.pregnancy);
+        }).catch(function(){}).then(function(){ state.homeSummaryChecklistLoading=false; });
       }
 
       function daysSince(value){
@@ -1723,14 +1836,14 @@
         if(!state.session||!state.home||!state.hasMore||state.loadingAll) return;
         state.loadingAll=true;
         function next(){
-          if(!state.hasMore){ state.loadingAll=false; renderPosts(state.home.posts||[]); return; }
+          if(!state.hasMore){ state.loadingAll=false; renderPosts(state.home.posts||[]); renderMemoriesIfOpen(); return; }
           var offset=Number(state.nextOffset||state.home.posts.length);
           callApi('apiGetHomeV221',[state.session.token,offset,50],24000).then(unwrap).then(function(page){
             var current=state.home.posts||[], incoming=page.posts||[], seen={}, merged=[];
             current.concat(incoming).forEach(function(post){ var id=String(post.id||''); if(id&&!seen[id]){seen[id]=true;merged.push(post);} });
             state.home=Object.assign({},state.home,page,{posts:merged});
             state.nextOffset=Number(page.nextOffset||merged.length); state.loadedCount=merged.length; state.hasMore=!!page.hasMore; state.homeFingerprint=fingerprintHome(state.home);
-            renderLoadMore(); renderPosts(merged); next();
+            renderLoadMore(); renderPosts(merged); renderMemoriesIfOpen(); next();
           }).catch(function(error){ state.loadingAll=false; toast('전체 기록을 불러오지 못했어: '+errorMessage(error)); });
         }
         next();
@@ -1824,7 +1937,7 @@
       }
 
       function overlayOpen(){
-        return !el('composer').classList.contains('hidden')||!el('settings').classList.contains('hidden')||!el('photoViewer').classList.contains('hidden')||!el('kickCounter').classList.contains('hidden')||!el('capsule').classList.contains('hidden')||!el('checkupNotes').classList.contains('hidden')||!el('bookMaker').classList.contains('hidden')||!el('lapseViewer').classList.contains('hidden')||!el('checklist').classList.contains('hidden')||!el('guidebook').classList.contains('hidden')||!el('moreSheet').classList.contains('hidden')||!el('photoPicker').classList.contains('hidden')||!el('tripSheet').classList.contains('hidden');
+        return !el('composer').classList.contains('hidden')||!el('checkin').classList.contains('hidden')||!el('settings').classList.contains('hidden')||!el('photoViewer').classList.contains('hidden')||!el('kickCounter').classList.contains('hidden')||!el('capsule').classList.contains('hidden')||!el('checkupNotes').classList.contains('hidden')||!el('bookMaker').classList.contains('hidden')||!el('lapseViewer').classList.contains('hidden')||!el('checklist').classList.contains('hidden')||!el('memories').classList.contains('hidden')||!el('guidebook').classList.contains('hidden')||!el('moreSheet').classList.contains('hidden')||!el('photoPicker').classList.contains('hidden')||!el('tripSheet').classList.contains('hidden');
       }
 
       function shouldPauseAutoRefresh(){
@@ -3295,8 +3408,11 @@
       function loadChecklist(){
         if(!state.session) return;
         callApi('apiGetChecklistV320',[state.session.token],20000).then(unwrap).then(function(data){
+          state.homeSummaryChecklist=Array.isArray(data&&data.items)?data.items:[];
+          state.homeSummaryChecklistAt=Date.now();
+          renderHomeSummary(state.home&&state.home.app&&state.home.app.pregnancy);
           if(el('checklist').classList.contains('hidden')) return;
-          renderChecklist(data&&data.items||[]);
+          renderChecklist(state.homeSummaryChecklist);
         }).catch(function(error){ text(el('checklistStatus'),'목록을 불러오지 못했어: '+errorMessage(error)); });
       }
       function renderChecklist(items){
@@ -3333,6 +3449,59 @@
           el('checkItemInput').value=''; loadChecklist();
         }).catch(function(error){ toast(errorMessage(error)); })
         .then(function(){ checklistBusy=false; el('addCheckItem').disabled=false; });
+      }
+
+      // --- 사진 추억함 ---
+      function memoryItems(){
+        var posts=state.home&&Array.isArray(state.home.posts)?state.home.posts:[];
+        var items=[];
+        for(var i=0;i<posts.length;i++){
+          var post=posts[i]||{};
+          var images=Array.isArray(post.images)?post.images:[];
+          for(var j=0;j<images.length;j++){
+            if(!images[j]||!images[j].id) continue;
+            items.push({post:post,image:images[j],index:j,date:String(post.recordDate||''),order:i*100+j});
+          }
+        }
+        items.sort(function(a,b){
+          if(a.date!==b.date) return a.date>b.date?-1:1;
+          return a.order-b.order;
+        });
+        return items;
+      }
+      function renderMemoriesIfOpen(){
+        if(el('memories')&&!el('memories').classList.contains('hidden')) renderMemories();
+      }
+      function renderMemories(){
+        var grid=el('memoryGrid');
+        if(!grid) return;
+        var selected=String(state.memoryMonth||'');
+        var all=memoryItems();
+        var items=selected?all.filter(function(item){ return item.date.slice(0,7)===selected; }):all;
+        text(el('memoryCount'),items.length+'장'+(state.loadingAll?' · 더 불러오는 중…':''));
+        grid.innerHTML='';
+        if(!items.length){
+          var empty=document.createElement('div'); empty.className='memory-empty';
+          empty.textContent=selected?'이 달에는 남긴 사진이 아직 없어.':'아직 사진 기록이 없어. 사진과 함께 첫 추억을 남겨봐.';
+          grid.appendChild(empty);
+          return;
+        }
+        items.forEach(function(item){
+          var card=document.createElement('button'); card.type='button'; card.className='memory-card';
+          card.setAttribute('aria-label',(item.date||'기록')+' 사진 크게 보기');
+          var imageBox=document.createElement('span'); imageBox.className='memory-image'; imageBox.setAttribute('data-image-id',String(item.image.id||'')); imageBox.innerHTML='<span class="photo-fail">사진 준비 중…</span>';
+          var meta=document.createElement('span'); meta.className='memory-meta'; meta.textContent=item.date?item.date.slice(5).replace('-','.'):'사진';
+          card.appendChild(imageBox); card.appendChild(meta);
+          card.addEventListener('click',function(){ openPhotoViewer(item.post.images,item.index); });
+          grid.appendChild(card);
+          observeImage(item.image.id,imageBox,'thumbnail');
+        });
+      }
+      function openMemories(){
+        openOverlaySheet('memories');
+        el('memoryMonth').value=state.memoryMonth||'';
+        renderMemories();
+        ensureAllPostsForLibrary();
       }
 
       // --- 타임랩스 영상 내보내기 ---
@@ -3470,7 +3639,7 @@
         try{
           if(navigator.serviceWorker&&window.isSecureContext){
             window.addEventListener('load',function(){
-              navigator.serviceWorker.register('sw.js?v=4.0.2',{updateViaCache:'none'}).catch(function(){});
+              navigator.serviceWorker.register('sw.js?v=4.1.0',{updateViaCache:'none'}).catch(function(){});
             });
           }
         }catch(swError){}
@@ -4129,6 +4298,96 @@
         }
       }
 
+      // 오늘 한 줄은 일반 기록과 같은 안전 저장 API를 쓰되, 사진·작성 화면 상태와
+      // 섞이지 않게 별도 초안과 요청 번호를 보관한다. 저장 도중 화면이 닫혀도 같은
+      // requestId로 이어서 처리되므로 중복 글이 생기지 않는다.
+      function checkinBody(note,mood,condition){
+        var lines=[];
+        if(mood) lines.push('오늘의 기분: '+mood);
+        if(condition) lines.push('오늘의 컨디션: '+condition);
+        if(note) lines.push(note);
+        return lines.join('\n');
+      }
+      function renderCheckinChoices(){
+        var moods=document.querySelectorAll('.checkin-mood');
+        for(var i=0;i<moods.length;i++) moods[i].classList.toggle('active',(moods[i].getAttribute('data-checkin-mood')||'')===state.checkinMood);
+        var conditions=document.querySelectorAll('.checkin-condition');
+        for(var j=0;j<conditions.length;j++) conditions[j].classList.toggle('active',(conditions[j].getAttribute('data-checkin-condition')||'')===state.checkinCondition);
+      }
+      function persistCheckinDraft(){
+        var userId=currentUserId();
+        if(!userId||!el('checkinNote')) return;
+        var attempt=state.checkinAttempt;
+        var safeAttempt=attempt&&validClientRequestId(attempt.requestId)?{requestId:attempt.requestId,postId:String(attempt.postId||''),signature:String(attempt.signature||'')} : null;
+        var draft={note:String(el('checkinNote').value||'').slice(0,1000),mood:String(state.checkinMood||''),condition:String(state.checkinCondition||''),attempt:safeAttempt};
+        storageSet(checkinDraftKey(userId),JSON.stringify(draft));
+      }
+      function restoreCheckinDraft(){
+        state.checkinMood=''; state.checkinCondition=''; state.checkinAttempt=null;
+        var note='';
+        try{
+          var raw=storageGet(checkinDraftKey(currentUserId()));
+          var draft=raw?JSON.parse(raw):null;
+          if(draft&&typeof draft==='object'){
+            note=String(draft.note||'').slice(0,1000);
+            state.checkinMood=String(draft.mood||'');
+            state.checkinCondition=String(draft.condition||'');
+            if(draft.attempt&&validClientRequestId(draft.attempt.requestId)) state.checkinAttempt={requestId:String(draft.attempt.requestId),postId:String(draft.attempt.postId||''),signature:String(draft.attempt.signature||'')};
+          }
+        }catch(draftError){}
+        el('checkinNote').value=note;
+        renderCheckinChoices();
+      }
+      function openCheckin(){
+        restoreCheckinDraft();
+        text(el('checkinStatus'),'');
+        text(el('saveCheckin'),'남기기');
+        el('saveCheckin').disabled=false;
+        openOverlaySheet('checkin');
+      }
+      function prepareCheckinAttempt(signature){
+        var reusable=state.checkinAttempt&&state.checkinAttempt.signature===signature&&validClientRequestId(state.checkinAttempt.requestId);
+        if(!reusable) state.checkinAttempt={requestId:uuid(),postId:'',signature:signature};
+        return state.checkinAttempt;
+      }
+      function saveCheckin(){
+        if(state.checkinBusy||!state.session) return;
+        var note=String(el('checkinNote').value||'').trim();
+        var mood=String(state.checkinMood||'');
+        var condition=String(state.checkinCondition||'');
+        if(!note&&!mood&&!condition){ toast('기분, 컨디션, 한 줄 중 하나를 남겨 줘.'); return; }
+        var payload={recordDate:today(),title:'오늘 한 줄 체크인',body:checkinBody(note,mood,condition),category:'일상',mood:mood,imageCount:0};
+        var signature=JSON.stringify({recordDate:payload.recordDate,title:payload.title,body:payload.body,category:payload.category,mood:payload.mood});
+        var attempt=prepareCheckinAttempt(signature);
+        payload.requestId=attempt.requestId;
+        state.checkinBusy=true;
+        state.lastInteractionAt=Date.now();
+        el('saveCheckin').disabled=true;
+        text(el('saveCheckin'),'저장 중…');
+        text(el('checkinStatus'),'안전하게 저장 중이야…');
+        persistCheckinDraft();
+        var start=attempt.postId?Promise.resolve({postId:attempt.postId}):callApi('apiStartPostV221',[state.session.token,payload],22000).then(unwrap);
+        start.then(function(result){
+          if(!result||!result.postId) throw new Error('저장할 기록 번호를 받지 못했어.');
+          state.checkinAttempt.postId=String(result.postId);
+          persistCheckinDraft();
+          return callApi('apiFinishPostV221',[state.session.token,state.checkinAttempt.postId],22000);
+        }).then(unwrap).then(function(){
+          storageRemove(checkinDraftKey(currentUserId()));
+          state.checkinAttempt=null; state.checkinMood=''; state.checkinCondition='';
+          hide(el('checkin')); restoreDialogFocus();
+          toast('오늘 한 줄을 남겼어 ☀️');
+          loadHome({source:'checkin',force:true}).catch(function(){});
+        }).catch(function(error){
+          text(el('checkinStatus'),'저장을 끝내지 못했어. 다시 누르면 같은 기록으로 이어서 시도해.');
+          toast(errorMessage(error));
+        }).then(function(){
+          state.checkinBusy=false;
+          el('saveCheckin').disabled=false;
+          text(el('saveCheckin'),'남기기');
+        });
+      }
+
       function clearComposer(){
         cancelDraftSave(true);
         el('postTitle').value='';
@@ -4368,6 +4627,8 @@
         state.homeApplyGeneration++;
         hide(el('settings'));
         hide(el('composer'));
+        hide(el('checkin'));
+        hide(el('memories'));
         hide(el('toast'));
         stopKickTimer();
         hide(el('kickCounter'));
@@ -4378,6 +4639,10 @@
         show(el('feedStatus'));
         if(state.imageObserver) state.imageObserver.disconnect();
         state.home=null;
+        state.homeSummaryChecklist=[];
+        state.homeSummaryChecklistAt=0;
+        state.homeSummaryChecklistLoading=false;
+        state.checkinMood=''; state.checkinCondition=''; state.checkinAttempt=null; state.checkinBusy=false; state.memoryMonth='';
         state.revision='';
         state.homeFingerprint='';
         state.images=[];

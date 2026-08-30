@@ -11,12 +11,12 @@
   <main class="card" aria-live="polite"><div class="leaf">🌱</div><h1>최신 화면으로 갱신 중</h1><p>잠시만 기다려 줘.</p></main>
   <script>
   (function(){
-    var target=new URL('./',location.href).href+'?updated=4.0.3';
+    var target=new URL('./',location.href).href+'?updated=4.1.0';
     var finished=false;
     function finish(){ if(finished) return; finished=true; setTimeout(function(){ location.replace(target); },180); }
     if(!('serviceWorker' in navigator)){ finish(); return; }
     navigator.serviceWorker.addEventListener('controllerchange',finish,{once:true});
-    navigator.serviceWorker.register('./sw.js?v=4.0.2',{scope:'./',updateViaCache:'none'})
+    navigator.serviceWorker.register('./sw.js?v=4.1.0',{scope:'./',updateViaCache:'none'})
       .then(function(reg){ return reg.update().catch(function(){}); })
       .then(function(){ setTimeout(finish,2500); })
       .catch(finish);
