@@ -1,0 +1,8 @@
+{
+  "name": "ilkong-web-release-checks",
+  "private": true,
+  "version": "4.3.0",
+  "scripts": {
+    "verify:release": "node scripts/verify-release.mjs"
+  }
+}
