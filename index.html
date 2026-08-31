@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.1.1 — Supabase 단일 쓰기 전환, 저장 경로·사진 로딩 안정화 -->
+<!-- 일콩 기록 v4.2.0 — 기록 탐색 성능·접근성·저장 안정화 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -95,7 +95,7 @@
     noscript{display:block;padding:20px;background:#8f403b;color:white}
 
     .recovery{margin:0 16px 12px;border:1px solid #d6b875;background:#fff7df;border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px}.recovery strong{display:block;font-size:13px}.recovery span{display:block;color:#795f2b;font-size:12px;margin-top:3px;line-height:1.45}.recovery-actions{display:flex;gap:6px;margin-left:auto}.recovery-actions button{border:0;border-radius:11px;padding:8px 10px;font-weight:800}.resume{background:#7b6536;color:white}.discard{background:#efe1b9;color:#6d5627}
-    .library-tools{margin:0 16px 12px;display:grid;grid-template-columns:1fr auto auto;gap:8px}.library-tools input,.library-tools select{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 11px;color:var(--ink)}.library-tools select{font-size:13px}.library-count{grid-column:1/-1;color:var(--muted);font-size:11px;padding:0 3px}
+    .library-tools{margin:0 16px 12px;display:grid;grid-template-columns:1fr auto auto;gap:8px}.library-tools input,.library-tools select{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 11px;color:var(--ink)}.library-tools select{font-size:13px}.library-count{grid-column:1/-1;color:var(--muted);font-size:11px;padding:0 3px;line-height:1.5}.library-actions{grid-column:1/-1;display:flex;gap:8px}.library-actions button{flex:1;min-width:0;min-height:40px;font-size:12px}
     .post-actions{display:flex;align-items:center;gap:3px}.post-action{border:0;background:transparent;color:var(--muted);width:34px;height:34px;border-radius:11px;font-size:16px}.post-action:hover,.post-action:focus{background:#f2ebe2}.post-action.favorite{color:#b58b25}.edited{font-size:10px;color:var(--muted);margin-left:5px}
     .comment-thread{display:grid;gap:7px}.comment-item.reply{margin-left:28px;position:relative}.comment-item.reply:before{content:'↳';position:absolute;left:-20px;top:7px;color:#a4978a;font-size:14px}.comment-actions{display:flex;gap:5px;margin-top:5px}.comment-action{border:0;background:transparent;color:var(--muted);padding:1px 4px;font-size:11px}.comment-deleted{color:#9c9288;font-style:italic;font-size:12px}.reply-target{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#eef2ea;border-radius:11px;padding:7px 9px;margin-bottom:7px;color:#596553;font-size:11px}.reply-target button{border:0;background:transparent;color:var(--muted);font-size:15px}.reply-mention{color:#71806b;font-weight:800;margin-right:4px}
     .advanced{margin-bottom:12px;border:1px solid var(--line);border-radius:15px;background:rgba(255,253,249,.68);overflow:hidden}.advanced summary{list-style:none;padding:12px 13px;font-size:12px;color:var(--muted);font-weight:800;cursor:pointer}.advanced summary::-webkit-details-marker{display:none}.advanced summary:after{content:'＋';float:right}.advanced[open] summary:after{content:'－'}.advanced-inner{padding:0 12px 2px}.edit-note{background:#eef2ea;color:#596553;border-radius:13px;padding:10px 12px;font-size:12px;line-height:1.5;margin-bottom:12px}
@@ -189,7 +189,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.1.1</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.2.0</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -205,7 +205,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.1.1</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.2.0</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -219,7 +219,7 @@
       </section>
       <div id="recordsSeg" class="segbar hidden"><button class="seg active" data-seg="ALL" type="button">전체</button><button class="seg" data-seg="JISU" type="button">🌿 지수</button><button class="seg" data-seg="HAKONG" type="button">🌼 하콩</button><button class="seg" data-seg="FAVORITE" type="button">★ 즐겨찾기</button><button id="segTrip" class="seg hidden" data-seg="TRIP" type="button">✈️ 여행</button></div>
       <div id="questionHead" class="question-head hidden"></div>
-      <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div style="grid-column:1/-1;display:flex;gap:7px;align-items:center"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">지우기</button></div><div id="libraryCount" class="library-count"></div></div>
+      <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div style="grid-column:1/-1;display:flex;gap:7px;align-items:center"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div><div id="libraryCount" class="library-count" role="status" aria-live="polite"></div><div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div></div>
       <div id="feedStatus" class="status-card" role="status" aria-live="polite">최신 기록을 불러오는 중이야…</div>
       <div id="feed" class="feed"></div>
       <div id="feedMore" class="feed-more hidden"><button id="loadMore" type="button">이전 기록 더 보기</button></div>
@@ -299,7 +299,7 @@
           <label style="display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px"><input id="notifyQuiet" type="checkbox" style="width:20px;height:20px"> 밤에는 조용히 (23시~7시)</label>
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p></div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v4.1.1 · Supabase 기본 저장 · 사진 복구 경로 점검</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v4.2.0 · Supabase 기본 저장 · 기록 탐색 성능 점검</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -448,7 +448,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.1.1';
+      var VERSION = '4.2.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -647,7 +647,7 @@
           if(isImeComposing(input)) return;
           state.searchApplyPending=false;
           state.searchQuery=String(input.value||'').trim().toLowerCase();
-          ensureAllPostsForLibrary();
+          if(state.searchQuery) ensureAllPostsForLibrary('search');
           renderPosts(state.home&&state.home.posts||[]);
         },typeof delay==='number'?delay:120);
       }
@@ -898,12 +898,14 @@
         });
         el('loadMore').addEventListener('click',loadMorePosts);
         el('searchInput').addEventListener('input',function(e){ state.lastInteractionAt=Date.now(); if(e.isComposing||isImeComposing(this)) return; scheduleSearchApply(this); });
-        el('viewFilter').addEventListener('change',function(){ state.catFilter=this.value.indexOf('CAT:')===0?this.value:''; if(state.catFilter) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); scrollFeedTop(); });
-        el('monthFilter').addEventListener('change',function(){ state.monthFilter=this.value; if(this.value) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); });
-        function applyRange(){ state.rangeFrom=el('rangeFrom').value||''; state.rangeTo=el('rangeTo').value||''; if(state.rangeFrom||state.rangeTo) ensureAllPostsForLibrary(); renderPosts(state.home&&state.home.posts||[]); }
+        el('viewFilter').addEventListener('change',function(){ state.catFilter=this.value.indexOf('CAT:')===0?this.value:''; if(state.catFilter) ensureAllPostsForLibrary('category'); renderPosts(state.home&&state.home.posts||[]); scrollFeedTop(); });
+        el('monthFilter').addEventListener('change',function(){ state.monthFilter=this.value; if(this.value) ensureAllPostsForLibrary('month'); renderPosts(state.home&&state.home.posts||[]); });
+        function applyRange(){ state.rangeFrom=el('rangeFrom').value||''; state.rangeTo=el('rangeTo').value||''; if(state.rangeFrom||state.rangeTo) ensureAllPostsForLibrary('range'); renderPosts(state.home&&state.home.posts||[]); }
         el('rangeFrom').addEventListener('change',applyRange);
         el('rangeTo').addEventListener('change',applyRange);
         el('rangeClear').addEventListener('click',function(){ el('rangeFrom').value=''; el('rangeTo').value=''; el('monthFilter').value=''; state.monthFilter=''; applyRange(); });
+        el('loadAllRecords').addEventListener('click',function(){ ensureAllPostsForLibrary('manual'); });
+        el('clearLibraryFilters').addEventListener('click',resetLibraryFilters);
         el('resumePending').addEventListener('click',function(){ openComposer(); });
         el('discardPending').addEventListener('click',discardPendingSave);
         el('offlineRetry').addEventListener('click',function(){ toast('지금 올려볼게…'); flushOfflineQueue(); });
@@ -1004,6 +1006,7 @@
           window.addEventListener(name,function(){ state.lastInteractionAt=Date.now(); },{passive:true});
         });
         document.addEventListener('keydown',function(e){
+          if(e.key==='Tab'&&trapDialogFocus(e)) return;
           if(e.key!=='Escape'||state.saving) return;
           closeTopDialogFromKeyboard();
         });
@@ -1841,7 +1844,16 @@
         captureLoadedImageSources(feed);
         feed.innerHTML='';
         var visible=filteredPosts(posts);
-        text(el('libraryCount'),visible.length+'개 표시 · 현재 '+(posts||[]).length+'개 불러옴'+(state.hasMore?' · 검색 시 전체를 더 불러와':' '));
+        var libraryStatus=visible.length+'개 표시 · 현재 '+(posts||[]).length+'개 불러옴';
+        if(state.loadingAll) libraryStatus+=' · 이전 기록 확인 중…';
+        else if(state.hasMore) libraryStatus+=' · 더 오래된 기록이 있어';
+        else libraryStatus+=' · 전체 기록 확인 완료';
+        text(el('libraryCount'),libraryStatus);
+        var loadAllButton=el('loadAllRecords');
+        if(loadAllButton){
+          loadAllButton.disabled=!!state.loadingAll||!state.hasMore;
+          text(loadAllButton,state.loadingAll?'전체 기록 불러오는 중…':(state.hasMore?'전체 기록 불러오기':'전체 기록을 불러왔어'));
+        }
         if(!visible.length){
           feed.innerHTML=emptyStateHtml();
           return true;
@@ -1855,9 +1867,15 @@
         return true;
       }
 
-      function ensureAllPostsForLibrary(){
+      function renderLibraryLoadingStatus(){
+        if(!state.loadingAll||!state.home) return;
+        text(el('libraryCount'),'전체 기록을 이어 불러오는 중… 현재 '+(state.home.posts||[]).length+'개 확인');
+        if(el('loadAllRecords')){ el('loadAllRecords').disabled=true; text(el('loadAllRecords'),'전체 기록 불러오는 중…'); }
+      }
+      function ensureAllPostsForLibrary(reason){
         if(!state.session||!state.home||!state.hasMore||state.loadingAll) return;
         state.loadingAll=true;
+        renderLibraryLoadingStatus();
         function next(){
           if(!state.hasMore){ state.loadingAll=false; renderPosts(state.home.posts||[]); renderMemoriesIfOpen(); return; }
           var offset=Number(state.nextOffset||state.home.posts.length);
@@ -1866,8 +1884,8 @@
             current.concat(incoming).forEach(function(post){ var id=String(post.id||''); if(id&&!seen[id]){seen[id]=true;merged.push(post);} });
             state.home=Object.assign({},state.home,page,{posts:merged});
             state.nextOffset=Number(page.nextOffset||merged.length); state.loadedCount=merged.length; state.hasMore=!!page.hasMore; state.homeFingerprint=fingerprintHome(state.home);
-            renderLoadMore(); renderPosts(merged); renderMemoriesIfOpen(); next();
-          }).catch(function(error){ state.loadingAll=false; toast('전체 기록을 불러오지 못했어: '+errorMessage(error)); });
+            renderLoadMore(); renderLibraryLoadingStatus(); next();
+          }).catch(function(error){ state.loadingAll=false; renderPosts(state.home.posts||[]); toast('전체 기록을 불러오지 못했어: '+errorMessage(error)); });
         }
         next();
       }
@@ -3068,7 +3086,7 @@
         el('libraryTools').classList.toggle('hidden',!isRecords);
         el('questionHead').classList.toggle('hidden',!isQuestion);
         if(isHome){ state.viewFilter='ALL'; }
-        else if(isRecords){ state.viewFilter=state.recordSegment||'ALL'; syncSegUI(); ensureAllPostsForLibrary(); }
+        else if(isRecords){ state.viewFilter=state.recordSegment||'ALL'; syncSegUI(); }
         else if(isQuestion){ state.viewFilter='QUESTION'; renderQuestionHead(); ensureAllPostsForLibrary(); }
         if(state.home) renderPosts(state.home.posts||[]);
         try{ window.scrollTo(0,0); }catch(scrollError){}
@@ -3081,7 +3099,14 @@
         state.recordSegment=seg||'ALL';
         state.viewFilter=state.recordSegment;
         syncSegUI();
-        ensureAllPostsForLibrary();
+        if(state.recordSegment!=='ALL') ensureAllPostsForLibrary('segment');
+        if(state.home) renderPosts(state.home.posts||[]);
+        scrollFeedTop();
+      }
+      function resetLibraryFilters(){
+        state.searchQuery=''; state.catFilter=''; state.monthFilter=''; state.rangeFrom=''; state.rangeTo=''; state.recordSegment='ALL'; state.viewFilter='ALL';
+        el('searchInput').value=''; el('viewFilter').value='ALL'; el('monthFilter').value=''; el('rangeFrom').value=''; el('rangeTo').value='';
+        syncSegUI();
         if(state.home) renderPosts(state.home.posts||[]);
         scrollFeedTop();
       }
@@ -3870,6 +3895,30 @@
         }
         return false;
       }
+      function topOpenDialog(){
+        var ids=['photoViewer','lapseViewer','composer','settings','kickCounter','checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
+        for(var i=0;i<ids.length;i++){
+          var node=el(ids[i]);
+          if(node&&!node.classList.contains('hidden')) return node;
+        }
+        return null;
+      }
+      function trapDialogFocus(event){
+        var dialog=topOpenDialog();
+        if(!dialog) return false;
+        var focusable=Array.prototype.slice.call(dialog.querySelectorAll('button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+          .filter(function(node){ return node.offsetParent!==null; });
+        if(!focusable.length) return false;
+        var first=focusable[0], last=focusable[focusable.length-1], active=document.activeElement;
+        if(!dialog.contains(active)){
+          event.preventDefault();
+          (event.shiftKey?last:first).focus();
+          return true;
+        }
+        if(event.shiftKey&&active===first){ event.preventDefault(); last.focus(); return true; }
+        if(!event.shiftKey&&active===last){ event.preventDefault(); first.focus(); return true; }
+        return false;
+      }
 
       // --- 배 타임랩스 ---
       var lapse={items:[],index:0,playing:false,timer:null};
@@ -4397,9 +4446,17 @@
       }
       function renderCheckinChoices(){
         var moods=document.querySelectorAll('.checkin-mood');
-        for(var i=0;i<moods.length;i++) moods[i].classList.toggle('active',(moods[i].getAttribute('data-checkin-mood')||'')===state.checkinMood);
+        for(var i=0;i<moods.length;i++){
+          var moodOn=(moods[i].getAttribute('data-checkin-mood')||'')===state.checkinMood;
+          moods[i].classList.toggle('active',moodOn);
+          moods[i].setAttribute('aria-pressed',moodOn?'true':'false');
+        }
         var conditions=document.querySelectorAll('.checkin-condition');
-        for(var j=0;j<conditions.length;j++) conditions[j].classList.toggle('active',(conditions[j].getAttribute('data-checkin-condition')||'')===state.checkinCondition);
+        for(var j=0;j<conditions.length;j++){
+          var conditionOn=(conditions[j].getAttribute('data-checkin-condition')||'')===state.checkinCondition;
+          conditions[j].classList.toggle('active',conditionOn);
+          conditions[j].setAttribute('aria-pressed',conditionOn?'true':'false');
+        }
       }
       function persistCheckinDraft(){
         var userId=currentUserId();
