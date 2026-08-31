@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.1.0 — Supabase 단일 쓰기 전환, GAS 로그인·PIN 보존, 안전 롤백 보호 -->
+<!-- 일콩 기록 v4.1.1 — Supabase 단일 쓰기 전환, 저장 경로·사진 로딩 안정화 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -64,6 +64,7 @@
     .brand{display:flex;align-items:center;gap:10px;min-width:0}.brand-icon{width:40px;height:40px;border-radius:15px;background:var(--accent2);display:grid;place-items:center;font-size:22px}.brand strong{display:block;font-size:16px}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
     .user-chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 12px;color:var(--ink);font-weight:700}
     .hero{margin:16px;border:1px solid var(--line);background:linear-gradient(145deg,#fffdf9,#eee5d9);border-radius:25px;padding:20px;box-shadow:0 10px 28px rgba(66,52,40,.08)}
+    .hero-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.hero-head>div{min-width:0}.hero-toggle{flex:0 0 auto;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--muted);padding:8px 10px;font-size:12px;font-weight:800}.hero.compact{padding:15px 18px}.hero.compact h2{font-size:23px;margin-bottom:0}.hero.compact #heroDetails{display:none}
     .hero small{color:var(--accent);font-weight:800}.hero h2{margin:7px 0 4px;font-size:27px;letter-spacing:-.04em}.hero p{margin:0;color:var(--muted);font-size:13px}
     .kick-body{padding:20px 18px 26px;display:flex;flex-direction:column;align-items:center;gap:14px}.kick-status{color:var(--muted);font-size:13px;min-height:18px}.kick-count{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}.kick-tap{width:190px;height:190px;border-radius:50%;border:0;background:linear-gradient(145deg,#ffd7e0,#ffe9a8);font-size:25px;font-weight:800;color:#5a4630;box-shadow:0 12px 30px rgba(66,52,40,.18);cursor:pointer}.kick-tap:active{transform:scale(.96)}.kick-tap:disabled{opacity:.6}.kick-tap span{display:block;font-size:12px;font-weight:600;margin-top:7px;color:#7a6a55}.kick-tools{display:flex;gap:10px}.kick-note{margin:2px 0 0;color:var(--muted);font-size:12px;line-height:1.65;text-align:center}
     .milestone{margin-top:12px;background:linear-gradient(135deg,#ffe9a8,#ffd7e0);border-radius:14px;padding:10px 14px;font-size:13.5px;font-weight:700;letter-spacing:-.02em;text-align:center;color:#5a4630}
@@ -137,7 +138,7 @@
     .more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px}
     .more-item{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px 13px;text-align:left;color:var(--ink);font-weight:700;font-size:14px;min-height:70px}
     .more-item span{display:block;font-size:25px;margin-bottom:7px}
-    .memory-tools{display:flex;align-items:center;gap:9px;margin-bottom:12px}.memory-tools input{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:10px 11px;color:var(--ink)}.memory-tools span{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap}.memory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.memory-card{position:relative;min-width:0;aspect-ratio:1;border:0;border-radius:13px;overflow:hidden;background:#e8e0d6;padding:0;color:white}.memory-image{display:grid;width:100%;height:100%;place-items:center;background:#e7dfd5;color:var(--muted)}.memory-image img{width:100%;height:100%;object-fit:cover;display:block}.memory-meta{position:absolute;right:5px;bottom:5px;border-radius:999px;background:rgba(30,25,21,.64);padding:3px 6px;color:#fff;font-size:10px;font-weight:800;line-height:1}.memory-empty{grid-column:1/-1;border:1px dashed var(--line);border-radius:15px;padding:25px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.65}html[data-theme="dark"] .memory-card,html[data-theme="dark"] .memory-image{background:#241f1a}
+    .memory-tools{display:flex;align-items:center;gap:9px;margin-bottom:12px}.memory-tools input{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:10px 11px;color:var(--ink)}.memory-tools span{margin-left:auto;color:var(--muted);font-size:11px;white-space:nowrap}.memory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.memory-card{position:relative;min-width:0;aspect-ratio:1;border:0;border-radius:13px;overflow:hidden;background:#e8e0d6;padding:0;color:white}.memory-image{display:grid;width:100%;height:100%;place-items:center;background:#e7dfd5;color:var(--muted)}.memory-image img{width:100%;height:100%;object-fit:cover;display:block}.memory-meta{position:absolute;right:5px;bottom:5px;border-radius:999px;background:rgba(30,25,21,.64);padding:3px 6px;color:#fff;font-size:10px;font-weight:800;line-height:1}.memory-more{width:100%;margin-top:12px}.memory-empty{grid-column:1/-1;border:1px dashed var(--line);border-radius:15px;padding:25px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.65}html[data-theme="dark"] .memory-card,html[data-theme="dark"] .memory-image{background:#241f1a}
     .badge.trip{background:linear-gradient(135deg,#cfe3f5,#e6ece1);color:#3c5468;font-weight:800}
     html[data-theme="dark"] .badge.trip{background:linear-gradient(135deg,#2f4356,#37402f);color:#cfe3f5}
     .trip-banner{margin-top:10px;background:linear-gradient(135deg,#d7e9fb,#e8f1e2);border-radius:13px;padding:10px 13px;font-size:13px;font-weight:700;color:#33536b;text-align:center}
@@ -188,12 +189,12 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.1.0</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.1.1</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
       </div>
-      <input id="pin" class="pin" type="password" inputmode="numeric" maxlength="4" placeholder="PIN" autocomplete="current-password" aria-label="4자리 로그인 PIN">
+      <input id="pin" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="PIN" autocomplete="current-password" aria-label="숫자 4~12자리 로그인 PIN">
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
     </div>
@@ -204,10 +205,10 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.1.0</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.1.1</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
-      <div id="heroSection" class="hero"><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div>
+      <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
       <div id="offlineBanner" class="offline-banner hidden" role="status"><span id="offlineText">인터넷이 끊겨서 기록을 이 기기에 보관 중이야.</span><button id="offlineRetry" type="button">지금 보내기</button></div>
       <div id="recoveryBanner" class="recovery hidden"><div><strong>저장 중 멈춘 기록이 있어</strong><span id="recoveryText">사진과 글을 이 기기에 안전하게 보관하고 있어.</span></div><div class="recovery-actions"><button id="resumePending" class="resume" type="button">이어쓰기</button><button id="discardPending" class="discard" type="button">버리기</button></div></div>
       <div id="quickBar" class="quick"><button id="quickWrite" class="quick-main" type="button">오늘 무슨 일이 있었어?</button><button id="quickPhoto" class="photo-quick" type="button" aria-label="사진으로 빠르게 기록하기">📷</button><button id="quickKick" class="photo-quick hidden" type="button" aria-label="태동 세기">👣</button></div>
@@ -298,7 +299,7 @@
           <label style="display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px"><input id="notifyQuiet" type="checkbox" style="width:20px;height:20px"> 밤에는 조용히 (23시~7시)</label>
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p></div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v4.1.0 · Supabase 기본 저장 · 사진 복구 경로 점검</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 점검</h3><p id="healthText">화면 v4.1.1 · Supabase 기본 저장 · 사진 복구 경로 점검</p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -384,6 +385,7 @@
         <p class="upload-note" style="margin:0 0 12px">기록에 남긴 사진을 날짜순으로 모았어. 사진을 누르면 크게 볼 수 있어.</p>
         <div class="memory-tools"><input id="memoryMonth" type="month" aria-label="사진 월별 보기"><span id="memoryCount"></span></div>
         <div id="memoryGrid" class="memory-grid"></div>
+        <button id="moreMemories" class="secondary memory-more hidden" type="button">사진 더 보기</button>
       </div>
     </div>
   </div>
@@ -446,13 +448,14 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.1.0';
+      var VERSION = '4.1.1';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
       var DRAFT_KEY = 'ilkong_v28_draft';
       var PENDING_SAVE_KEY = 'ilkong_v28_pending';
       var CHECKIN_DRAFT_KEY = 'ilkong_v41_checkin';
+      var HERO_DENSITY_KEY = 'ilkong_v411_hero_density';
       var PREVIOUS_DRAFT_KEY = 'ilkong_v22_draft';
       var LEGACY_DRAFT_KEY = 'ilkong_v21_draft';
       var OLDER_DRAFT_KEY = 'ilkong_v2_draft';
@@ -482,7 +485,7 @@
         imageLoadQueue:[], imageLoadActive:0, imageLoadSerial:0, imageFallbackTimers:{},
         imageQueueRunning:false, imageBatchSupport:null, composerMode:'create', editingPostId:'', editExistingPhotoCount:0, offlineQueued:false, offlineFlushTimer:null, pendingRestored:false,
         searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false,
-        checkinMood:'', checkinCondition:'', checkinAttempt:null, checkinBusy:false, homeSummaryChecklist:[], homeSummaryChecklistAt:0, homeSummaryChecklistLoading:false, memoryMonth:''
+        checkinMood:'', checkinCondition:'', checkinAttempt:null, checkinBusy:false, homeSummaryChecklist:[], homeSummaryChecklistAt:0, homeSummaryChecklistLoading:false, memoryMonth:'', memoryVisibleLimit:36, loadingMemoryPosts:false, heroExpanded:false
       };
 
       function el(id){ return document.getElementById(id); }
@@ -797,6 +800,7 @@
       function boot(){
         try {
           initTheme();
+          initHeroDensity();
           bind();
           bindOfflineWatchers();
           setupPwa();
@@ -835,6 +839,7 @@
         for(var i=0;i<userButtons.length;i++) userButtons[i].addEventListener('click',selectUser);
         el('loginButton').addEventListener('click',login);
         el('pin').addEventListener('keydown',function(e){ if(e.key==='Enter') login(); });
+        el('heroToggle').addEventListener('click',function(){ setHeroExpanded(!state.heroExpanded,true); });
         el('quickWrite').addEventListener('click',openComposer);
         el('openCheckin').addEventListener('click',openCheckin);
         el('summaryCheckup').addEventListener('click',openSettings);
@@ -906,7 +911,8 @@
         el('openMemories').addEventListener('click',openMemories);
         el('closeMemories').addEventListener('click',function(){ closeOverlaySheet('memories'); });
         el('memories').addEventListener('click',function(e){ if(e.target===el('memories')) closeOverlaySheet('memories'); });
-        el('memoryMonth').addEventListener('change',function(){ state.memoryMonth=this.value||''; renderMemories(); });
+        el('memoryMonth').addEventListener('change',function(){ state.memoryMonth=this.value||''; state.memoryVisibleLimit=36; renderMemories(); });
+        el('moreMemories').addEventListener('click',showMoreMemories);
         el('closeLapse').addEventListener('click',function(){ stopLapsePlay(); closeOverlaySheet('lapseViewer'); });
         el('lapsePrev').addEventListener('click',function(){ stopLapsePlay(); moveLapse(-1); });
         el('lapseNext').addEventListener('click',function(){ stopLapsePlay(); moveLapse(1); });
@@ -999,9 +1005,7 @@
         });
         document.addEventListener('keydown',function(e){
           if(e.key!=='Escape'||state.saving) return;
-          if(!el('photoViewer').classList.contains('hidden')) closePhotoViewer();
-          else if(!el('composer').classList.contains('hidden')) closeComposer();
-          else if(!el('settings').classList.contains('hidden')) closeSettings();
+          closeTopDialogFromKeyboard();
         });
       }
 
@@ -1012,10 +1016,26 @@
         el('pin').focus();
       }
 
+      function initHeroDensity(){
+        state.heroExpanded=storageGet(HERO_DENSITY_KEY)==='expanded';
+        setHeroExpanded(state.heroExpanded,false);
+      }
+      function setHeroExpanded(expanded,persist){
+        state.heroExpanded=!!expanded;
+        var hero=el('heroSection'), details=el('heroDetails'), toggle=el('heroToggle');
+        if(hero) hero.classList.toggle('compact',!state.heroExpanded);
+        if(details) details.setAttribute('aria-hidden',state.heroExpanded?'false':'true');
+        if(toggle){
+          toggle.setAttribute('aria-expanded',state.heroExpanded?'true':'false');
+          text(toggle,state.heroExpanded?'오늘 정보 접기':'오늘 정보 보기');
+        }
+        if(persist) storageSet(HERO_DENSITY_KEY,state.heroExpanded?'expanded':'compact');
+      }
+
       function login(){
         if(!state.selectedUser){ setLoginStatus('지수 또는 하콩을 먼저 골라 줘.'); return; }
         var pin=el('pin').value.trim();
-        if(pin.length!==4){ setLoginStatus('4자리 PIN을 입력해 줘.'); return; }
+        if(!/^\d{4,12}$/.test(pin)){ setLoginStatus('숫자 4~12자리 PIN을 입력해 줘.'); return; }
 
         setLoginBusy(true);
         setLoginStatus('');
@@ -1673,8 +1693,11 @@
           if(!state.session||state.session.token!==requestToken) return;
           state.homeSummaryChecklist=Array.isArray(data&&data.items)?data.items:[];
           state.homeSummaryChecklistAt=Date.now();
+        }).catch(function(){}).then(function(){
+          if(!state.session||state.session.token!==requestToken) return;
+          state.homeSummaryChecklistLoading=false;
           renderHomeSummary(state.home&&state.home.app&&state.home.app.pregnancy);
-        }).catch(function(){}).then(function(){ state.homeSummaryChecklistLoading=false; });
+        });
       }
 
       function daysSince(value){
@@ -2673,9 +2696,11 @@
         var observer=getImageObserver();
         if(observer){ try{ observer.observe(box); }catch(e){} }
 
-        // 관찰기나 바깥 Google Sites 스크롤에 의존하지 않는다.
-        // 모든 사진을 제한된 대기열에 즉시 넣고, 기기 캐시 → 서버 순서로 복원한다.
-        enqueueImageLoad(imageId,box,variant,false);
+        // 현재 화면 근처의 사진만 즉시 복원한다. 나머지는 관찰기가 가까워질 때
+        // 대기열에 넣어 추억함·긴 기록을 열어도 네트워크와 메모리를 한꺼번에 쓰지 않는다.
+        var rect=box.getBoundingClientRect();
+        var nearViewport=rect.bottom>=-180&&rect.top<=(window.innerHeight||800)+760;
+        if(!observer||nearViewport) enqueueImageLoad(imageId,box,variant,false);
       }
 
       function enqueueImageLoad(imageId,box,variant,priority){
@@ -3478,30 +3503,63 @@
         var selected=String(state.memoryMonth||'');
         var all=memoryItems();
         var items=selected?all.filter(function(item){ return item.date.slice(0,7)===selected; }):all;
-        text(el('memoryCount'),items.length+'장'+(state.loadingAll?' · 더 불러오는 중…':''));
+        var visible=items.slice(0,Math.max(1,Number(state.memoryVisibleLimit)||36));
+        var countText=visible.length+' / '+items.length+'장';
+        if(state.loadingMemoryPosts) countText+=' · 이전 기록 불러오는 중…';
+        else if(state.hasMore) countText+=' · 이전 기록에 더 있어';
+        text(el('memoryCount'),countText);
         grid.innerHTML='';
         if(!items.length){
           var empty=document.createElement('div'); empty.className='memory-empty';
-          empty.textContent=selected?'이 달에는 남긴 사진이 아직 없어.':'아직 사진 기록이 없어. 사진과 함께 첫 추억을 남겨봐.';
+          empty.textContent=selected?'이 달에는 남긴 사진이 아직 없어.':'아직 불러온 기록에는 사진이 없어. 이전 기록도 찾아볼 수 있어.';
           grid.appendChild(empty);
-          return;
+        } else {
+          visible.forEach(function(item){
+            var card=document.createElement('button'); card.type='button'; card.className='memory-card';
+            card.setAttribute('aria-label',(item.date||'기록')+' 사진 크게 보기');
+            var imageBox=document.createElement('span'); imageBox.className='memory-image'; imageBox.setAttribute('data-image-id',String(item.image.id||'')); imageBox.innerHTML='<span class="photo-fail">사진 준비 중…</span>';
+            var meta=document.createElement('span'); meta.className='memory-meta'; meta.textContent=item.date?item.date.slice(5).replace('-','.'):'사진';
+            card.appendChild(imageBox); card.appendChild(meta);
+            card.addEventListener('click',function(){ openPhotoViewer(item.post.images,item.index); });
+            grid.appendChild(card);
+            observeImage(item.image.id,imageBox,'thumbnail');
+          });
         }
-        items.forEach(function(item){
-          var card=document.createElement('button'); card.type='button'; card.className='memory-card';
-          card.setAttribute('aria-label',(item.date||'기록')+' 사진 크게 보기');
-          var imageBox=document.createElement('span'); imageBox.className='memory-image'; imageBox.setAttribute('data-image-id',String(item.image.id||'')); imageBox.innerHTML='<span class="photo-fail">사진 준비 중…</span>';
-          var meta=document.createElement('span'); meta.className='memory-meta'; meta.textContent=item.date?item.date.slice(5).replace('-','.'):'사진';
-          card.appendChild(imageBox); card.appendChild(meta);
-          card.addEventListener('click',function(){ openPhotoViewer(item.post.images,item.index); });
-          grid.appendChild(card);
-          observeImage(item.image.id,imageBox,'thumbnail');
-        });
+        var more=el('moreMemories');
+        if(!more) return;
+        more.disabled=!!state.loadingMemoryPosts;
+        if(items.length>visible.length){ text(more,'사진 더 보기'); show(more); }
+        else if(state.hasMore){ text(more,state.loadingMemoryPosts?'이전 기록 불러오는 중…':'이전 기록 사진 더 찾기'); show(more); }
+        else hide(more);
       }
       function openMemories(){
         openOverlaySheet('memories');
         el('memoryMonth').value=state.memoryMonth||'';
+        state.memoryVisibleLimit=36;
         renderMemories();
-        ensureAllPostsForLibrary();
+      }
+      function showMoreMemories(){
+        if(!state.session||!state.home||state.loadingMemoryPosts) return;
+        var selected=String(state.memoryMonth||'');
+        var items=selected?memoryItems().filter(function(item){ return item.date.slice(0,7)===selected; }):memoryItems();
+        if(items.length>state.memoryVisibleLimit){ state.memoryVisibleLimit+=36; renderMemories(); return; }
+        if(!state.hasMore) return;
+        state.loadingMemoryPosts=true;
+        renderMemories();
+        var requestToken=state.session.token;
+        var offset=Number(state.nextOffset||((state.home.posts||[]).length));
+        callApi('apiGetHomeV221',[requestToken,offset,50],24000).then(unwrap).then(function(page){
+          if(!state.session||state.session.token!==requestToken) return;
+          var current=state.home.posts||[], incoming=page.posts||[], seen={}, merged=[];
+          current.concat(incoming).forEach(function(post){ var id=String(post.id||''); if(id&&!seen[id]){seen[id]=true;merged.push(post);} });
+          state.home=Object.assign({},state.home,page,{posts:merged});
+          state.nextOffset=Number(page.nextOffset||merged.length);
+          state.loadedCount=merged.length;
+          state.hasMore=!!page.hasMore;
+          state.homeFingerprint=fingerprintHome(state.home);
+          state.memoryVisibleLimit+=36;
+        }).catch(function(error){ toast('이전 사진을 불러오지 못했어: '+errorMessage(error)); })
+        .then(function(){ state.loadingMemoryPosts=false; renderMemoriesIfOpen(); });
       }
 
       // --- 타임랩스 영상 내보내기 ---
@@ -3769,11 +3827,24 @@
         .then(function(){ exportBusy=false; el('exportData').disabled=false; });
       }
 
-      function openPhotoPicker(){ show(el('photoPicker')); }
+      function openPhotoPicker(){
+        state.dialogReturnFocus=document.activeElement;
+        show(el('photoPicker'));
+        focusFirstInDialog(el('photoPicker'));
+      }
+      function focusFirstInDialog(node){
+        if(!node) return;
+        setTimeout(function(){
+          var target=node.querySelector('button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])');
+          if(target){ try{ target.focus({preventScroll:true}); }catch(e){ try{ target.focus(); }catch(e2){} } }
+        },0);
+      }
       function openOverlaySheet(id,returnTo){
         state.dialogReturnFocus=document.activeElement;
         if(returnTo) state.sheetReturn[id]=returnTo; else delete state.sheetReturn[id];
-        show(el(id));
+        var sheet=el(id);
+        show(sheet);
+        focusFirstInDialog(sheet);
       }
       function closeOverlaySheet(id){
         hide(el(id));
@@ -3782,6 +3853,22 @@
         // v3.6.0: 더보기에서 연 화면은 닫으면 더보기로 돌아간다(홈으로 튕기지 않음).
         if(back&&el(back)){ show(el(back)); return; }
         restoreDialogFocus();
+      }
+      function closeTopDialogFromKeyboard(){
+        if(!el('photoViewer').classList.contains('hidden')){ closePhotoViewer(); return true; }
+        if(!el('lapseViewer').classList.contains('hidden')){ stopLapsePlay(); closeOverlaySheet('lapseViewer'); return true; }
+        if(!el('composer').classList.contains('hidden')){ closeComposer(); return true; }
+        if(!el('settings').classList.contains('hidden')){ closeSettings(); return true; }
+        if(!el('kickCounter').classList.contains('hidden')){ closeKickCounter(); return true; }
+        var sheets=['checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
+        for(var i=0;i<sheets.length;i++){
+          var id=sheets[i], node=el(id);
+          if(!node||node.classList.contains('hidden')) continue;
+          if(id==='checkin'){ if(state.checkinBusy) return false; persistCheckinDraft(); }
+          if(id==='photoPicker'){ hide(node); restoreDialogFocus(); } else closeOverlaySheet(id);
+          return true;
+        }
+        return false;
       }
 
       // --- 배 타임랩스 ---
@@ -4360,6 +4447,8 @@
         var signature=JSON.stringify({recordDate:payload.recordDate,title:payload.title,body:payload.body,category:payload.category,mood:payload.mood});
         var attempt=prepareCheckinAttempt(signature);
         payload.requestId=attempt.requestId;
+        // 저장 직전에 시작된 오래된 홈 조회가 새 체크인을 덮어쓰지 않도록 막는다.
+        invalidateHomeResponses();
         state.checkinBusy=true;
         state.lastInteractionAt=Date.now();
         el('saveCheckin').disabled=true;
@@ -4954,11 +5043,17 @@
         }
         if(SUPABASE_DIRECT_ROLLOUT&&SUPABASE_DIRECT_FUNCTIONS[name]){
           return callSupabaseDirect(name,args,timeout).catch(function(error){
-            // 조회는 언제든 기존 서버로 되돌릴 수 있다. 쓰기는 컷오버 전 MODE 응답에서만
-            // 되돌리고, 컷오버 뒤 애매한 네트워크 오류를 GAS에 재전송해 중복 기록을 만들지 않는다.
-            if(SUPABASE_DIRECT_READS[name]||!SUPABASE_PRIMARY_WRITE_CUTOVER||(error&&error.code==='MODE')){
+            // 조회는 언제든 기존 서버로 되돌릴 수 있다. 주 쓰기 경로가 Supabase인 뒤에는
+            // 어떤 오류도 GAS로 재전송하지 않는다. GAS는 전환 뒤 쓰기를 막고 있어 이 우회가
+            // "Supabase rollout disabled"를 다시 만들 수 있으며, 저장 재시도도 혼란스러워진다.
+            if(SUPABASE_DIRECT_READS[name]||!SUPABASE_PRIMARY_WRITE_CUTOVER){
               supabaseToken='';
               return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
+            }
+            if(error&&error.code==='MODE'){
+              var modeError=new Error('저장 경로를 확인 중이야. 입력한 내용은 이 기기에 남아 있어. 잠시 뒤 다시 눌러 줘.');
+              modeError.code='MODE';
+              throw modeError;
             }
             throw error;
           });
