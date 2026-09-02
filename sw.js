@@ -1,9 +1,9 @@
 /*
- * 일콩 기록 서비스워커 v4.3.1
+ * 일콩 기록 서비스워커 v4.3.2
  * 화면(껍데기)을 기기에 저장해 인터넷이 없어도 앱이 열리게 한다.
  * 데이터는 브리지(script.google.com)로 오가며, 그건 절대 캐시하지 않는다.
  */
-var CACHE = 'ilkong-shell-v4.3.1';
+var CACHE = 'ilkong-shell-v4.3.2';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function (event) {
