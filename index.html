@@ -189,7 +189,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.3.2</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.3.3</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -205,7 +205,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.3.2</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.3.3</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -299,7 +299,7 @@
           <label style="display:flex;align-items:center;gap:9px;padding:7px 0;font-size:14px"><input id="notifyQuiet" type="checkbox" style="width:20px;height:20px"> 밤에는 조용히 (23시~7시)</label>
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p></div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.3.2 · Supabase 직접 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.3.3 · Supabase 100% 강제 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -448,7 +448,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.3.2';
+      var VERSION = '4.3.3';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -4943,12 +4943,10 @@
       // Existing Apps Script remains the live fallback and the write path.
       // GitHub Pages가 운영 원본이다. 이 주소가 아닌 구형 앱/내장 화면은 GAS만
       // 사용하므로, 오래된 화면이 "Supabase rollout disabled"를 사용자에게 노출하지 않는다.
-      var IS_PRIMARY_WEB_ORIGIN=!!(window.location&&window.location.hostname==='gssg100.github.io');
-      var SUPABASE_READ_ROLLOUT=IS_PRIMARY_WEB_ORIGIN;
-      // 쓰기 전환 코드는 배포해 두되, GAS 차단 보호막과 최종 대조 전까지는 켜지 않는다.
-      // 이 값이 true가 되는 배포와 서버 write_mode 전환은 반드시 같은 컷오버 절차로 처리한다.
-      var SUPABASE_DIRECT_ROLLOUT=IS_PRIMARY_WEB_ORIGIN;
-      var SUPABASE_PRIMARY_WRITE_CUTOVER=IS_PRIMARY_WEB_ORIGIN;
+      var IS_PRIMARY_WEB_ORIGIN=true; // 구형 앱 포함 모든 클라이언트 강제 적용
+      var SUPABASE_READ_ROLLOUT=true;
+      var SUPABASE_DIRECT_ROLLOUT=true;
+      var SUPABASE_PRIMARY_WRITE_CUTOVER=true;
       var SUPABASE_API_EXEC='https://areyvrdvnaccebqbigyy.supabase.co/functions/v1/ilkong-api';
       var SUPABASE_PUBLIC_KEY='sb_publishable_x7UeQcviY3DopGGcucV9hg_vpnDcL5c';
       var supabaseToken='';
