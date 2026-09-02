@@ -1,9 +1,9 @@
 /*
- * 일콩 기록 서비스워커 v4.3.4
+ * 일콩 기록 서비스워커 v4.4.0
  * 화면(껍데기)을 기기에 저장해 인터넷이 없어도 앱이 열리게 한다.
- * 데이터는 브리지(script.google.com)로 오가며, 그건 절대 캐시하지 않는다.
+ * 백그라운드 Web Push 알림 수신 및 탭 이동 지원.
  */
-var CACHE = 'ilkong-shell-v4.3.4';
+var CACHE = 'ilkong-shell-v4.4.0';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function (event) {
@@ -30,7 +30,7 @@ self.addEventListener('fetch', function (event) {
   var request = event.request;
   if (request.method !== 'GET') return;
   var url = new URL(request.url);
-  // 서버 통신(브리지)은 항상 네트워크로 — 오래된 데이터를 보여주지 않는다.
+  // 서버 통신(브리지 및 Supabase)은 항상 네트워크로 — 오래된 데이터를 보여주지 않는다.
   if (url.origin !== self.location.origin) return;
 
   // 화면 진입은 네트워크 우선이다. 이전 서비스워커가 오래된 index.html을 계속
@@ -63,3 +63,60 @@ self.addEventListener('fetch', function (event) {
     })
   );
 });
+
+/*
+ * Web Push 백그라운드 수신
+ * 앱이 닫혀 있거나 화면이 꺼져 있어도 시스템 알림 배너를 띄운다.
+ */
+self.addEventListener('push', function (event) {
+  var data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (parseError) {
+      data = { title: '일콩 기록 🔔', body: event.data.text() };
+    }
+  }
+  var title = data.title || '일콩 기록 🔔';
+  var options = {
+    body: data.body || '새로운 소식이 도착했어.',
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    tag: data.tag || ('ilkong-push-' + Date.now()),
+    data: {
+      url: data.url || './'
+    },
+    renotify: true
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+/*
+ * 알림 터치 시 앱 열기 / 포커스
+ */
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+  var targetUrl = (event.notification.data && event.notification.data.url) || './';
+  var targetAbsolute = new URL(targetUrl, self.location.origin).href;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+      for (var i = 0; i < clientList.length; i++) {
+        var client = clientList[i];
+        if (client.url && 'focus' in client) {
+          if (client.url === targetAbsolute || client.url.indexOf(self.location.origin) === 0) {
+            client.focus();
+            if ('navigate' in client && client.url !== targetAbsolute) {
+              client.navigate(targetAbsolute);
+            }
+            return;
+          }
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetAbsolute);
+      }
+    })
+  );
+});
+
