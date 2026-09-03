@@ -1,9 +1,9 @@
 /*
- * 일콩 기록 서비스워커 v4.4.0
+ * 일콩 기록 서비스워커 v4.4.1
  * 화면(껍데기)을 기기에 저장해 인터넷이 없어도 앱이 열리게 한다.
  * 백그라운드 Web Push 알림 수신 및 탭 이동 지원.
  */
-var CACHE = 'ilkong-shell-v4.4.0';
+var CACHE = 'ilkong-shell-v4.4.1';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function (event) {

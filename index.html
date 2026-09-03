@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.4.0 — Web Push 실시간 알림 지원 및 저장 안전성 강화 -->
+<!-- 일콩 기록 v4.4.1 — 알림 중복 개선, iOS 호환성 강화 및 즉시 반응 최적화 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -189,7 +189,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.4.0</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.4.1</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -205,7 +205,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.4.0</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.4.1</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -311,7 +311,7 @@
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p>
         </div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.4.0 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.4.1 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -460,7 +460,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.4.0';
+      var VERSION = '4.4.1';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -3499,7 +3499,17 @@
           toggle.style.border='0'; toggle.style.background='transparent'; toggle.style.fontSize='20px'; toggle.style.padding='2px';
           toggle.setAttribute('aria-label',item.done?'준비 완료 해제':'준비 완료로 표시');
           toggle.addEventListener('click',function(){
-            callApi('apiToggleChecklistItemV320',[state.session.token,item.id,!item.done],16000).then(unwrap).then(loadChecklist).catch(function(error){ toast(errorMessage(error)); });
+            var prevDone=item.done;
+            item.done=!prevDone;
+            renderChecklist(items);
+            callApi('apiToggleChecklistItemV320',[state.session.token,item.id,item.done],16000)
+              .then(unwrap)
+              .then(loadChecklist)
+              .catch(function(error){
+                item.done=prevDone;
+                renderChecklist(items);
+                toast(errorMessage(error));
+              });
           });
           var label=document.createElement('div'); label.style.flex='1'; label.style.minWidth='0'; label.textContent=item.content;
           if(item.done){ label.style.textDecoration='line-through'; label.style.color='var(--muted)'; }
@@ -3643,11 +3653,20 @@
           canvas.width=720; canvas.height=900;
           var ctx=canvas.getContext('2d');
           var stream=canvas.captureStream(30);
-          var mimeType=(window.MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported('video/webm;codecs=vp9'))?'video/webm;codecs=vp9':'video/webm';
-          var recorder=new MediaRecorder(stream,{mimeType:mimeType,videoBitsPerSecond:4000000});
+          var mimeType='';
+          var ext='webm';
+          if(typeof MediaRecorder!=='undefined'&&typeof MediaRecorder.isTypeSupported==='function'){
+            if(MediaRecorder.isTypeSupported('video/mp4;codecs=avc1')){ mimeType='video/mp4;codecs=avc1'; ext='mp4'; }
+            else if(MediaRecorder.isTypeSupported('video/mp4')){ mimeType='video/mp4'; ext='mp4'; }
+            else if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9')){ mimeType='video/webm;codecs=vp9'; ext='webm'; }
+            else if(MediaRecorder.isTypeSupported('video/webm')){ mimeType='video/webm'; ext='webm'; }
+          }
+          var recOptions={videoBitsPerSecond:4000000};
+          if(mimeType) recOptions.mimeType=mimeType;
+          var recorder=new MediaRecorder(stream,recOptions);
           var chunks=[];
           recorder.ondataavailable=function(event){ if(event.data&&event.data.size) chunks.push(event.data); };
-          var finished=new Promise(function(resolve){ recorder.onstop=function(){ resolve(new Blob(chunks,{type:'video/webm'})); }; });
+          var finished=new Promise(function(resolve){ recorder.onstop=function(){ resolve({blob:new Blob(chunks,{type:mimeType||('video/'+ext)}),ext:ext,mime:mimeType||('video/'+ext)}); }; });
           function drawFrame(entry){
             ctx.fillStyle='#181512'; ctx.fillRect(0,0,canvas.width,canvas.height);
             var img=entry.img;
@@ -3670,16 +3689,17 @@
             }
           },900);
           return finished;
-        }).then(function(blob){
+        }).then(function(res){
+          var blob=res.blob, ext=res.ext, mime=res.mime;
           return blobToBase64(blob).then(function(base64){
-            var name='일콩_배타임랩스_'+today()+'.webm';
+            var name='일콩_배타임랩스_'+today()+'.'+ext;
             if(window.IlkongFiles&&typeof window.IlkongFiles.saveToDownloads==='function'){
               var saved='';
-              try{ saved=String(window.IlkongFiles.saveToDownloads(name,'video/webm',base64)||''); }catch(saveError){ saved=''; }
+              try{ saved=String(window.IlkongFiles.saveToDownloads(name,mime,base64)||''); }catch(saveError){ saved=''; }
               if(saved){ toast('영상을 저장했어! 갤러리·파일 앱의 다운로드에서 봐 🎬'); return; }
             }
             var link=document.createElement('a');
-            link.href='data:video/webm;base64,'+base64;
+            link.href='data:'+mime+';base64,'+base64;
             link.download=name;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
             toast('영상 파일을 내려받았어 🎬');
@@ -4335,6 +4355,12 @@
             text(el('bookStatus'),'미리보기를 열어 인쇄하면 PDF로 저장할 수 있어. 기록 '+((data.posts&&data.posts.length)||0)+'개 · 사진 '+(data.images||0)+'장');
             var printLink=document.createElement('a'); printLink.className='book-link'; printLink.href=objectUrl; printLink.target='_blank'; printLink.rel='noopener';
             printLink.textContent='📖 책 미리보기 열기 — 인쇄에서 PDF로 저장';
+            printLink.addEventListener('click',function(e){
+              try {
+                var w=window.open(objectUrl,'_blank');
+                if(w) e.preventDefault();
+              } catch(winErr){}
+            });
             el('bookResult').appendChild(printLink);
             return;
           }
@@ -5287,9 +5313,16 @@
       }
 
       function callApi(name,args,timeout){
-        // 로그인은 이미 운영에서 검증된 GAS 브리지로만 처리한다. Supabase는 로그인 뒤
-        // 조회 가속을 맡으므로 Edge 연결 상태가 PIN 인증 자체를 막지 않는다.
-        if(name==='apiLoginV221') return callLegacyApi(name,args,timeout);
+        // 로그인은 운영 브리지를 우선 시도하되, GAS 콜드스타트(슬립)나 브리지 오류 시
+        // 이미 검증된 고속 Supabase 로그인으로 자동 폴백하여 즉시 인증을 통과한다.
+        if(name==='apiLoginV221'){
+          return callLegacyApi(name,args,timeout).catch(function(legacyErr){
+            if(SUPABASE_READ_ROLLOUT){
+              return callSupabaseLogin(args,timeout).catch(function(){ throw legacyErr; });
+            }
+            throw legacyErr;
+          });
+        }
         if(SUPABASE_READ_ROLLOUT&&(name==='apiGetHomeV221'||name==='apiGetImagesBatchV285')){
           return callSupabaseRead(name,args,timeout).catch(function(error){
             // A staging read failure must never take the existing app offline.
