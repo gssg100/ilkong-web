@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.4.2 — 야간 방해금지 푸시, 태동 햅틱 진동 및 퀵 필터 업그레이드 -->
+<!-- 일콩 기록 v4.5.0 — 출산 준비물 이름 수정(인라인 편집) 및 삭제 되돌리기 추가 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -189,7 +189,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.4.2</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.5.0</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -205,7 +205,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.4.2</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.5.0</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -461,7 +461,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.4.2';
+      var VERSION = '4.5.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -3522,13 +3522,61 @@
               });
           });
           var label=document.createElement('div'); label.style.flex='1'; label.style.minWidth='0'; label.textContent=item.content;
+          label.style.cursor='text';
           if(item.done){ label.style.textDecoration='line-through'; label.style.color='var(--muted)'; }
+          var edit=document.createElement('button'); edit.type='button'; edit.className='comment-action'; edit.textContent='수정';
+          edit.setAttribute('aria-label',item.content+' 이름 수정');
           var del=document.createElement('button'); del.type='button'; del.className='comment-action'; del.textContent='삭제';
+
+          function beginEdit(){
+            if(row.dataset.editing==='1') return;
+            row.dataset.editing='1';
+            var prev=item.content;
+            var input=document.createElement('input');
+            input.type='text'; input.value=prev; input.maxLength=200;
+            input.style.flex='1'; input.style.minWidth='0';
+            input.style.border='1px solid var(--line)'; input.style.background='var(--card)';
+            input.style.borderRadius='10px'; input.style.padding='8px 10px';
+            input.style.color='var(--ink)'; input.style.outline='none'; input.style.font='inherit';
+            input.setAttribute('aria-label','준비물 이름');
+            var save=document.createElement('button'); save.type='button'; save.className='comment-action'; save.textContent='저장';
+            var cancel=document.createElement('button'); cancel.type='button'; cancel.className='comment-action'; cancel.textContent='취소';
+            row.replaceChild(input,label); row.replaceChild(save,edit); row.replaceChild(cancel,del);
+            input.focus(); input.select();
+
+            function restore(){ row.replaceChild(label,input); row.replaceChild(edit,save); row.replaceChild(del,cancel); row.dataset.editing=''; }
+            function commit(){
+              var next=String(input.value||'').trim();
+              if(!next){ toast('준비물 내용을 적어 줘.'); input.focus(); return; }
+              if(next===prev){ restore(); return; }
+              item.content=next; restore(); renderChecklist(items);
+              callApi('apiUpdateChecklistItemV450',[state.session.token,item.id,next],16000)
+                .then(unwrap).then(loadChecklist)
+                .catch(function(error){ item.content=prev; renderChecklist(items); toast(errorMessage(error)); });
+            }
+            save.addEventListener('click',commit);
+            cancel.addEventListener('click',restore);
+            input.addEventListener('keydown',function(e){
+              if(e.key==='Enter'){ e.preventDefault(); commit(); }
+              else if(e.key==='Escape'){ e.preventDefault(); restore(); }
+            });
+          }
+
+          edit.addEventListener('click',beginEdit);
+          label.addEventListener('click',beginEdit);
           del.addEventListener('click',function(){
             if(!confirm('"'+item.content+'" 항목을 지울까?')) return;
-            callApi('apiDeleteChecklistItemV320',[state.session.token,item.id],16000).then(unwrap).then(loadChecklist).catch(function(error){ toast(errorMessage(error)); });
+            var removedId=item.id, removedName=item.content;
+            callApi('apiDeleteChecklistItemV320',[state.session.token,removedId],16000).then(unwrap).then(function(){
+              loadChecklist();
+              toast('"'+removedName+'" 삭제됨','되돌리기',function(){
+                callApi('apiRestoreChecklistItemV450',[state.session.token,removedId],16000)
+                  .then(unwrap).then(loadChecklist)
+                  .catch(function(error){ toast(errorMessage(error)); });
+              },6000);
+            }).catch(function(error){ toast(errorMessage(error)); });
           });
-          row.appendChild(toggle); row.appendChild(label); row.appendChild(del);
+          row.appendChild(toggle); row.appendChild(label); row.appendChild(edit); row.appendChild(del);
           list.appendChild(row);
         });
       }
