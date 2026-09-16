@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.6.0 — 진통 간격 타이머(5-1-1 판정), 푸시 구독 보안 보정, 로그인 GAS 의존 축소 -->
+<!-- 일콩 기록 v4.7.0 — 준비물 수량·비용·분류, 저장공간 정리, 오프라인 썸네일 복구 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -189,6 +189,23 @@
     .labor-row{display:flex;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:6px;font-size:12.5px;color:var(--ink)}
     .labor-row span:first-child{font-weight:700}
     .labor-row span:not(:first-child){color:var(--muted)}
+
+    .chk-filters{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+    .chk-chip{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer}
+    .chk-chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+    .chk-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px}
+    .chk-toggle{border:0;background:transparent;font-size:20px;padding:2px;cursor:pointer;line-height:1}
+    .chk-main{flex:1;min-width:0}
+    .chk-name{word-break:break-word}
+    .chk-sub{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.45;word-break:break-word}
+    .chk-item.chk-editing{display:block}
+    .chk-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .chk-field{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .chk-field-wide{grid-column:1/-1}
+    .chk-field span{font-size:11px;color:var(--muted)}
+    .chk-field input,.chk-field select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit;font-size:13px;outline:none;min-width:0}
+    .chk-actions{display:flex;justify-content:flex-end;gap:7px;margin-top:10px}
+    .chk-actions .save{padding:8px 16px}
 </style>
 </head>
 <body>
@@ -201,7 +218,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.6.0</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.7.0</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -217,7 +234,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.6.0</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.7.0</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -323,7 +340,7 @@
         <div class="settings-box"><h3>다음 검진일 🏥</h3><p id="checkupStatus">검진일을 넣어두면 홈 화면 위에 D-day가 떠.</p><input id="checkupDateInput" type="date"><button id="checkupSave" class="save" type="button">검진일 저장</button><button id="checkupClear" class="secondary hidden" type="button">검진일 지우기</button></div>
         <div class="settings-box"><h3>일콩이 시간</h3><p id="birthStatus">임신 정보를 불러오는 중이야.</p><div id="birthControls" class="hidden"><label class="upload-note" for="birthDateInput">실제 출생일</label><input id="birthDateInput" type="date"><button id="birthConfirm" class="save" type="button">일콩이가 태어났어요 🎉</button></div><button id="birthRevert" class="secondary hidden" type="button">임신 모드로 되돌리기</button></div>
         <div class="settings-box"><h3>화면 테마 🌙</h3><p id="themeStatus">시스템 설정을 따라가는 중</p><div class="photo-actions" style="grid-template-columns:1fr 1fr 1fr" role="group"><button id="themeSystem" class="secondary" type="button">시스템</button><button id="themeLight" class="secondary" type="button">☀️ 라이트</button><button id="themeDark" class="secondary" type="button">🌙 다크</button></div></div>
-        <div class="settings-box"><h3>PIN 변경 🔒</h3><p>로그인할 때 쓰는 숫자 4~12자리를 바꿔. 상대방 것은 각자 폰에서 바꾸면 돼.</p><input id="pinCurrent" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="지금 PIN" aria-label="지금 PIN"><input id="pinNew" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN" aria-label="새 PIN"><input id="pinNew2" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN 다시" aria-label="새 PIN 확인"><button id="changePin" class="save" type="button" style="width:100%;margin-top:10px">PIN 바꾸기</button><p id="pinChangeStatus" class="upload-note" style="margin-top:8px"></p></div>
+        <div class="settings-box"><h3>저장공간 정리 🧹</h3><p id="storageStatus" class="upload-note" style="margin:0 0 10px">지운 기록의 사진은 되돌릴 수 있도록 30일간 보관했다가 비워요.</p><button id="runCleanup" class="secondary" type="button" style="width:100%">지금 정리하기</button></div><div class="settings-box"><h3>PIN 변경 🔒</h3><p>로그인할 때 쓰는 숫자 4~12자리를 바꿔. 상대방 것은 각자 폰에서 바꾸면 돼.</p><input id="pinCurrent" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="지금 PIN" aria-label="지금 PIN"><input id="pinNew" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN" aria-label="새 PIN"><input id="pinNew2" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN 다시" aria-label="새 PIN 확인"><button id="changePin" class="save" type="button" style="width:100%;margin-top:10px">PIN 바꾸기</button><p id="pinChangeStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>실시간 푸시 알림 🔔</h3>
           <p id="pushGuideText" class="upload-note" style="margin:0 0 10px">앱이 닫혀 있거나 화면이 꺼져 있어도 상대방의 새 글·사진·댓글 소식을 휴대폰 알림으로 바로 받을 수 있어.</p>
           <div id="pushBannerBox" style="margin-bottom:12px">
@@ -418,6 +435,7 @@
       <div class="form">
         <div style="display:flex;gap:7px"><input id="checkItemInput" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:11px 12px;color:var(--ink);outline:none" maxlength="200" placeholder="예) 배냇저고리 3벌"><button id="addCheckItem" class="save" type="button">추가</button></div>
         <div id="checklistStatus" class="upload-note" style="margin-top:8px"></div>
+        <div id="checklistFilters" class="chk-filters hidden"></div>
         <div id="checklistList" class="note-list"></div>
       </div>
     </div>
@@ -493,7 +511,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.6.0';
+      var VERSION = '4.7.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -527,7 +545,7 @@
         lastInteractionAt:0, autoRefreshFailures:0, lastAutoCheckAt:0, checkingUpdates:false, commentComposing:false, imeComposing:false, compositionTarget:null, compositionSerial:0, compositionWatchdogTimer:null, draftSaveTimer:null, draftSavePending:false, searchApplyTimer:null, searchApplyPending:false, pendingFeedRender:null, pendingFeedRenderTimer:null, homeApplyGeneration:0, pullStartY:0, pullDistance:0, pulling:false,
         hasMore:false, nextOffset:0, loadedCount:PAGE_SIZE, loadingMore:false, loadingAll:false, selectedMood:'', saveAttempt:null,
         imageCache:{}, imageCacheOrder:[], imageInFlight:{}, imageObserver:null, dialogReturnFocus:null,
-        imagePersistentReads:{}, imagePersistentKnown:{}, imagePersistChain:Promise.resolve(), imageCacheReady:false,
+        imagePersistentReads:{},remoteThumbFetching:{}, imagePersistentKnown:{}, imagePersistChain:Promise.resolve(), imageCacheReady:false,
         imageLoadQueue:[], imageLoadActive:0, imageLoadSerial:0, imageFallbackTimers:{},
         imageQueueRunning:false, imageBatchSupport:null, composerMode:'create', editingPostId:'', editExistingPhotoCount:0, offlineQueued:false, offlineFlushTimer:null, pendingRestored:false,
         searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false,
@@ -983,6 +1001,7 @@
         el('openChecklist').addEventListener('click',openChecklist);
         el('openKickMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.kickCounter='moreSheet'; openKickCounter(); });
         el('openLaborMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.laborTimer='moreSheet'; openLaborTimer(); });
+        el('runCleanup').addEventListener('click',runCleanup);
         el('closeLabor').addEventListener('click',closeLaborTimer);
         el('laborTap').addEventListener('click',tapLabor);
         el('laborUndo').addEventListener('click',undoLabor);
@@ -2893,6 +2912,41 @@
         var key=imageRequestKey(imageId,variant);
         rememberImageMemory(key,url);
         persistImageUrl(imageId,variant,url);
+        persistRemoteThumbnail(imageId,variant,url);
+      }
+
+      // Supabase Storage로 옮긴 뒤 사진이 1시간짜리 서명 URL로 바뀌면서,
+      // dataURL만 보관하던 기존 오프라인 캐시가 동작하지 않게 됐다.
+      // 원격 썸네일을 한 번만 내려받아 dataURL로 바꿔 같은 캐시에 태운다.
+      // (보관 장수·용량·정리는 기존 persistImageUrl 규칙을 그대로 따른다.)
+      function persistRemoteThumbnail(imageId,variant,url){
+        variant=variant||'thumbnail';
+        if(variant!=='thumbnail') return;
+        if(!/^https?:\/\//i.test(String(url||''))) return;
+        if(typeof fetch!=='function'||typeof FileReader!=='function') return;
+        var key=imageRequestKey(imageId,variant);
+        if(state.imagePersistentKnown[key]) return;
+        if(!state.remoteThumbFetching) state.remoteThumbFetching={};
+        if(state.remoteThumbFetching[key]) return;
+        state.remoteThumbFetching[key]=true;
+        fetch(url,{mode:'cors',credentials:'omit'}).then(function(response){
+          if(!response||!response.ok) throw new Error('원격 썸네일 응답 실패');
+          return response.blob();
+        }).then(function(blob){
+          if(!blob||!blob.size||blob.size>IMAGE_CACHE_MAX_ITEM_BYTES) throw new Error('보관하기엔 너무 큰 썸네일');
+          return new Promise(function(resolve,reject){
+            var reader=new FileReader();
+            reader.onload=function(){ resolve(String(reader.result||'')); };
+            reader.onerror=function(){ reject(new Error('썸네일을 읽지 못했어')); };
+            reader.readAsDataURL(blob);
+          });
+        }).then(function(dataUrl){
+          if(/^data:image\//i.test(dataUrl)) persistImageUrl(imageId,variant,dataUrl);
+        }).catch(function(){
+          // 오프라인 보관은 부가 기능이라 실패해도 화면에 영향을 주지 않는다.
+        }).then(function(){
+          delete state.remoteThumbFetching[key];
+        });
       }
 
       function requestImageApi(name,args,timeout){ return callApi(name,args,timeout).then(unwrap); }
@@ -3571,6 +3625,42 @@
           .then(function(){ if(state.labor&&state.labor.saving){ state.labor.saving=false; renderLaborTimer(); } });
       }
 
+      // --- 저장공간 정리 ---
+      function formatBytes(bytes){
+        var n=Number(bytes||0);
+        if(n<1024) return n+'B';
+        if(n<1048576) return (n/1024).toFixed(0)+'KB';
+        if(n<1073741824) return (n/1048576).toFixed(1)+'MB';
+        return (n/1073741824).toFixed(2)+'GB';
+      }
+
+      function refreshStorageReport(){
+        if(!state.session) return;
+        callApi('apiGetStorageReportV450',[state.session.token],16000).then(unwrap).then(function(info){
+          var box=el('storageStatus');
+          if(!box) return;
+          var photos=Number(info&&info.photos||0);
+          if(!photos){ text(box,'지금은 비울 게 없어. 지운 기록의 사진은 30일간 보관했다가 정리돼.'); return; }
+          text(box,'지운 기록의 사진 '+photos+'장('+formatBytes(info&&info.bytes)+')을 비울 수 있어.'+((info&&info.hasMore)?' (더 있음)':''));
+        }).catch(function(){});
+      }
+
+      function runCleanup(){
+        if(!state.session) return;
+        var button=el('runCleanup');
+        if(button){ button.disabled=true; text(button,'정리하는 중…'); }
+        callApi('apiRunCleanupV450',[state.session.token],40000).then(unwrap).then(function(result){
+          var photos=Number(result&&result.photos||0);
+          var bytes=Number(result&&result.bytes||0);
+          toast(photos?('사진 '+photos+'장 · '+formatBytes(bytes)+' 비웠어 🧹'):'정리할 사진은 없었어. 오래된 기록은 정리했어 🧹');
+          refreshStorageReport();
+        }).catch(function(error){
+          toast('정리하지 못했어: '+errorMessage(error));
+        }).then(function(){
+          if(button){ button.disabled=false; text(button,'지금 정리하기'); }
+        });
+      }
+
       // --- 화면 테마 ---
       var THEME_KEY='ilkong_theme_v320';
       var themeMediaBound=false;
@@ -3766,66 +3856,177 @@
           renderChecklist(state.homeSummaryChecklist);
         }).catch(function(error){ text(el('checklistStatus'),'목록을 불러오지 못했어: '+errorMessage(error)); });
       }
+      var CHECKLIST_CATS=['수유','위생','외출','침구','옷','엄마용품','병원','기타'];
+      var CHECKLIST_OWNERS=['엄마','아빠','함께'];
+      var checklistFilter='';
+
+      function checklistMoney(value){
+        var digits=String(value==null?'':value).replace(/[^0-9]/g,'');
+        return digits?Number(digits).toLocaleString('ko-KR'):'';
+      }
+
+      function checklistSubtitle(item){
+        var bits=[];
+        if(item.quantity) bits.push(item.quantity+'개');
+        if(item.category) bits.push(item.category);
+        if(item.owner) bits.push(item.owner);
+        if(item.needWeek) bits.push(item.needWeek+'주까지');
+        if(item.spent) bits.push('쓴 돈 '+checklistMoney(item.spent)+'원');
+        else if(item.price) bits.push('예상 '+checklistMoney(item.price)+'원');
+        if(item.memo) bits.push(item.memo);
+        return bits.join(' · ');
+      }
+
       function renderChecklist(items){
         var list=el('checklistList'); list.innerHTML='';
-        var doneCount=0; items.forEach(function(item){ if(item.done) doneCount++; });
-        text(el('checklistStatus'),items.length?('총 '+items.length+'개 중 '+doneCount+'개 준비 완료'):'');
-        if(!items.length){ list.innerHTML='<div class="comment-empty">첫 준비물을 추가해봐. 예) 배냇저고리, 속싸개, 아기 세제 🍼</div>'; return; }
+        var doneCount=0, plan=0, spent=0, remainPlan=0;
         items.forEach(function(item){
-          var row=document.createElement('div'); row.className='note-item';
-          row.style.display='flex'; row.style.alignItems='center'; row.style.gap='10px'; row.style.padding='10px 12px';
-          var toggle=document.createElement('button'); toggle.type='button'; toggle.textContent=item.done?'✅':'⬜';
-          toggle.style.border='0'; toggle.style.background='transparent'; toggle.style.fontSize='20px'; toggle.style.padding='2px';
+          if(item.done) doneCount++;
+          var price=Number(String(item.price||'').replace(/[^0-9]/g,''))||0;
+          var used=Number(String(item.spent||'').replace(/[^0-9]/g,''))||0;
+          plan+=price; spent+=used;
+          if(!item.done&&!used) remainPlan+=price;
+        });
+        var summary='';
+        if(items.length){
+          summary='총 '+items.length+'개 중 '+doneCount+'개 준비 완료';
+          if(plan||spent){
+            summary+=' · 쓴 돈 '+spent.toLocaleString('ko-KR')+'원';
+            if(remainPlan) summary+=' · 남은 예상 '+remainPlan.toLocaleString('ko-KR')+'원';
+          }
+        }
+        text(el('checklistStatus'),summary);
+
+        var bar=el('checklistFilters');
+        if(bar){
+          var used={};
+          items.forEach(function(it){ if(it.category) used[it.category]=(used[it.category]||0)+1; });
+          var names=Object.keys(used);
+          if(names.length){
+            bar.classList.remove('hidden');
+            bar.innerHTML=['<button type="button" class="chk-chip'+(checklistFilter?'':' on')+'" data-cat="">전체 '+items.length+'</button>']
+              .concat(names.map(function(name){
+                return '<button type="button" class="chk-chip'+(checklistFilter===name?' on':'')+'" data-cat="'+escapeHtml(name)+'">'+escapeHtml(name)+' '+used[name]+'</button>';
+              })).join('');
+            Array.prototype.forEach.call(bar.querySelectorAll('.chk-chip'),function(chip){
+              chip.addEventListener('click',function(){ checklistFilter=chip.getAttribute('data-cat')||''; renderChecklist(items); });
+            });
+          } else { bar.classList.add('hidden'); bar.innerHTML=''; }
+        }
+
+        var shown=checklistFilter?items.filter(function(it){ return it.category===checklistFilter; }):items;
+        if(!shown.length){
+          list.innerHTML='<div class="comment-empty">'+(checklistFilter?'이 분류에는 아직 준비물이 없어':'첫 준비물을 추가해봐. 예) 배냇저고리, 속싸개, 아기 세제 🍼')+'</div>';
+          return;
+        }
+
+        shown.forEach(function(item){
+          var row=document.createElement('div'); row.className='note-item chk-item';
+
+          var toggle=document.createElement('button'); toggle.type='button'; toggle.className='chk-toggle';
+          toggle.textContent=item.done?'✅':'⬜';
           toggle.setAttribute('aria-label',item.done?'준비 완료 해제':'준비 완료로 표시');
           toggle.addEventListener('click',function(){
             var prevDone=item.done;
             item.done=!prevDone;
             renderChecklist(items);
             callApi('apiToggleChecklistItemV320',[state.session.token,item.id,item.done],16000)
-              .then(unwrap)
-              .then(loadChecklist)
-              .catch(function(error){
-                item.done=prevDone;
-                renderChecklist(items);
-                toast(errorMessage(error));
-              });
+              .then(unwrap).then(loadChecklist)
+              .catch(function(error){ item.done=prevDone; renderChecklist(items); toast(errorMessage(error)); });
           });
-          var label=document.createElement('div'); label.style.flex='1'; label.style.minWidth='0'; label.textContent=item.content;
-          label.style.cursor='text';
+
+          var main=document.createElement('div'); main.className='chk-main';
+          var label=document.createElement('div'); label.className='chk-name'; label.textContent=item.content;
           if(item.done){ label.style.textDecoration='line-through'; label.style.color='var(--muted)'; }
+          main.appendChild(label);
+          var sub=checklistSubtitle(item);
+          if(sub){ var subEl=document.createElement('div'); subEl.className='chk-sub'; subEl.textContent=sub; main.appendChild(subEl); }
+
           var edit=document.createElement('button'); edit.type='button'; edit.className='comment-action'; edit.textContent='수정';
-          edit.setAttribute('aria-label',item.content+' 이름 수정');
+          edit.setAttribute('aria-label',item.content+' 수정');
           var del=document.createElement('button'); del.type='button'; del.className='comment-action'; del.textContent='삭제';
 
           function beginEdit(){
             if(row.dataset.editing==='1') return;
             row.dataset.editing='1';
-            var prev=item.content;
-            var input=document.createElement('input');
-            input.type='text'; input.value=prev; input.maxLength=200;
-            input.style.flex='1'; input.style.minWidth='0';
-            input.style.border='1px solid var(--line)'; input.style.background='var(--card)';
-            input.style.borderRadius='10px'; input.style.padding='8px 10px';
-            input.style.color='var(--ink)'; input.style.outline='none'; input.style.font='inherit';
-            input.setAttribute('aria-label','준비물 이름');
-            var save=document.createElement('button'); save.type='button'; save.className='comment-action'; save.textContent='저장';
-            var cancel=document.createElement('button'); cancel.type='button'; cancel.className='comment-action'; cancel.textContent='취소';
-            row.replaceChild(input,label); row.replaceChild(save,edit); row.replaceChild(cancel,del);
-            input.focus(); input.select();
+            var snapshot={content:item.content,quantity:item.quantity||0,price:item.price||'',spent:item.spent||'',category:item.category||'',needWeek:item.needWeek||0,owner:item.owner||'',memo:item.memo||''};
+            row.classList.add('chk-editing');
+            row.innerHTML='';
+            var form=document.createElement('div'); form.className='chk-form';
+            function field(labelText,node){
+              var wrap=document.createElement('label'); wrap.className='chk-field';
+              var span=document.createElement('span'); span.textContent=labelText;
+              wrap.appendChild(span); wrap.appendChild(node); return wrap;
+            }
+            function input(value,placeholder,mode){
+              var i=document.createElement('input'); i.type='text'; i.value=value==null?'':String(value);
+              if(placeholder) i.placeholder=placeholder;
+              if(mode) i.inputMode=mode;
+              return i;
+            }
+            var nameInput=input(snapshot.content,'준비물 이름'); nameInput.maxLength=200;
+            var qtyInput=input(snapshot.quantity||'','0','numeric');
+            var priceInput=input(checklistMoney(snapshot.price),'예상 금액','numeric');
+            var spentInput=input(checklistMoney(snapshot.spent),'실제 지출','numeric');
+            var memoInput=input(snapshot.memo,'구매처·메모'); memoInput.maxLength=200;
+            var weekInput=input(snapshot.needWeek||'','예: 36','numeric');
+            var catSelect=document.createElement('select');
+            catSelect.innerHTML='<option value="">분류 없음</option>'+CHECKLIST_CATS.map(function(c){
+              return '<option value="'+escapeHtml(c)+'"'+(snapshot.category===c?' selected':'')+'>'+escapeHtml(c)+'</option>';
+            }).join('');
+            var ownerSelect=document.createElement('select');
+            ownerSelect.innerHTML='<option value="">담당 없음</option>'+CHECKLIST_OWNERS.map(function(c){
+              return '<option value="'+escapeHtml(c)+'"'+(snapshot.owner===c?' selected':'')+'>'+escapeHtml(c)+'</option>';
+            }).join('');
 
-            function restore(){ row.replaceChild(label,input); row.replaceChild(edit,save); row.replaceChild(del,cancel); row.dataset.editing=''; }
+            var nameWrap=field('이름',nameInput); nameWrap.className='chk-field chk-field-wide';
+            form.appendChild(nameWrap);
+            form.appendChild(field('수량',qtyInput));
+            form.appendChild(field('분류',catSelect));
+            form.appendChild(field('예상 금액',priceInput));
+            form.appendChild(field('실제 지출',spentInput));
+            form.appendChild(field('담당',ownerSelect));
+            form.appendChild(field('필요 주차',weekInput));
+            var memoWrap=field('메모',memoInput); memoWrap.className='chk-field chk-field-wide';
+            form.appendChild(memoWrap);
+
+            var actions=document.createElement('div'); actions.className='chk-actions';
+            var save=document.createElement('button'); save.type='button'; save.className='save'; save.textContent='저장';
+            var cancel=document.createElement('button'); cancel.type='button'; cancel.className='comment-action'; cancel.textContent='취소';
+            actions.appendChild(cancel); actions.appendChild(save);
+
+            row.appendChild(form); row.appendChild(actions);
+            nameInput.focus(); nameInput.select();
+
+            function restore(){ row.dataset.editing=''; row.classList.remove('chk-editing'); renderChecklist(items); }
             function commit(){
-              var next=String(input.value||'').trim();
-              if(!next){ toast('준비물 내용을 적어 줘.'); input.focus(); return; }
-              if(next===prev){ restore(); return; }
-              item.content=next; restore(); renderChecklist(items);
-              callApi('apiUpdateChecklistItemV450',[state.session.token,item.id,next],16000)
+              var next=String(nameInput.value||'').trim();
+              if(!next){ toast('준비물 내용을 적어 줘.'); nameInput.focus(); return; }
+              var details={
+                quantity:Number(String(qtyInput.value||'').replace(/[^0-9]/g,''))||0,
+                price:String(priceInput.value||'').replace(/[^0-9]/g,''),
+                spent:String(spentInput.value||'').replace(/[^0-9]/g,''),
+                category:catSelect.value||'',
+                needWeek:Number(String(weekInput.value||'').replace(/[^0-9]/g,''))||0,
+                owner:ownerSelect.value||'',
+                memo:String(memoInput.value||'').trim()
+              };
+              item.content=next;
+              item.quantity=details.quantity; item.price=details.price; item.spent=details.spent;
+              item.category=details.category; item.needWeek=details.needWeek; item.owner=details.owner; item.memo=details.memo;
+              restore();
+              callApi('apiUpdateChecklistItemV450',[state.session.token,item.id,next,details],16000)
                 .then(unwrap).then(loadChecklist)
-                .catch(function(error){ item.content=prev; renderChecklist(items); toast(errorMessage(error)); });
+                .catch(function(error){
+                  item.content=snapshot.content; item.quantity=snapshot.quantity; item.price=snapshot.price;
+                  item.spent=snapshot.spent; item.category=snapshot.category; item.needWeek=snapshot.needWeek;
+                  item.owner=snapshot.owner; item.memo=snapshot.memo;
+                  renderChecklist(items); toast(errorMessage(error));
+                });
             }
             save.addEventListener('click',commit);
             cancel.addEventListener('click',restore);
-            input.addEventListener('keydown',function(e){
+            nameInput.addEventListener('keydown',function(e){
               if(e.key==='Enter'){ e.preventDefault(); commit(); }
               else if(e.key==='Escape'){ e.preventDefault(); restore(); }
             });
@@ -3845,10 +4046,12 @@
               },6000);
             }).catch(function(error){ toast(errorMessage(error)); });
           });
-          row.appendChild(toggle); row.appendChild(label); row.appendChild(edit); row.appendChild(del);
+
+          row.appendChild(toggle); row.appendChild(main); row.appendChild(edit); row.appendChild(del);
           list.appendChild(row);
         });
       }
+
       function addChecklistItem(){
         if(checklistBusy||!state.session) return;
         var content=String(el('checkItemInput').value||'').trim();
@@ -5273,6 +5476,7 @@
         renderNotifySettings();
         renderBirthSettings();
         renderCheckupSettings();
+        refreshStorageReport();
         state.dialogReturnFocus=document.activeElement;
         show(el('settings'));
         el('closeSettings').focus();
