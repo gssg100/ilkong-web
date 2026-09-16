@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.7.0 — 준비물 수량·비용·분류, 저장공간 정리, 오프라인 썸네일 복구 -->
+<!-- 일콩 기록 v4.8.0 — 엄마 건강 기록(체중·혈압·영양제), 태동 10회 세기, 검진 일정 제안, 출산 계획서 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -206,6 +206,17 @@
     .chk-field input,.chk-field select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit;font-size:13px;outline:none;min-width:0}
     .chk-actions{display:flex;justify-content:flex-end;gap:7px;margin-top:10px}
     .chk-actions .save{padding:8px 16px}
+
+    .hl-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .hl-sect{margin-top:13px}
+    .hl-pill{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer}
+    .hl-pill.on{background:var(--accent,#71806b);color:#fff;border-color:var(--accent,#71806b)}
+    .bp-row{display:flex;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:8px 11px;margin-bottom:6px;font-size:12.5px}
+    .bp-row.high{border-color:rgba(220,38,38,.45);background:rgba(220,38,38,.07)}
+    .bp-row span:first-child{font-weight:700}
+    .plan-q{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:9px}
+    .plan-q>strong{display:block;font-size:13px;margin-bottom:7px}
+    .plan-opts{display:flex;flex-wrap:wrap;gap:6px}
 </style>
 </head>
 <body>
@@ -218,7 +229,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.7.0</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.8.0</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -234,7 +245,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.7.0</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.0</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -305,10 +316,65 @@
       <div class="sheet-head"><button id="closeKick" class="icon" type="button" aria-label="태동 세기 닫기">✕</button><h2 id="kickTitle">태동 세기 👣</h2><button id="saveKick" class="save" type="button">기록 저장</button></div>
       <div class="kick-body">
         <div id="kickStatus" class="kick-status">첫 태동이 느껴지면 큰 버튼을 눌러 줘</div>
+        <div id="kickTenBox" class="labor-signal hidden" role="status" aria-live="polite"></div>
         <div id="kickCount" class="kick-count">0</div>
         <button id="kickTap" class="kick-tap" type="button">톡! 👣<span>태동이 느껴질 때마다</span></button>
         <div class="kick-tools"><button id="kickUndo" class="secondary" type="button">하나 빼기</button><button id="kickReset" class="secondary" type="button">처음부터</button></div>
-        <p class="kick-note">태동은 정상 횟수가 따로 정해져 있지 않고 평소 패턴이 중요해요. 평소보다 움직임이 줄거나 달라졌다면 횟수를 채우려고 기다리지 말고 바로 의료진에게 문의해 주세요. 세다가 닫아도 이 기기에 저장돼서 이어서 셀 수 있어요.</p>
+        <p class="kick-note">표준 방법은 <strong>10회 세기</strong>예요. 태동이 활발한 시간에 옆으로 누워 10회를 느낄 때까지 걸린 시간을 재요. 보통 2시간 안에 채워져요. 태동은 정상 횟수가 따로 정해져 있지 않고 평소 패턴이 중요해요. 평소보다 움직임이 줄거나 달라졌다면 횟수를 채우려고 기다리지 말고 바로 의료진에게 문의해 주세요. 세다가 닫아도 이 기기에 저장돼서 이어서 셀 수 있어요.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="healthSheet" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="healthTitle">
+    <div class="sheet">
+      <div class="sheet-head"><button id="closeHealth" class="icon" type="button" aria-label="건강 기록 닫기">✕</button><h2 id="healthTitle">엄마 건강 기록 🩺</h2><button id="saveHealth" class="save" type="button">저장</button></div>
+      <div class="form">
+        <div id="healthAlert" class="labor-signal hidden" role="status" aria-live="polite"></div>
+
+        <div class="hl-grid">
+          <label class="chk-field"><span>날짜</span><input id="healthDate" type="date"></label>
+          <label class="chk-field"><span>몸무게 (kg)</span><input id="healthWeight" inputmode="decimal" placeholder="예) 58.4"></label>
+          <label class="chk-field"><span>혈압 수축기</span><input id="healthSys" inputmode="numeric" placeholder="예) 112"></label>
+          <label class="chk-field"><span>혈압 이완기</span><input id="healthDia" inputmode="numeric" placeholder="예) 70"></label>
+        </div>
+
+        <div class="hl-sect">
+          <span class="upload-note">오늘 챙긴 영양제 💊</span>
+          <div id="healthSupplements" class="chk-filters"></div>
+        </div>
+
+        <label class="chk-field chk-field-wide" style="margin-top:10px"><span>메모</span><input id="healthMemo" maxlength="200" placeholder="컨디션·증상 등"></label>
+
+        <div id="healthWeightBox" class="hidden" style="margin-top:16px">
+          <span class="upload-note">체중 변화 ⚖️ <small id="healthGainNote"></small></span>
+          <canvas id="healthWeightChart" style="width:100%;height:170px;border:1px solid var(--line);border-radius:13px;background:var(--card);margin-top:6px"></canvas>
+        </div>
+
+        <div id="healthBpBox" class="hidden" style="margin-top:14px">
+          <span class="upload-note">혈압 추세 🩺</span>
+          <div id="healthBpList" class="labor-list" style="margin-top:6px"></div>
+        </div>
+
+        <details class="settlement-paste" style="margin-top:16px">
+          <summary>임신 전 몸무게·키 설정</summary>
+          <p class="upload-note" style="margin:8px 0">한 번만 넣어두면 권장 체중 증가 범위를 그래프에 같이 그려줘.</p>
+          <div class="hl-grid">
+            <label class="chk-field"><span>임신 전 몸무게 (kg)</span><input id="healthStartWeight" inputmode="decimal" placeholder="예) 52"></label>
+            <label class="chk-field"><span>키 (cm)</span><input id="healthHeight" inputmode="numeric" placeholder="예) 163"></label>
+          </div>
+          <button id="saveHealthProfile" class="secondary" type="button" style="width:100%;margin-top:10px">기준 저장</button>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div id="birthPlanSheet" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="birthPlanTitle">
+    <div class="sheet">
+      <div class="sheet-head"><button id="closeBirthPlan" class="icon" type="button" aria-label="출산 계획서 닫기">✕</button><h2 id="birthPlanTitle">출산 계획서 📝</h2><button id="saveBirthPlan" class="save" type="button">저장</button></div>
+      <div class="form">
+        <p class="upload-note" style="margin:0 0 10px">둘이 미리 정해두면 진통 중에 헤매지 않아. 병원에 보여줄 수도 있어.</p>
+        <div id="birthPlanChoices"></div>
+        <label class="chk-field chk-field-wide" style="margin-top:12px"><span>그 밖에 남길 말</span><input id="birthPlanFree" maxlength="500" placeholder="예) 남편 참관 희망, 태아 음악 준비"></label>
       </div>
     </div>
   </div>
@@ -337,7 +403,7 @@
       <div class="sheet-head"><button id="closeSettings" class="icon" type="button" aria-label="설정 닫기">✕</button><h2 id="settingsTitle">이 기기 설정</h2><span></span></div>
       <div class="settings">
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
-        <div class="settings-box"><h3>다음 검진일 🏥</h3><p id="checkupStatus">검진일을 넣어두면 홈 화면 위에 D-day가 떠.</p><input id="checkupDateInput" type="date"><button id="checkupSave" class="save" type="button">검진일 저장</button><button id="checkupClear" class="secondary hidden" type="button">검진일 지우기</button></div>
+        <div class="settings-box"><h3>다음 검진일 🏥</h3><p id="checkupStatus">검진일을 넣어두면 홈 화면 위에 D-day가 떠.</p><input id="checkupDateInput" type="date"><button id="checkupSave" class="save" type="button">검진일 저장</button><button id="checkupClear" class="secondary hidden" type="button">검진일 지우기</button><div id="checkupSuggestBox" class="hidden" style="margin-top:8px"><p id="checkupSuggestText" class="upload-note" style="margin:0 0 6px"></p><button id="checkupSuggest" class="secondary" type="button" style="width:100%">이 날짜로 넣기</button></div></div>
         <div class="settings-box"><h3>일콩이 시간</h3><p id="birthStatus">임신 정보를 불러오는 중이야.</p><div id="birthControls" class="hidden"><label class="upload-note" for="birthDateInput">실제 출생일</label><input id="birthDateInput" type="date"><button id="birthConfirm" class="save" type="button">일콩이가 태어났어요 🎉</button></div><button id="birthRevert" class="secondary hidden" type="button">임신 모드로 되돌리기</button></div>
         <div class="settings-box"><h3>화면 테마 🌙</h3><p id="themeStatus">시스템 설정을 따라가는 중</p><div class="photo-actions" style="grid-template-columns:1fr 1fr 1fr" role="group"><button id="themeSystem" class="secondary" type="button">시스템</button><button id="themeLight" class="secondary" type="button">☀️ 라이트</button><button id="themeDark" class="secondary" type="button">🌙 다크</button></div></div>
         <div class="settings-box"><h3>저장공간 정리 🧹</h3><p id="storageStatus" class="upload-note" style="margin:0 0 10px">지운 기록의 사진은 되돌릴 수 있도록 30일간 보관했다가 비워요.</p><button id="runCleanup" class="secondary" type="button" style="width:100%">지금 정리하기</button></div><div class="settings-box"><h3>PIN 변경 🔒</h3><p>로그인할 때 쓰는 숫자 4~12자리를 바꿔. 상대방 것은 각자 폰에서 바꾸면 돼.</p><input id="pinCurrent" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="지금 PIN" aria-label="지금 PIN"><input id="pinNew" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN" aria-label="새 PIN"><input id="pinNew2" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN 다시" aria-label="새 PIN 확인"><button id="changePin" class="save" type="button" style="width:100%;margin-top:10px">PIN 바꾸기</button><p id="pinChangeStatus" class="upload-note" style="margin-top:8px"></p></div>
@@ -406,6 +472,8 @@
           <button id="openChecklist" class="more-item" type="button"><span>🍼</span>출산 준비물</button>
           <button id="openKickMore" class="more-item" type="button"><span>👣</span>태동 세기</button>
           <button id="openLaborMore" class="more-item" type="button"><span>⏱️</span>진통 간격</button>
+          <button id="openHealthMore" class="more-item" type="button"><span>🩺</span>엄마 건강 기록</button>
+          <button id="openBirthPlanMore" class="more-item" type="button"><span>📝</span>출산 계획서</button>
           <button id="openBook" class="more-item" type="button"><span>📖</span>기록을 책으로</button>
           <button id="openTrip" class="more-item" type="button"><span>✈️</span>여행 모드</button>
           <button id="openSettingsMore" class="more-item" type="button"><span>⚙️</span>설정</button>
@@ -511,7 +579,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.7.0';
+      var VERSION = '4.8.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -1002,6 +1070,17 @@
         el('openKickMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.kickCounter='moreSheet'; openKickCounter(); });
         el('openLaborMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.laborTimer='moreSheet'; openLaborTimer(); });
         el('runCleanup').addEventListener('click',runCleanup);
+        el('checkupSuggest').addEventListener('click',applyCheckupSuggestion);
+        el('openHealthMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.healthSheet='moreSheet'; openHealthSheet(); });
+        el('closeHealth').addEventListener('click',function(){ closeOverlaySheet('healthSheet'); });
+        el('saveHealth').addEventListener('click',saveHealthLog);
+        el('healthDate').addEventListener('change',function(){ fillHealthFormForDate(); renderHealthCharts(); });
+        el('healthSys').addEventListener('input',renderHealthAlert);
+        el('healthDia').addEventListener('input',renderHealthAlert);
+        el('saveHealthProfile').addEventListener('click',saveHealthProfile);
+        el('openBirthPlanMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.birthPlanSheet='moreSheet'; openBirthPlan(); });
+        el('closeBirthPlan').addEventListener('click',function(){ closeOverlaySheet('birthPlanSheet'); });
+        el('saveBirthPlan').addEventListener('click',saveBirthPlanNow);
         el('closeLabor').addEventListener('click',closeLaborTimer);
         el('laborTap').addEventListener('click',tapLabor);
         el('laborUndo').addEventListener('click',undoLabor);
@@ -1044,7 +1123,7 @@
         el('closeMore').addEventListener('click',function(){ closeOverlaySheet('moreSheet'); });
         el('moreSheet').addEventListener('click',function(e){ if(e.target===el('moreSheet')) closeOverlaySheet('moreSheet'); });
         el('openSettingsMore').addEventListener('click',function(){ hide(el('moreSheet')); openSettings(); state.sheetReturn.settings='moreSheet'; });
-        var moreTargets={openTimelapse:'lapseViewer',openMemories:'memories',openCapsule:'capsule',openCheckupNotes:'checkupNotes',openChecklist:'checklist',openKickMore:'kickCounter',openLaborMore:'laborTimer',openBook:'bookMaker'};
+        var moreTargets={openTimelapse:'lapseViewer',openMemories:'memories',openCapsule:'capsule',openCheckupNotes:'checkupNotes',openChecklist:'checklist',openKickMore:'kickCounter',openLaborMore:'laborTimer',openHealthMore:'healthSheet',openBirthPlanMore:'birthPlanSheet',openBook:'bookMaker'};
         Object.keys(moreTargets).forEach(function(id){
           el(id).addEventListener('click',function(){
             hide(el('moreSheet'));
@@ -1267,6 +1346,54 @@
         } catch(checkupError){ hide(box); }
       }
 
+      // 임신 주차별 표준 검진 간격: 28주까지 4주, 36주까지 2주, 이후 매주.
+      // 다음 검진일을 매번 손으로 계산하지 않도록 날짜를 제안한다.
+      function checkupIntervalWeeks(week){
+        if(!isFinite(week)) return 4;
+        if(week<28) return 4;
+        if(week<36) return 2;
+        return 1;
+      }
+
+      function checkupMilestoneNote(week){
+        if(!isFinite(week)) return '';
+        if(week>=10&&week<14) return '이 무렵 1차 기형아 검사(목덜미 투명대)를 해요';
+        if(week>=15&&week<21) return '이 무렵 2차 기형아 검사·정밀 초음파를 해요';
+        if(week>=24&&week<29) return '이 무렵 임신성 당뇨 검사를 해요';
+        if(week>=35&&week<38) return '이 무렵 GBS(세균) 검사를 해요';
+        return '';
+      }
+
+      function renderCheckupSuggestion(){
+        var box=el('checkupSuggestBox'), textBox=el('checkupSuggestText');
+        if(!box||!textBox) return;
+        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||{};
+        var phase=String(pregnancy.phase||'').toUpperCase();
+        var week=Number(pregnancy.week);
+        if(phase==='BORN'||!isFinite(week)||pregnancy.valid===false){ box.classList.add('hidden'); return; }
+
+        var base=String(pregnancy.checkupDate||'')||today();
+        var gap=checkupIntervalWeeks(week);
+        var next=new Date(base+'T00:00:00');
+        if(isNaN(next.getTime())){ box.classList.add('hidden'); return; }
+        next.setDate(next.getDate()+gap*7);
+        var nextStr=next.getFullYear()+'-'+pad2(next.getMonth()+1)+'-'+pad2(next.getDate());
+        if(nextStr<=today()){ box.classList.add('hidden'); return; }
+
+        state.checkupSuggestion=nextStr;
+        var note=checkupMilestoneNote(week+gap);
+        textBox.textContent='지금 '+week+'주라 '+gap+'주 뒤인 '+nextStr+'이 다음 검진일로 적당해요.'+(note?(' '+note+'.'):'');
+        box.classList.remove('hidden');
+      }
+
+      function applyCheckupSuggestion(){
+        var value=state.checkupSuggestion;
+        if(!value) return;
+        var input=el('checkupDateInput');
+        if(input) input.value=value;
+        toast('검진일 후보를 넣었어. 저장을 눌러 확정해 줘 🏥');
+      }
+
       function renderCheckupSettings(){
         var status=el('checkupStatus');
         if(!status) return;
@@ -1406,7 +1533,8 @@
         var minutes=k.startAt&&k.lastTapAt?Math.max(0,Math.round((k.lastTapAt-k.startAt)/60000)):0;
         var duration=minutes>0?minutes+'분':'1분 미만';
         var range=k.startAt?' ('+formatClock(k.startAt)+' ~ '+formatClock(k.lastTapAt||k.startAt)+')':'';
-        return '👣 태동 '+k.count+'회\n⏱ '+duration+range;
+        var tenNote=k.count>=10?('\n🔟 10회까지 '+Math.max(1,Math.round((k.lastTapAt-k.startAt)/60000))+'분'):'';
+        return '👣 태동 '+k.count+'회\n⏱ '+duration+range+tenNote;
       }
 
       function saveKickRecord(){
@@ -1428,6 +1556,11 @@
           })
           .then(unwrap)
           .then(function(){
+            if(k.count>=10&&k.startAt&&k.lastTapAt){
+              var tenMinutes=Math.max(1,Math.round((k.lastTapAt-k.startAt)/60000));
+              callApi('apiSaveHealthLogV470',[state.session.token,{date:today(),kickTenMinutes:String(tenMinutes),supplements:[]}],16000)
+                .then(unwrap).then(function(){ return loadHealthLogs(); }).catch(function(){});
+            }
             clearKickSession();
             stopKickTimer();
             hide(el('kickCounter'));
@@ -1457,9 +1590,51 @@
       function renderKickStatusLine(){
         var status=el('kickStatus'), k=state.kick;
         if(!status) return;
-        if(!k||!k.startAt){ text(status,'첫 태동이 느껴지면 큰 버튼을 눌러 줘'); return; }
+        if(!k||!k.startAt){ text(status,'첫 태동이 느껴지면 큰 버튼을 눌러 줘'); renderKickTenBox(); return; }
         var elapsed=Math.max(0,Math.floor((Date.now()-k.startAt)/1000));
         text(status,formatClock(k.startAt)+' 시작 · '+Math.floor(elapsed/60)+'분 '+('0'+(elapsed%60)).slice(-2)+'초 경과');
+        renderKickTenBox();
+      }
+
+      // 지난 기록들의 '10회까지 걸린 시간' 평균. 가이드가 강조하는 "평소 패턴"의 기준이 된다.
+      function kickTenAverage(){
+        var values=(healthState.logs||[]).filter(function(log){ return log.kickTenMinutes; })
+          .slice(-14).map(function(log){ return Number(log.kickTenMinutes); });
+        if(!values.length) return 0;
+        var sum=values.reduce(function(a,b){ return a+b; },0);
+        return Math.round(sum/values.length);
+      }
+
+      // 10회를 채우면 걸린 시간을 알려주고, 평소보다 오래 걸리면 그 사실을 짚어준다.
+      function renderKickTenBox(){
+        var box=el('kickTenBox');
+        if(!box) return;
+        var k=state.kick;
+        if(!k||!k.startAt||!k.count){ box.className='labor-signal hidden'; box.innerHTML=''; return; }
+        var minutes=Math.max(1,Math.round(((k.lastTapAt||Date.now())-k.startAt)/60000));
+        var avg=kickTenAverage();
+        if(k.count<10){
+          var left=10-k.count;
+          var elapsedMin=Math.max(0,Math.round((Date.now()-k.startAt)/60000));
+          if(elapsedMin>=120){
+            box.className='labor-signal on';
+            box.innerHTML='⚠️ <strong>2시간이 지났는데 '+k.count+'회예요</strong><br>기다리지 말고 의료진에게 연락하세요';
+          } else {
+            box.className='labor-signal warn';
+            box.innerHTML='10회까지 '+left+'회 남았어요 · '+elapsedMin+'분 경과'+(avg?(' · 평소 '+avg+'분'):'');
+          }
+          return;
+        }
+        if(minutes>120){
+          box.className='labor-signal on';
+          box.innerHTML='⚠️ <strong>10회 채우는 데 '+minutes+'분 걸렸어요</strong><br>2시간이 넘었어요. 의료진에게 연락하세요';
+        } else if(avg&&minutes>=avg*2&&minutes-avg>=15){
+          box.className='labor-signal warn';
+          box.innerHTML='🎉 10회 완료 · <strong>'+minutes+'분</strong><br>평소('+avg+'분)보다 오래 걸렸어요. 한 번 더 세어보고 계속 느리면 연락하세요';
+        } else {
+          box.className='labor-signal warn';
+          box.innerHTML='🎉 <strong>10회 완료 · '+minutes+'분</strong>'+(avg?('<br>평소 '+avg+'분과 비슷해요'):'<br>저장하면 다음부터 평소 패턴과 비교해줄게');
+        }
       }
 
       // 태동 버튼은 임신 16주 이상(태동을 느끼기 시작하는 시기)에만 보인다.
@@ -2066,7 +2241,7 @@
       }
 
       function overlayOpen(){
-        return !el('composer').classList.contains('hidden')||!el('checkin').classList.contains('hidden')||!el('settings').classList.contains('hidden')||!el('photoViewer').classList.contains('hidden')||!el('kickCounter').classList.contains('hidden')||!el('laborTimer').classList.contains('hidden')||!el('capsule').classList.contains('hidden')||!el('checkupNotes').classList.contains('hidden')||!el('bookMaker').classList.contains('hidden')||!el('lapseViewer').classList.contains('hidden')||!el('checklist').classList.contains('hidden')||!el('memories').classList.contains('hidden')||!el('guidebook').classList.contains('hidden')||!el('moreSheet').classList.contains('hidden')||!el('photoPicker').classList.contains('hidden')||!el('tripSheet').classList.contains('hidden');
+        return !el('composer').classList.contains('hidden')||!el('checkin').classList.contains('hidden')||!el('settings').classList.contains('hidden')||!el('photoViewer').classList.contains('hidden')||!el('kickCounter').classList.contains('hidden')||!el('laborTimer').classList.contains('hidden')||!el('healthSheet').classList.contains('hidden')||!el('birthPlanSheet').classList.contains('hidden')||!el('capsule').classList.contains('hidden')||!el('checkupNotes').classList.contains('hidden')||!el('bookMaker').classList.contains('hidden')||!el('lapseViewer').classList.contains('hidden')||!el('checklist').classList.contains('hidden')||!el('memories').classList.contains('hidden')||!el('guidebook').classList.contains('hidden')||!el('moreSheet').classList.contains('hidden')||!el('photoPicker').classList.contains('hidden')||!el('tripSheet').classList.contains('hidden');
       }
 
       function shouldPauseAutoRefresh(){
@@ -3661,6 +3836,290 @@
         });
       }
 
+      // ===== v4.7.0 엄마 건강 기록 (체중·혈압·영양제) =====
+      // 체중은 그동안 검진노트에 묶여 있어 4주에 한 점씩만 찍혔다.
+      // 집에서 주 1회 재는 흐름을 만들고, 임신 전 BMI 기준 권장 증가 범위를 함께 그린다.
+      var SUPPLEMENT_OPTIONS=['엽산','철분','비타민D','칼슘','오메가3','유산균'];
+      var healthState={logs:[],startWeight:0,heightCm:0,bmi:0,gainRange:null,picked:[],loaded:false};
+
+      function openHealthSheet(){
+        openOverlaySheet('healthSheet');
+        var dateInput=el('healthDate');
+        if(dateInput&&!dateInput.value) dateInput.value=today();
+        renderSupplementPills();
+        loadHealthLogs();
+      }
+
+      function loadHealthLogs(){
+        if(!state.session) return;
+        callApi('apiGetHealthLogsV470',[state.session.token],20000).then(unwrap).then(function(data){
+          healthState.logs=(data&&data.logs)||[];
+          healthState.startWeight=Number(data&&data.startWeight)||0;
+          healthState.heightCm=Number(data&&data.heightCm)||0;
+          healthState.bmi=Number(data&&data.bmi)||0;
+          healthState.gainRange=(data&&data.gainRange)||null;
+          healthState.birthPlan=String((data&&data.birthPlan)||'');
+          healthState.loaded=true;
+          if(el('healthStartWeight')&&!el('healthStartWeight').value&&healthState.startWeight) el('healthStartWeight').value=String(healthState.startWeight);
+          if(el('healthHeight')&&!el('healthHeight').value&&healthState.heightCm) el('healthHeight').value=String(healthState.heightCm);
+          fillHealthFormForDate();
+          renderHealthCharts();
+        }).catch(function(error){ toast('건강 기록을 불러오지 못했어: '+errorMessage(error)); });
+      }
+
+      // 이미 그 날짜에 적어둔 값이 있으면 폼에 채워서 이어 쓰게 한다.
+      function fillHealthFormForDate(){
+        var target=String((el('healthDate')&&el('healthDate').value)||today());
+        var found=null;
+        healthState.logs.forEach(function(log){ if(log.date===target) found=log; });
+        if(!found){ healthState.picked=[]; renderSupplementPills(); return; }
+        if(el('healthWeight')) el('healthWeight').value=found.weight!=null?String(found.weight):'';
+        if(el('healthSys')) el('healthSys').value=found.systolic!=null?String(found.systolic):'';
+        if(el('healthDia')) el('healthDia').value=found.diastolic!=null?String(found.diastolic):'';
+        if(el('healthMemo')) el('healthMemo').value=found.memo||'';
+        healthState.picked=Array.isArray(found.supplements)?found.supplements.slice():[];
+        renderSupplementPills();
+      }
+
+      function renderSupplementPills(){
+        var box=el('healthSupplements');
+        if(!box) return;
+        box.innerHTML='';
+        SUPPLEMENT_OPTIONS.forEach(function(name){
+          var on=healthState.picked.indexOf(name)>=0;
+          var pill=document.createElement('button');
+          pill.type='button'; pill.className='hl-pill'+(on?' on':'');
+          pill.textContent=(on?'✓ ':'')+name;
+          pill.setAttribute('aria-pressed',on?'true':'false');
+          pill.addEventListener('click',function(){
+            var idx=healthState.picked.indexOf(name);
+            if(idx>=0) healthState.picked.splice(idx,1); else healthState.picked.push(name);
+            renderSupplementPills();
+          });
+          box.appendChild(pill);
+        });
+      }
+
+      // 임신 후반 전자간증 신호를 놓치지 않도록 140/90 기준으로 알린다.
+      function bloodPressureLevel(sys,dia){
+        if(!sys&&!dia) return '';
+        if(sys>=160||dia>=110) return 'severe';
+        if(sys>=140||dia>=90) return 'high';
+        if(sys>=130||dia>=85) return 'watch';
+        return 'ok';
+      }
+
+      function renderHealthAlert(){
+        var box=el('healthAlert');
+        if(!box) return;
+        var sys=Number(String((el('healthSys')&&el('healthSys').value)||'').replace(/[^0-9]/g,''))||0;
+        var dia=Number(String((el('healthDia')&&el('healthDia').value)||'').replace(/[^0-9]/g,''))||0;
+        var level=bloodPressureLevel(sys,dia);
+        if(level==='severe'){
+          box.className='labor-signal on';
+          box.innerHTML='🚨 <strong>혈압이 많이 높아요 ('+sys+'/'+dia+')</strong><br>지금 바로 의료진에게 연락하세요';
+        } else if(level==='high'){
+          box.className='labor-signal on';
+          box.innerHTML='⚠️ <strong>혈압이 높아요 ('+sys+'/'+dia+')</strong><br>140/90 이상이에요. 검진 때 꼭 이야기하고, 두통·시야 번쩍임·윗배 통증·갑작스러운 부종이 있으면 바로 연락하세요';
+        } else if(level==='watch'){
+          box.className='labor-signal warn';
+          box.innerHTML='혈압이 조금 올라가 있어요 ('+sys+'/'+dia+') · 며칠 더 지켜봐요';
+        } else {
+          box.className='labor-signal hidden'; box.innerHTML='';
+        }
+      }
+
+      function saveHealthLog(){
+        if(!state.session) return;
+        var button=el('saveHealth');
+        var payload={
+          date:String((el('healthDate')&&el('healthDate').value)||today()),
+          weight:String((el('healthWeight')&&el('healthWeight').value)||'').replace(/[^0-9.]/g,''),
+          systolic:String((el('healthSys')&&el('healthSys').value)||'').replace(/[^0-9]/g,''),
+          diastolic:String((el('healthDia')&&el('healthDia').value)||'').replace(/[^0-9]/g,''),
+          supplements:healthState.picked.slice(),
+          memo:String((el('healthMemo')&&el('healthMemo').value)||'').trim()
+        };
+        if(!payload.weight&&!payload.systolic&&!payload.diastolic&&!payload.supplements.length&&!payload.memo){
+          toast('기록할 내용을 하나는 넣어 줘.'); return;
+        }
+        if(button){ button.disabled=true; text(button,'저장 중…'); }
+        callApi('apiSaveHealthLogV470',[state.session.token,payload],20000).then(unwrap).then(function(){
+          toast('건강 기록을 저장했어 🩺');
+          return loadHealthLogs();
+        }).catch(function(error){ toast('저장하지 못했어: '+errorMessage(error)); })
+        .then(function(){ if(button){ button.disabled=false; text(button,'저장'); } });
+      }
+
+      function saveHealthProfile(){
+        if(!state.session) return;
+        var button=el('saveHealthProfile');
+        var payload={
+          startWeight:String((el('healthStartWeight')&&el('healthStartWeight').value)||'').replace(/[^0-9.]/g,''),
+          heightCm:String((el('healthHeight')&&el('healthHeight').value)||'').replace(/[^0-9]/g,'')
+        };
+        if(button){ button.disabled=true; text(button,'저장 중…'); }
+        callApi('apiSaveHealthProfileV470',[state.session.token,payload],20000).then(unwrap).then(function(){
+          toast('기준을 저장했어. 권장 범위를 함께 그려줄게 ⚖️');
+          return loadHealthLogs();
+        }).catch(function(error){ toast('저장하지 못했어: '+errorMessage(error)); })
+        .then(function(){ if(button){ button.disabled=false; text(button,'기준 저장'); } });
+      }
+
+      function renderHealthCharts(){
+        renderHealthAlert();
+        var points=healthState.logs.filter(function(log){ return log.weight!=null; })
+          .map(function(log){ return {date:log.date,value:Number(log.weight)}; });
+        var box=el('healthWeightBox');
+        var note=el('healthGainNote');
+        if(note){
+          if(healthState.gainRange&&healthState.gainRange.label&&healthState.startWeight){
+            var gained=points.length?(points[points.length-1].value-healthState.startWeight):0;
+            note.textContent='· 임신 전 '+healthState.startWeight+'kg('+healthState.gainRange.label+') · 권장 +'+healthState.gainRange.low+'~'+healthState.gainRange.high+'kg'
+              +(points.length?(' · 지금 '+(gained>=0?'+':'')+gained.toFixed(1)+'kg'):'');
+          } else { note.textContent='· 임신 전 몸무게·키를 넣으면 권장 범위도 같이 보여줘'; }
+        }
+        if(box){
+          if(points.length<2){ box.classList.add('hidden'); }
+          else { box.classList.remove('hidden'); drawHealthWeightChart(points); }
+        }
+
+        var bpBox=el('healthBpBox'), bpList=el('healthBpList');
+        var bps=healthState.logs.filter(function(log){ return log.systolic!=null||log.diastolic!=null; }).slice(-10).reverse();
+        if(bpBox&&bpList){
+          if(!bps.length){ bpBox.classList.add('hidden'); bpList.innerHTML=''; }
+          else {
+            bpBox.classList.remove('hidden');
+            bpList.innerHTML=bps.map(function(log){
+              var level=bloodPressureLevel(Number(log.systolic||0),Number(log.diastolic||0));
+              var cls=(level==='high'||level==='severe')?' high':'';
+              return '<div class="bp-row'+cls+'"><span>'+escapeHtml(log.date)+'</span><span>'+escapeHtml(String(log.systolic||'-'))+' / '+escapeHtml(String(log.diastolic||'-'))+'</span><span>'+(level==='severe'?'매우 높음':level==='high'?'높음':level==='watch'?'주의':'정상')+'</span></div>';
+            }).join('');
+          }
+        }
+      }
+
+      // 체중 선 + 권장 증가 범위 밴드를 함께 그린다.
+      function drawHealthWeightChart(points){
+        var canvas=el('healthWeightChart');
+        if(!canvas) return;
+        var ratio=window.devicePixelRatio||1;
+        var w=canvas.clientWidth||300, h=170;
+        canvas.width=Math.max(1,Math.round(w*ratio)); canvas.height=Math.round(h*ratio);
+        var ctx=canvas.getContext('2d'); if(!ctx) return;
+        ctx.setTransform(1,0,0,1,0,0); ctx.scale(ratio,ratio); ctx.clearRect(0,0,w,h);
+        var styles=getComputedStyle(document.documentElement);
+        var accent=(styles.getPropertyValue('--accent')||'#71806b').trim()||'#71806b';
+        var muted=(styles.getPropertyValue('--muted')||'#7d746b').trim()||'#7d746b';
+
+        var values=points.map(function(pt){ return pt.value; });
+        var min=Math.min.apply(null,values), max=Math.max.apply(null,values);
+        var band=null;
+        if(healthState.startWeight&&healthState.gainRange&&healthState.gainRange.high){
+          band={low:healthState.startWeight+Number(healthState.gainRange.low),high:healthState.startWeight+Number(healthState.gainRange.high)};
+          min=Math.min(min,healthState.startWeight); max=Math.max(max,band.high);
+        }
+        var pad=(max-min)*0.15||1; min-=pad; max+=pad;
+        var left=38,right=10,top=12,bottom=22;
+        var plotW=w-left-right, plotH=h-top-bottom;
+        function yOf(v){ return top+plotH-(v-min)/(max-min)*plotH; }
+        function xOf(i){ return left+(points.length<2?plotW/2:plotW*i/(points.length-1)); }
+
+        if(band){
+          ctx.fillStyle='rgba(113,128,107,0.14)';
+          var yHigh=yOf(band.high), yLow=yOf(band.low);
+          ctx.fillRect(left,yHigh,plotW,Math.max(1,yLow-yHigh));
+          ctx.strokeStyle='rgba(113,128,107,0.45)'; ctx.setLineDash([4,3]); ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(left,yHigh); ctx.lineTo(w-right,yHigh); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(left,yLow); ctx.lineTo(w-right,yLow); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        ctx.font='10px sans-serif'; ctx.fillStyle=muted; ctx.strokeStyle=muted; ctx.lineWidth=0.5;
+        for(var g=0;g<3;g++){
+          var gv=min+(max-min)*g/2, gy=yOf(gv);
+          ctx.globalAlpha=0.35; ctx.beginPath(); ctx.moveTo(left,gy); ctx.lineTo(w-right,gy); ctx.stroke(); ctx.globalAlpha=1;
+          ctx.fillText(gv.toFixed(1),4,gy+3);
+        }
+
+        ctx.strokeStyle=accent; ctx.lineWidth=2; ctx.beginPath();
+        points.forEach(function(pt,i){ var x=xOf(i), y=yOf(pt.value); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+        ctx.stroke();
+        ctx.fillStyle=accent;
+        points.forEach(function(pt,i){ ctx.beginPath(); ctx.arc(xOf(i),yOf(pt.value),2.5,0,Math.PI*2); ctx.fill(); });
+
+        ctx.fillStyle=muted;
+        if(points.length){
+          ctx.fillText(points[0].date.slice(5),left,h-6);
+          if(points.length>1){
+            var lastLabel=points[points.length-1].date.slice(5);
+            ctx.fillText(lastLabel,w-right-ctx.measureText(lastLabel).width,h-6);
+          }
+        }
+      }
+
+      // ===== 출산 계획서 =====
+      var BIRTH_PLAN_QUESTIONS=[
+        {key:'pain',q:'진통 완화',opts:['무통 주사 원해요','되도록 자연스럽게','상황 보고 결정']},
+        {key:'partner',q:'분만실 동반',opts:['남편 함께','상황에 따라','혼자가 편해요']},
+        {key:'delivery',q:'분만 방식 선호',opts:['자연분만 희망','제왕절개 예정','의료진 판단 따름']},
+        {key:'cord',q:'탯줄 자르기',opts:['아빠가 자르기','의료진에게','정하지 않음']},
+        {key:'skin',q:'태어난 직후',opts:['바로 캥거루케어','닦고 나서','의료진 판단']},
+        {key:'feed',q:'수유 계획',opts:['모유 먼저','분유 병행','정하지 않음']}
+      ];
+
+      function openBirthPlan(){
+        openOverlaySheet('birthPlanSheet');
+        if(!healthState.loaded) loadHealthLogs();
+        renderBirthPlan();
+      }
+
+      function parseBirthPlan(){
+        try { return JSON.parse(healthState.birthPlan||'{}')||{}; } catch(e){ return {}; }
+      }
+
+      function renderBirthPlan(){
+        var box=el('birthPlanChoices');
+        if(!box) return;
+        var saved=parseBirthPlan();
+        box.innerHTML='';
+        BIRTH_PLAN_QUESTIONS.forEach(function(item){
+          var wrap=document.createElement('div'); wrap.className='plan-q';
+          var title=document.createElement('strong'); title.textContent=item.q;
+          var opts=document.createElement('div'); opts.className='plan-opts';
+          item.opts.forEach(function(opt){
+            var pill=document.createElement('button');
+            pill.type='button';
+            pill.className='hl-pill'+(saved[item.key]===opt?' on':'');
+            pill.textContent=opt;
+            pill.addEventListener('click',function(){
+              var current=parseBirthPlan();
+              current[item.key]=(current[item.key]===opt)?'':opt;
+              healthState.birthPlan=JSON.stringify(current);
+              renderBirthPlan();
+            });
+            opts.appendChild(pill);
+          });
+          wrap.appendChild(title); wrap.appendChild(opts);
+          box.appendChild(wrap);
+        });
+        var free=el('birthPlanFree');
+        if(free&&document.activeElement!==free) free.value=String(saved.free||'');
+      }
+
+      function saveBirthPlanNow(){
+        if(!state.session) return;
+        var button=el('saveBirthPlan');
+        var current=parseBirthPlan();
+        current.free=String((el('birthPlanFree')&&el('birthPlanFree').value)||'').trim();
+        healthState.birthPlan=JSON.stringify(current);
+        if(button){ button.disabled=true; text(button,'저장 중…'); }
+        callApi('apiSaveBirthPlanV470',[state.session.token,healthState.birthPlan],20000).then(unwrap).then(function(){
+          toast('출산 계획서를 저장했어 📝');
+        }).catch(function(error){ toast('저장하지 못했어: '+errorMessage(error)); })
+        .then(function(){ if(button){ button.disabled=false; text(button,'저장'); } });
+      }
+
       // --- 화면 테마 ---
       var THEME_KEY='ilkong_theme_v320';
       var themeMediaBound=false;
@@ -4626,6 +5085,8 @@
         if(!el('settings').classList.contains('hidden')){ closeSettings(); return true; }
         if(!el('kickCounter').classList.contains('hidden')){ closeKickCounter(); return true; }
         if(!el('laborTimer').classList.contains('hidden')){ closeLaborTimer(); return true; }
+        if(!el('healthSheet').classList.contains('hidden')){ closeOverlaySheet('healthSheet'); return true; }
+        if(!el('birthPlanSheet').classList.contains('hidden')){ closeOverlaySheet('birthPlanSheet'); return true; }
         var sheets=['checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
         for(var i=0;i<sheets.length;i++){
           var id=sheets[i], node=el(id);
@@ -4637,7 +5098,7 @@
         return false;
       }
       function topOpenDialog(){
-        var ids=['photoViewer','lapseViewer','composer','settings','kickCounter','laborTimer','checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
+        var ids=['photoViewer','lapseViewer','composer','settings','kickCounter','laborTimer','healthSheet','birthPlanSheet','checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
         for(var i=0;i<ids.length;i++){
           var node=el(ids[i]);
           if(node&&!node.classList.contains('hidden')) return node;
@@ -5476,6 +5937,7 @@
         renderNotifySettings();
         renderBirthSettings();
         renderCheckupSettings();
+        renderCheckupSuggestion();
         refreshStorageReport();
         state.dialogReturnFocus=document.activeElement;
         show(el('settings'));
