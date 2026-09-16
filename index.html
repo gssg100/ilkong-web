@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.5.0 — 출산 준비물 이름 수정(인라인 편집) 및 삭제 되돌리기 추가 -->
+<!-- 일콩 기록 v4.6.0 — 진통 간격 타이머(5-1-1 판정), 푸시 구독 보안 보정, 로그인 GAS 의존 축소 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -177,7 +177,19 @@
 
 
     @media(max-width:540px){.overlay{align-items:stretch}.sheet{height:100%;max-height:100%;border-radius:0;padding-top:var(--safe-top)}.row{grid-template-columns:1fr}.library-tools{grid-template-columns:1fr 1fr}.library-tools input{grid-column:1/-1}.login-card{padding:24px 18px}.previews{grid-template-columns:repeat(3,1fr)}}
-  </style>
+  
+    .labor-signal{border-radius:14px;padding:11px 13px;font-size:13.5px;line-height:1.5;text-align:center;margin-bottom:11px}
+    .labor-signal.on{background:rgba(220,38,38,.12);color:#b91c1c;border:1px solid rgba(220,38,38,.3)}
+    .labor-signal.warn{background:rgba(217,119,6,.12);color:#b45309;border:1px solid rgba(217,119,6,.28)}
+    .labor-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:13px 0}
+    .labor-stats>div{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 6px;text-align:center}
+    .labor-stats span{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+    .labor-stats strong{font-size:15px;color:var(--ink)}
+    .labor-list{max-height:210px;overflow-y:auto;margin-bottom:11px}
+    .labor-row{display:flex;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:6px;font-size:12.5px;color:var(--ink)}
+    .labor-row span:first-child{font-weight:700}
+    .labor-row span:not(:first-child){color:var(--muted)}
+</style>
 </head>
 <body>
   <noscript>자바스크립트가 꺼져 있어서 앱을 열 수 없어. 브라우저 설정에서 자바스크립트를 켜 줘.</noscript>
@@ -189,7 +201,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.5.0</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.6.0</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -205,7 +217,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.5.0</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.6.0</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -219,7 +231,7 @@
       </section>
       <div id="recordsSeg" class="segbar hidden"><button class="seg active" data-seg="ALL" type="button">전체</button><button class="seg" data-seg="JISU" type="button">🌿 지수</button><button class="seg" data-seg="HAKONG" type="button">🌼 하콩</button><button class="seg" data-seg="PHOTO" type="button">📷 사진</button><button class="seg" data-seg="FAVORITE" type="button">★ 즐겨찾기</button><button id="segTrip" class="seg hidden" data-seg="TRIP" type="button">✈️ 여행</button></div>
       <div id="questionHead" class="question-head hidden"></div>
-      <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="PHOTO">📷 사진 있는 기록만</option><option value="MOOD:🥰">🥰 행복한 순간</option><option value="MOOD:🥹">🥹 뭉클한 순간</option><option value="MOOD:😂">😂 웃긴 순간</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div style="grid-column:1/-1;display:flex;gap:7px;align-items:center"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div><div id="libraryCount" class="library-count" role="status" aria-live="polite"></div><div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div></div>
+      <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="PHOTO">📷 사진 있는 기록만</option><option value="MOOD:🥰">🥰 행복한 순간</option><option value="MOOD:🥹">🥹 뭉클한 순간</option><option value="MOOD:😂">😂 웃긴 순간</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:진통">⏱️ 진통</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div style="grid-column:1/-1;display:flex;gap:7px;align-items:center"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div><div id="libraryCount" class="library-count" role="status" aria-live="polite"></div><div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div></div>
       <div id="feedStatus" class="status-card" role="status" aria-live="polite">최신 기록을 불러오는 중이야…</div>
       <div id="feed" class="feed"></div>
       <div id="feedMore" class="feed-more hidden"><button id="loadMore" type="button">이전 기록 더 보기</button></div>
@@ -243,7 +255,7 @@
         <details id="advancedFields" class="advanced"><summary>날짜·분류·제목 자세히</summary><div class="advanced-inner">
           <div class="row">
             <div class="field"><label for="recordDate">기록 날짜</label><input id="recordDate" type="date"></div>
-            <div class="field"><label for="category">분류</label><select id="category"><option>일상</option><option>병원</option><option>몸의 변화</option><option>태교</option><option>여행</option><option>아기에게</option><option>웃긴 일</option><option>걱정되는 일</option><option>태동</option><option>배 사진</option></select></div>
+            <div class="field"><label for="category">분류</label><select id="category"><option>일상</option><option>병원</option><option>몸의 변화</option><option>태교</option><option>여행</option><option>아기에게</option><option>웃긴 일</option><option>걱정되는 일</option><option>태동</option><option>진통</option><option>배 사진</option></select></div>
           </div>
           <div class="field"><label for="postTitle">제목 · 선택 입력</label><input id="postTitle" maxlength="80" placeholder="비워두면 제목 없이 본문만 보여"></div>
         </div></details>
@@ -280,6 +292,25 @@
         <button id="kickTap" class="kick-tap" type="button">톡! 👣<span>태동이 느껴질 때마다</span></button>
         <div class="kick-tools"><button id="kickUndo" class="secondary" type="button">하나 빼기</button><button id="kickReset" class="secondary" type="button">처음부터</button></div>
         <p class="kick-note">태동은 정상 횟수가 따로 정해져 있지 않고 평소 패턴이 중요해요. 평소보다 움직임이 줄거나 달라졌다면 횟수를 채우려고 기다리지 말고 바로 의료진에게 문의해 주세요. 세다가 닫아도 이 기기에 저장돼서 이어서 셀 수 있어요.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="laborTimer" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="laborTitle">
+    <div class="sheet">
+      <div class="sheet-head"><button id="closeLabor" class="icon" type="button" aria-label="진통 간격 닫기">✕</button><h2 id="laborTitle">진통 간격 ⏱️</h2><button id="saveLabor" class="save" type="button">기록 저장</button></div>
+      <div class="kick-body">
+        <div id="laborStatus" class="kick-status">진통이 시작되면 아래 큰 버튼을 눌러 줘</div>
+        <div id="laborSignal" class="labor-signal hidden" role="status" aria-live="polite"></div>
+        <button id="laborTap" class="kick-tap" type="button">진통 시작 ⏱️<span>끝나면 한 번 더</span></button>
+        <div class="labor-stats">
+          <div><span>평균 간격</span><strong id="laborAvgGap">–</strong></div>
+          <div><span>평균 지속</span><strong id="laborAvgDur">–</strong></div>
+          <div><span>1시간 횟수</span><strong id="laborCount">0</strong></div>
+        </div>
+        <div id="laborList" class="labor-list"></div>
+        <div class="kick-tools"><button id="laborUndo" class="secondary" type="button">방금 지우기</button><button id="laborReset" class="secondary" type="button">처음부터</button></div>
+        <p class="kick-note">5-1-1 = 5분 간격 · 1분 지속 · 1시간 지속. 이 조건이 되면 병원에 연락할 때예요. 다만 둘째 이상이거나 병원이 멀면 더 빨리 출발해야 할 수 있어요. 양수가 터지거나 출혈이 있으면 간격과 상관없이 바로 연락하세요. 재던 중 앱을 닫아도 이 기기에 저장돼요.</p>
       </div>
     </div>
   </div>
@@ -357,6 +388,7 @@
           <button id="openCheckupNotes" class="more-item" type="button"><span>🏥</span>검진노트</button>
           <button id="openChecklist" class="more-item" type="button"><span>🍼</span>출산 준비물</button>
           <button id="openKickMore" class="more-item" type="button"><span>👣</span>태동 세기</button>
+          <button id="openLaborMore" class="more-item" type="button"><span>⏱️</span>진통 간격</button>
           <button id="openBook" class="more-item" type="button"><span>📖</span>기록을 책으로</button>
           <button id="openTrip" class="more-item" type="button"><span>✈️</span>여행 모드</button>
           <button id="openSettingsMore" class="more-item" type="button"><span>⚙️</span>설정</button>
@@ -461,7 +493,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.5.0';
+      var VERSION = '4.6.0';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -950,6 +982,12 @@
         el('weeklyPrompt').addEventListener('click',function(){ openWeeklyAnswer(this.__ilkongQuestion||''); });
         el('openChecklist').addEventListener('click',openChecklist);
         el('openKickMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.kickCounter='moreSheet'; openKickCounter(); });
+        el('openLaborMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.laborTimer='moreSheet'; openLaborTimer(); });
+        el('closeLabor').addEventListener('click',closeLaborTimer);
+        el('laborTap').addEventListener('click',tapLabor);
+        el('laborUndo').addEventListener('click',undoLabor);
+        el('laborReset').addEventListener('click',resetLabor);
+        el('saveLabor').addEventListener('click',saveLaborRecord);
         el('closeChecklist').addEventListener('click',function(){ closeOverlaySheet('checklist'); });
         el('checklist').addEventListener('click',function(e){ if(e.target===el('checklist')) closeOverlaySheet('checklist'); });
         el('addCheckItem').addEventListener('click',addChecklistItem);
@@ -987,7 +1025,7 @@
         el('closeMore').addEventListener('click',function(){ closeOverlaySheet('moreSheet'); });
         el('moreSheet').addEventListener('click',function(e){ if(e.target===el('moreSheet')) closeOverlaySheet('moreSheet'); });
         el('openSettingsMore').addEventListener('click',function(){ hide(el('moreSheet')); openSettings(); state.sheetReturn.settings='moreSheet'; });
-        var moreTargets={openTimelapse:'lapseViewer',openMemories:'memories',openCapsule:'capsule',openCheckupNotes:'checkupNotes',openChecklist:'checklist',openKickMore:'kickCounter',openBook:'bookMaker'};
+        var moreTargets={openTimelapse:'lapseViewer',openMemories:'memories',openCapsule:'capsule',openCheckupNotes:'checkupNotes',openChecklist:'checklist',openKickMore:'kickCounter',openLaborMore:'laborTimer',openBook:'bookMaker'};
         Object.keys(moreTargets).forEach(function(id){
           el(id).addEventListener('click',function(){
             hide(el('moreSheet'));
@@ -2009,7 +2047,7 @@
       }
 
       function overlayOpen(){
-        return !el('composer').classList.contains('hidden')||!el('checkin').classList.contains('hidden')||!el('settings').classList.contains('hidden')||!el('photoViewer').classList.contains('hidden')||!el('kickCounter').classList.contains('hidden')||!el('capsule').classList.contains('hidden')||!el('checkupNotes').classList.contains('hidden')||!el('bookMaker').classList.contains('hidden')||!el('lapseViewer').classList.contains('hidden')||!el('checklist').classList.contains('hidden')||!el('memories').classList.contains('hidden')||!el('guidebook').classList.contains('hidden')||!el('moreSheet').classList.contains('hidden')||!el('photoPicker').classList.contains('hidden')||!el('tripSheet').classList.contains('hidden');
+        return !el('composer').classList.contains('hidden')||!el('checkin').classList.contains('hidden')||!el('settings').classList.contains('hidden')||!el('photoViewer').classList.contains('hidden')||!el('kickCounter').classList.contains('hidden')||!el('laborTimer').classList.contains('hidden')||!el('capsule').classList.contains('hidden')||!el('checkupNotes').classList.contains('hidden')||!el('bookMaker').classList.contains('hidden')||!el('lapseViewer').classList.contains('hidden')||!el('checklist').classList.contains('hidden')||!el('memories').classList.contains('hidden')||!el('guidebook').classList.contains('hidden')||!el('moreSheet').classList.contains('hidden')||!el('photoPicker').classList.contains('hidden')||!el('tripSheet').classList.contains('hidden');
       }
 
       function shouldPauseAutoRefresh(){
@@ -3302,6 +3340,237 @@
       }
 
       // ===== v3.2.0 새 기능 =====
+      // ===== v4.6.0 진통 간격 타이머 =====
+      // 가이드가 37주부터 안내하는 5-1-1(5분 간격·1분 지속·1시간 지속)을 직접 재준다.
+      // 태동 카운터와 같은 방식으로 기기에 저장돼 앱을 닫아도 이어서 잴 수 있다.
+      var LABOR_WINDOW_MS=3600000;   // 규칙성 판단에 쓰는 최근 1시간
+      var LABOR_KEEP_MS=21600000;    // 기기에 보관하는 6시간
+
+      function laborStorageKey(){ return 'ilkong_labor_v460_'+currentUserId(); }
+
+      function loadLaborSession(){
+        try {
+          var raw=storageGet(laborStorageKey());
+          if(!raw) return null;
+          var parsed=JSON.parse(raw);
+          if(!parsed||!Array.isArray(parsed.items)) return null;
+          var cutoff=Date.now()-LABOR_KEEP_MS;
+          parsed.items=parsed.items.filter(function(it){ return it&&it.start&&it.start>cutoff; });
+          return parsed;
+        } catch(e){ return null; }
+      }
+
+      function persistLaborSession(){
+        try {
+          var l=state.labor;
+          if(!l||!l.items.length){ storageRemove(laborStorageKey()); return; }
+          storageSet(laborStorageKey(),JSON.stringify({items:l.items,requestId:l.requestId,requestSignature:l.requestSignature}));
+        } catch(e){}
+      }
+
+      function clearLaborSession(){
+        state.labor={items:[],requestId:'',requestSignature:'',saving:false};
+        try { storageRemove(laborStorageKey()); } catch(e){}
+      }
+
+      function openLaborTimer(){
+        if(state.saving) return;
+        var restored=loadLaborSession();
+        state.labor=restored?Object.assign({saving:false,requestId:'',requestSignature:''},restored):{items:[],requestId:'',requestSignature:'',saving:false};
+        openOverlaySheet('laborTimer');
+        startLaborTimer();
+        renderLaborTimer();
+        if(restored&&restored.items.length) toast('재던 진통을 이어서 열었어 ⏱️');
+      }
+
+      function closeLaborTimer(){
+        persistLaborSession();
+        stopLaborTimer();
+        closeOverlaySheet('laborTimer');
+      }
+
+      function startLaborTimer(){ stopLaborTimer(); state.laborTimer=setInterval(renderLaborLive,1000); }
+      function stopLaborTimer(){ if(state.laborTimer){ clearInterval(state.laborTimer); state.laborTimer=null; } }
+
+      function laborOngoing(){
+        var l=state.labor;
+        if(!l||!l.items.length) return null;
+        var last=l.items[l.items.length-1];
+        return (last&&!last.end)?last:null;
+      }
+
+      // 한 번 누르면 시작, 다시 누르면 끝. 진통 중에는 지속시간이 실시간으로 올라간다.
+      function tapLabor(){
+        var l=state.labor;
+        if(!l||l.saving) return;
+        var now=Date.now();
+        var ongoing=laborOngoing();
+        if(ongoing){
+          if(now-ongoing.start<1000){ toast('진통이 끝나면 다시 눌러 줘.'); return; }
+          ongoing.end=now;
+        } else {
+          l.items.push({start:now,end:0});
+        }
+        if(navigator.vibrate){ try{ navigator.vibrate(ongoing?[20,40,20]:30); }catch(e){} }
+        persistLaborSession();
+        renderLaborTimer();
+      }
+
+      function undoLabor(){
+        var l=state.labor;
+        if(!l||l.saving||!l.items.length) return;
+        l.items.pop();
+        persistLaborSession();
+        renderLaborTimer();
+      }
+
+      function resetLabor(){
+        var l=state.labor;
+        if(!l||l.saving) return;
+        if(l.items.length&&!confirm('재던 진통을 지우고 처음부터 다시 잴까?')) return;
+        clearLaborSession();
+        renderLaborTimer();
+      }
+
+      function completedLabor(){
+        var l=state.labor;
+        return (l&&l.items?l.items:[]).filter(function(it){ return it.end&&it.end>it.start; });
+      }
+
+      // 5-1-1 판정은 "최근 1시간" 기준으로만 본다.
+      function laborSummary(){
+        var done=completedLabor();
+        var cutoff=Date.now()-LABOR_WINDOW_MS;
+        var recent=done.filter(function(it){ return it.start>cutoff; });
+        var gaps=[];
+        for(var i=1;i<recent.length;i++) gaps.push(recent[i].start-recent[i-1].start);
+        var avgGap=gaps.length?gaps.reduce(function(a,b){return a+b;},0)/gaps.length:0;
+        var avgDur=recent.length?recent.reduce(function(a,it){return a+(it.end-it.start);},0)/recent.length:0;
+        var span=recent.length>1?(recent[recent.length-1].start-recent[0].start):0;
+        var meets=recent.length>=5&&avgGap>0&&avgGap<=300000&&avgDur>=45000&&span>=3300000;
+        return {recent:recent,count:recent.length,avgGap:avgGap,avgDur:avgDur,span:span,meets:meets};
+      }
+
+      function fmtClock(ms){
+        var total=Math.max(0,Math.round(ms/1000));
+        var m=Math.floor(total/60), sec=total%60;
+        return m?(m+'분 '+(sec<10?'0':'')+sec+'초'):(sec+'초');
+      }
+
+      function renderLaborTimer(){
+        var l=state.labor||{items:[],saving:false};
+        var sum=laborSummary();
+        text(el('laborAvgGap'),sum.avgGap?fmtClock(sum.avgGap):'–');
+        text(el('laborAvgDur'),sum.avgDur?fmtClock(sum.avgDur):'–');
+        text(el('laborCount'),String(sum.count));
+
+        var signal=el('laborSignal');
+        if(signal){
+          if(sum.meets){
+            signal.className='labor-signal on';
+            signal.innerHTML='🚨 <strong>5-1-1 조건이 됐어요</strong><br>지금 병원에 연락할 때예요';
+          } else if(sum.count>=3&&sum.avgGap&&sum.avgGap<=600000){
+            signal.className='labor-signal warn';
+            signal.innerHTML='간격이 좁아지고 있어요 · 준비를 시작해요';
+          } else {
+            signal.className='labor-signal hidden';
+            signal.innerHTML='';
+          }
+        }
+
+        var list=el('laborList');
+        if(list){
+          var all=completedLabor();
+          var done=all.slice(-8).reverse();
+          if(!done.length){ list.innerHTML='<div class="comment-empty">아직 기록된 진통이 없어</div>'; }
+          else {
+            list.innerHTML=done.map(function(it){
+              var idx=all.indexOf(it);
+              var gap=idx>0?(it.start-all[idx-1].start):0;
+              var t=new Date(it.start);
+              return '<div class="labor-row"><span>'+pad2(t.getHours())+':'+pad2(t.getMinutes())+'</span>'
+                +'<span>지속 '+escapeHtml(fmtClock(it.end-it.start))+'</span>'
+                +'<span>'+(gap?('간격 '+escapeHtml(fmtClock(gap))):'첫 진통')+'</span></div>';
+            }).join('');
+          }
+        }
+
+        var undo=el('laborUndo'); if(undo) undo.disabled=!l.items.length||!!l.saving;
+        var reset=el('laborReset'); if(reset) reset.disabled=!!l.saving;
+        var tap=el('laborTap'); if(tap) tap.disabled=!!l.saving;
+        var save=el('saveLabor');
+        if(save){ save.disabled=!!l.saving; text(save,l.saving?'저장 중…':'기록 저장'); }
+        renderLaborLive();
+      }
+
+      function renderLaborLive(){
+        var status=el('laborStatus');
+        if(!status) return;
+        var ongoing=laborOngoing();
+        var tap=el('laborTap');
+        if(ongoing){
+          text(status,'진통 중 · '+fmtClock(Date.now()-ongoing.start));
+          if(tap) tap.innerHTML='진통 끝 ✋<span>끝나면 눌러 줘</span>';
+          return;
+        }
+        if(tap) tap.innerHTML='진통 시작 ⏱️<span>끝나면 한 번 더</span>';
+        var done=completedLabor();
+        if(!done.length){ text(status,'진통이 시작되면 아래 큰 버튼을 눌러 줘'); return; }
+        var since=Date.now()-done[done.length-1].end;
+        text(status,'마지막 진통 뒤 '+fmtClock(since)+' 지났어');
+      }
+
+      function buildLaborBody(){
+        var sum=laborSummary();
+        var done=completedLabor();
+        var lines=['진통 '+done.length+'회 기록'];
+        if(sum.count){
+          lines.push('최근 1시간 '+sum.count+'회 · 평균 간격 '+fmtClock(sum.avgGap)+' · 평균 지속 '+fmtClock(sum.avgDur));
+          if(sum.meets) lines.push('5-1-1 조건 충족');
+        }
+        lines.push('');
+        var tail=done.slice(-20);
+        tail.forEach(function(it,i){
+          var t=new Date(it.start);
+          var gap=i>0?(it.start-tail[i-1].start):0;
+          lines.push(pad2(t.getHours())+':'+pad2(t.getMinutes())+' · 지속 '+fmtClock(it.end-it.start)+(gap?(' · 간격 '+fmtClock(gap)):''));
+        });
+        return lines.join('\n');
+      }
+
+      function saveLaborRecord(){
+        var l=state.labor;
+        if(!l||l.saving) return;
+        var done=completedLabor();
+        if(!done.length){ toast('아직 끝난 진통이 없어. 시작과 끝을 눌러 줘.'); return; }
+        var signature=done.length+'|'+done[0].start+'|'+done[done.length-1].end;
+        if(l.requestSignature!==signature||!validClientRequestId(l.requestId)){ l.requestId=uuid(); l.requestSignature=signature; }
+        persistLaborSession();
+        l.saving=true;
+        renderLaborTimer();
+        var payload={recordDate:today(),title:'',body:buildLaborBody(),category:'진통',mood:'',imageCount:0,requestId:l.requestId};
+        callApi('apiStartPostV221',[state.session.token,payload],22000)
+          .then(unwrap)
+          .then(function(result){
+            if(!result||!result.postId) throw new Error('저장할 글 번호를 받지 못했어.');
+            return callApi('apiFinishPostV221',[state.session.token,result.postId],22000);
+          })
+          .then(unwrap)
+          .then(function(){
+            clearLaborSession();
+            stopLaborTimer();
+            closeOverlaySheet('laborTimer');
+            toast('진통 기록을 저장했어 ⏱️');
+            return loadHome({source:'labor',force:true});
+          })
+          .catch(function(error){
+            l.saving=false;
+            renderLaborTimer();
+            toast('저장을 끝내지 못했어. 같은 버튼을 다시 누르면 이어서 시도해: '+errorMessage(error));
+          })
+          .then(function(){ if(state.labor&&state.labor.saving){ state.labor.saving=false; renderLaborTimer(); } });
+      }
+
       // --- 화면 테마 ---
       var THEME_KEY='ilkong_theme_v320';
       var themeMediaBound=false;
@@ -4153,6 +4422,7 @@
         if(!el('composer').classList.contains('hidden')){ closeComposer(); return true; }
         if(!el('settings').classList.contains('hidden')){ closeSettings(); return true; }
         if(!el('kickCounter').classList.contains('hidden')){ closeKickCounter(); return true; }
+        if(!el('laborTimer').classList.contains('hidden')){ closeLaborTimer(); return true; }
         var sheets=['checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
         for(var i=0;i<sheets.length;i++){
           var id=sheets[i], node=el(id);
@@ -4164,7 +4434,7 @@
         return false;
       }
       function topOpenDialog(){
-        var ids=['photoViewer','lapseViewer','composer','settings','kickCounter','checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
+        var ids=['photoViewer','lapseViewer','composer','settings','kickCounter','laborTimer','checkin','photoPicker','moreSheet','guidebook','checklist','memories','capsule','checkupNotes','bookMaker','tripSheet'];
         for(var i=0;i<ids.length;i++){
           var node=el(ids[i]);
           if(node&&!node.classList.contains('hidden')) return node;
@@ -5078,6 +5348,9 @@
         hide(el('toast'));
         stopKickTimer();
         hide(el('kickCounter'));
+        hide(el('laborTimer'));
+        stopLaborTimer();
+        state.labor=null;
         state.kick=null;
         hide(el('feedMore'));
         el('feed').innerHTML='';
