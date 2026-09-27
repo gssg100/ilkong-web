@@ -50,6 +50,10 @@ assert(!/function setupPwa\(\)[\s\S]{0,900}\bensureBridge\(\)/.test(appScript), 
 assert(appScript.includes('var ALLOW_BROWSER_GAS_FALLBACK=false;'), 'browser GAS fallback was re-enabled');
 assert(appScript.includes('var APPS_SCRIPT_EXEC=\'\';'), 'legacy GAS deployment URL is still embedded in the PWA');
 assert(!html.includes('script.google.com/macros/s/'), 'legacy GAS deployment URL leaked into the public PWA source');
+assert(!appScript.includes('SUPABASE_DIRECT_READS'), 'post-cutover read fallback allowlist remains');
+assert(/if\(!SUPABASE_PRIMARY_WRITE_CUTOVER\)\{[\s\S]{0,180}callSupabaseLegacyApi/.test(appScript), 'legacy read fallback is not limited to pre-cutover mode');
+assert(appScript.includes("if(!SUPABASE_PRIMARY_WRITE_CUTOVER) return callSupabaseLegacyApi(name,args,timeout);"), 'unmapped API fallback is not limited to pre-cutover mode');
+assert(!/callSupabaseRead\(name,args,timeout\)\.catch\(function\(error\)\{\s*supabaseToken=''/.test(appScript), 'home/image reads still fall back to legacy after cutover');
 
 const calledApis = [...new Set([...appScript.matchAll(/\bcallApi\('([^']+)'/g)].map((match) => match[1]))];
 const directBlock = appScript.match(/var SUPABASE_DIRECT_FUNCTIONS=\{([\s\S]*?)\};/);
@@ -60,4 +64,4 @@ const legacyOnlyCalls = calledApis.filter((name) => !directApis.has(name) && !sp
 assert(legacyOnlyCalls.length === 0, `active APIs still depend on browser GAS fallback: ${legacyOnlyCalls.join(', ')}`);
 assert(/if\(name==='apiLoginV221'\)\{[\s\S]{0,220}callSupabaseLogin/.test(appScript), 'login is not routed to Supabase first');
 
-console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write-route guard, retry safeguards, bridge isolation, Supabase routing coverage`);
+console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, retry safeguards, bridge isolation, Supabase routing coverage`);
