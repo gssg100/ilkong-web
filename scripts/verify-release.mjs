@@ -54,6 +54,7 @@ assert(!appScript.includes('SUPABASE_DIRECT_READS'), 'post-cutover read fallback
 assert(/if\(!SUPABASE_PRIMARY_WRITE_CUTOVER\)\{[\s\S]{0,180}callSupabaseLegacyApi/.test(appScript), 'legacy read fallback is not limited to pre-cutover mode');
 assert(appScript.includes("if(!SUPABASE_PRIMARY_WRITE_CUTOVER) return callSupabaseLegacyApi(name,args,timeout);"), 'unmapped API fallback is not limited to pre-cutover mode');
 assert(!/callSupabaseRead\(name,args,timeout\)\.catch\(function\(error\)\{\s*supabaseToken=''/.test(appScript), 'home/image reads still fall back to legacy after cutover');
+assert(/state\.session=upgradedSession;[\s\S]{0,120}saveSession\(upgradedSession\)/.test(appScript), 'legacy-to-Supabase session exchange is not persisted');
 
 const calledApis = [...new Set([...appScript.matchAll(/\bcallApi\('([^']+)'/g)].map((match) => match[1]))];
 const directBlock = appScript.match(/var SUPABASE_DIRECT_FUNCTIONS=\{([\s\S]*?)\};/);
