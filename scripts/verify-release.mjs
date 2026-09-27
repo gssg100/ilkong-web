@@ -40,5 +40,11 @@ assert(appScript.includes('SUPABASE_PRIMARY_WRITE_CUTOVER'), 'Supabase primary w
 assert(!appScript.includes("||(!SUPABASE_PRIMARY_WRITE_CUTOVER||(error&&error.code==='MODE'))"), 'legacy MODE fallback was reintroduced');
 assert(!appScript.includes("||!SUPABASE_PRIMARY_WRITE_CUTOVER||(error&&error.code==='MODE')"), 'legacy MODE fallback was reintroduced');
 assert(appScript.includes('validClientRequestId') && appScript.includes('persistPendingSave'), 'safe post retry safeguards are missing');
+assert(!html.includes('화면 v4.4.2'), 'stale settings version label remains');
+assert(appScript.includes("serviceWorker.register('sw.js?v='+encodeURIComponent(VERSION)"), 'service worker registration is pinned to a stale hard-coded version');
+assert(appScript.includes("event.source!==bridge.frame.contentWindow"), 'bridge messages are not pinned to the created iframe');
+assert(appScript.includes("bridge.target.postMessage({ilkongBridge:'call'" ) && appScript.includes(',bridge.origin);'), 'bridge calls are not pinned to the verified origin');
+assert(!appScript.includes("bridge.target.postMessage({ilkongBridge:'call',id:id,fn:name,args:args||[]},'*')"), 'bridge token-bearing calls still use wildcard targetOrigin');
+assert(appScript.includes("document.querySelectorAll('#moodChoices .mood-btn')"), 'composer mood handlers are not scoped away from check-in controls');
 
-console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write-route guard, retry safeguards`);
+console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write-route guard, retry safeguards, bridge isolation`);
