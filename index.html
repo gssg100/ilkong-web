@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.8.2 — Supabase 우선 인증·직접 API 라우팅 및 레거시 GAS 지연 fallback -->
+<!-- 일콩 기록 v4.8.3 — PWA 브라우저 GAS fallback 완전 비활성화 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -231,7 +231,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.8.2</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.8.3</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -247,7 +247,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.2</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.3</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -427,7 +427,7 @@
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p>
         </div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.2 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.3 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -581,7 +581,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.8.2';
+      var VERSION = '4.8.3';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -4855,7 +4855,7 @@
       }
       // v3.9.0: 외부 주소(PWA)로 열렸을 때만 오프라인 실행 준비를 한다.
       function setupPwa(){
-        if(!USE_BRIDGE) return;
+        if(!IS_EXTERNAL_WEB) return;
         try{
           if(!document.querySelector('link[rel="manifest"]')){
             var link=document.createElement('link');
@@ -4863,7 +4863,6 @@
             document.head.appendChild(link);
           }
         }catch(manifestError){}
-        bindBridgeListener();
         try{
           if(navigator.serviceWorker&&window.isSecureContext){
             window.addEventListener('load',function(){
@@ -4871,8 +4870,8 @@
             });
           }
         }catch(swError){}
-        // Supabase가 현재 운영 경로다. GAS 브리지는 레거시 fallback이 실제로 필요한 순간에만
-        // callBridge()가 지연 생성한다. 앱 시작마다 오래된 GAS iframe을 미리 띄우지 않는다.
+        // Supabase가 현재 운영 경로다. PWA에서는 브라우저 GAS iframe fallback 자체를 끈다.
+        // 구형 GAS 세션 교환/읽기 호환이 필요하면 Edge가 서버→서버로 처리한다.
       }
 
       function bindOfflineWatchers(){
@@ -6333,7 +6332,9 @@
 
       // v3.9.0: 화면이 앱스 스크립트 밖(예: GitHub Pages)에 올라가 있을 때는
       // 보이지 않는 브리지 창을 통해 기존 서버 함수를 그대로 호출한다(CORS 없이 동작).
-      var APPS_SCRIPT_EXEC='https://script.google.com/macros/s/AKfycbw52QS-sM2MqwCGOstDd5NhQDl2l3ovk36lt-ASguBwJywaS0fZMnpLbhej9F1d7Tja/exec';
+      // PWA의 브라우저→GAS iframe fallback은 운영에서 사용하지 않는다.
+      // 구형 데이터 호환은 Supabase Edge가 서버→서버로 처리하므로 공개 화면에는 배포 URL도 넣지 않는다.
+      var APPS_SCRIPT_EXEC='';
       // Supabase read path is deliberately off until staging parity is signed off.
       // Existing Apps Script remains the live fallback and the write path.
       // GitHub Pages가 운영 원본이다. 이 주소가 아닌 구형 앱/내장 화면은 GAS만
@@ -6347,7 +6348,9 @@
       var VAPID_PUBLIC_KEY='BNpeN3rm6wHJIirD4U0G_eD7tLMF9f4tU2iaa4PP9x008vEzx9_ZJnD2LBhbyMtiMJ0BP6AJ9xbYRzXVL_r8T8s';
       var supabaseToken='';
       var HAS_GAS=!!(window.google&&window.google.script&&window.google.script.run);
-      var USE_BRIDGE=!HAS_GAS&&!NATIVE_RPC;
+      var IS_EXTERNAL_WEB=!HAS_GAS&&!NATIVE_RPC;
+      var ALLOW_BROWSER_GAS_FALLBACK=false;
+      var USE_BRIDGE=IS_EXTERNAL_WEB&&ALLOW_BROWSER_GAS_FALLBACK;
       var bridge={frame:null,target:null,origin:'',ready:false,pending:{},queue:[],loading:false,failedAt:0};
       function trustedBridgeOrigin(origin){
         origin=String(origin||'');
@@ -6388,6 +6391,7 @@
       function ensureBridge(){
         bindBridgeListener();
         if(bridge.ready||bridge.loading) return;
+        if(!APPS_SCRIPT_EXEC){ bridge.failedAt=Date.now(); return; }
         bridge.loading=true;
         try{
           if(bridge.frame&&bridge.frame.parentNode) bridge.frame.parentNode.removeChild(bridge.frame);
@@ -6545,9 +6549,9 @@
         }
         if(SUPABASE_READ_ROLLOUT&&(name==='apiGetHomeV221'||name==='apiGetImagesBatchV285')){
           return callSupabaseRead(name,args,timeout).catch(function(error){
-            // A staging read failure must never take the existing app offline.
+            // 조회용 legacy 호환도 브라우저 GAS iframe이 아니라 Edge 서버 경유로만 수행한다.
             supabaseToken='';
-            return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
+            return callSupabaseLegacyApi(name,args,timeout);
           });
         }
         if(SUPABASE_DIRECT_ROLLOUT&&SUPABASE_DIRECT_FUNCTIONS[name]){
@@ -6557,7 +6561,7 @@
             // "Supabase rollout disabled"를 다시 만들 수 있으며, 저장 재시도도 혼란스러워진다.
             if(SUPABASE_DIRECT_READS[name]||!SUPABASE_PRIMARY_WRITE_CUTOVER){
               supabaseToken='';
-              return state.session&&state.session.supabase===true ? callSupabaseLegacyApi(name,args,timeout) : callLegacyApi(name,args,timeout);
+              return callSupabaseLegacyApi(name,args,timeout);
             }
             if(error&&error.code==='MODE'){
               var modeError=new Error('저장 경로를 확인 중이야. 입력한 내용은 이 기기에 남아 있어. 잠시 뒤 다시 눌러 줘.');
@@ -6567,7 +6571,7 @@
             throw error;
           });
         }
-        if(SUPABASE_READ_ROLLOUT&&state.session&&state.session.supabase===true) return callSupabaseLegacyApi(name,args,timeout);
+        if(SUPABASE_READ_ROLLOUT) return callSupabaseLegacyApi(name,args,timeout);
         return callLegacyApi(name,args,timeout);
       }
 

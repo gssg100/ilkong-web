@@ -47,6 +47,9 @@ assert(appScript.includes("bridge.target.postMessage({ilkongBridge:'call'" ) && 
 assert(!appScript.includes("bridge.target.postMessage({ilkongBridge:'call',id:id,fn:name,args:args||[]},'*')"), 'bridge token-bearing calls still use wildcard targetOrigin');
 assert(appScript.includes("document.querySelectorAll('#moodChoices .mood-btn')"), 'composer mood handlers are not scoped away from check-in controls');
 assert(!/function setupPwa\(\)[\s\S]{0,900}\bensureBridge\(\)/.test(appScript), 'PWA still eagerly opens the legacy GAS bridge');
+assert(appScript.includes('var ALLOW_BROWSER_GAS_FALLBACK=false;'), 'browser GAS fallback was re-enabled');
+assert(appScript.includes('var APPS_SCRIPT_EXEC=\'\';'), 'legacy GAS deployment URL is still embedded in the PWA');
+assert(!html.includes('script.google.com/macros/s/'), 'legacy GAS deployment URL leaked into the public PWA source');
 
 const calledApis = [...new Set([...appScript.matchAll(/\bcallApi\('([^']+)'/g)].map((match) => match[1]))];
 const directBlock = appScript.match(/var SUPABASE_DIRECT_FUNCTIONS=\{([\s\S]*?)\};/);
