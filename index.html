@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.8.6 — PIN 교환 보호 및 기록 정확성 보완 -->
+<!-- 일콩 기록 v4.8.7 — 안전한 로그아웃과 사진 정리 안내 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -231,7 +231,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.8.6</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.8.7</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -247,7 +247,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.6</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.7</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -427,7 +427,7 @@
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p>
         </div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.6 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.7 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -581,7 +581,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.8.6';
+      var VERSION = '4.8.7';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -616,7 +616,7 @@
         lastInteractionAt:0, autoRefreshFailures:0, lastAutoCheckAt:0, checkingUpdates:false, commentComposing:false, imeComposing:false, compositionTarget:null, compositionSerial:0, compositionWatchdogTimer:null, draftSaveTimer:null, draftSavePending:false, searchApplyTimer:null, searchApplyPending:false, pendingFeedRender:null, pendingFeedRenderTimer:null, homeApplyGeneration:0, pullStartY:0, pullDistance:0, pulling:false,
         hasMore:false, nextOffset:0, loadedCount:PAGE_SIZE, loadingMore:false, loadingAll:false, loadingAllPromise:null, selectedMood:'', saveAttempt:null,
         imageCache:{}, imageCacheOrder:[], imageInFlight:{}, imageObserver:null, dialogReturnFocus:null,
-        imagePersistentReads:{},remoteThumbFetching:{}, imagePersistentKnown:{}, imagePersistChain:Promise.resolve(), imageCacheReady:false,
+        imagePersistentReads:{},remoteThumbFetching:{}, imagePersistentKnown:{}, imagePersistChain:Promise.resolve(), homeSnapshotPersistChain:Promise.resolve(), pendingPersistChain:Promise.resolve(), logoutBusy:false, imageCacheReady:false,
         imageLoadQueue:[], imageLoadActive:0, imageLoadSerial:0, imageFallbackTimers:{},
         imageQueueRunning:false, imageBatchSupport:null, imageDataApiName:'', composerMode:'create', editingPostId:'', editExistingPhotoCount:0, offlineQueued:false, offlineFlushTimer:null, pendingRestored:false, composerMutationGeneration:0, composerClosing:false,
         searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false,
@@ -2942,6 +2942,8 @@
       }
       function readPersistentImageUrl(imageId,variant){
         variant=variant||'thumbnail';
+        if(state.logoutBusy||!state.session) return Promise.resolve('');
+        var expectedUser=currentUserId();
         if(variant!=='thumbnail') return Promise.resolve('');
         var key=imageRequestKey(imageId,variant);
         // v3.1.0: 안드로이드 앱의 디스크 캐시를 최우선으로 본다(더 크고 빠르고 오래 남는다).
@@ -2958,6 +2960,7 @@
         if(state.imagePersistentReads[key]) return state.imagePersistentReads[key];
         var promise=idbGet(persistentImageKey(key)).then(function(record){
           delete state.imagePersistentReads[key];
+          if(state.logoutBusy||!state.session||currentUserId()!==expectedUser) return '';
           if(!record||!looksLikeImageUrl(record.url)) return '';
           var savedAt=Number(record.savedAt||0);
           if(!savedAt||Date.now()-savedAt>IMAGE_CACHE_MAX_AGE_MS){
@@ -2973,6 +2976,7 @@
       }
       function persistImageUrl(imageId,variant,url){
         variant=variant||'thumbnail';
+        if(state.logoutBusy||!state.session) return;
         if(variant!=='thumbnail'||!/^data:image\//i.test(String(url||''))) return;
         var bytes=estimateDataUrlBytes(url);
         if(!bytes||bytes>IMAGE_CACHE_MAX_ITEM_BYTES) return;
@@ -3922,13 +3926,14 @@
           var box=el('storageStatus');
           if(!box) return;
           var photos=Number(info&&info.photos||0);
-          if(!photos){ text(box,'지금은 비울 게 없어. 지운 기록의 사진은 30일간 보관했다가 정리돼.'); return; }
+          if(!photos){ text(box,'지금은 비울 사진이 없어. 삭제한 기록의 사진은 30일 후 이 화면에서 수동으로 정리할 수 있어.'); return; }
           text(box,'지운 기록의 사진 '+photos+'장('+formatBytes(info&&info.bytes)+')을 비울 수 있어.'+((info&&info.hasMore)?' (더 있음)':''));
-        }).catch(function(){});
+        }).catch(function(){ text(el('storageStatus'),'저장공간 상태를 불러오지 못했어. 연결을 확인하고 설정을 다시 열어 줘.'); });
       }
 
       function runCleanup(){
         if(!state.session) return;
+        if(!confirm('삭제된 게시글의 사진 중 30일이 지난 파일을 저장공간에서 영구 삭제할 거야. 외부에 원본을 백업했는지 확인했어? 삭제한 사진은 복구할 수 없어.\n\n[확인] 백업을 확인했고 영구 삭제 / [취소] 돌아가기')) return;
         var button=el('runCleanup');
         if(button){ button.disabled=true; text(button,'정리하는 중…'); }
         callApi('apiRunCleanupV450',[state.session.token],40000).then(unwrap).then(function(result){
@@ -4296,16 +4301,18 @@
       function homeSnapshotKey(){ return 'ilkong_home_snapshot_'+currentUserId(); }
       function persistHomeSnapshot(home){
         try{
-          if(!home||!Array.isArray(home.posts)) return;
+          if(state.logoutBusy||!state.session||!home||!Array.isArray(home.posts)) return;
           var copy=Object.assign({},home);
           if(copy.posts.length>200) copy.posts=copy.posts.slice(0,200);
           delete copy.renewedSession;
-          idbSet(homeSnapshotKey(),JSON.stringify(copy)).catch(function(){});
+          var key=homeSnapshotKey(), value=JSON.stringify(copy);
+          state.homeSnapshotPersistChain=state.homeSnapshotPersistChain.catch(function(){}).then(function(){ return idbSet(key,value); }).catch(function(){});
         }catch(snapshotError){}
       }
       function restoreHomeSnapshot(){
+        var userId=currentUserId();
         return idbGet(homeSnapshotKey()).then(function(raw){
-          if(!raw||state.home) return false;
+          if(state.logoutBusy||!state.session||currentUserId()!==userId||!raw||state.home) return false;
           var snapshot=null;
           try{ snapshot=JSON.parse(String(raw)); }catch(parseError){ return false; }
           if(!snapshot||!Array.isArray(snapshot.posts)||state.home) return false;
@@ -5948,6 +5955,7 @@
       }
 
       function scheduleDraftSave(){
+        if(state.logoutBusy) return;
         if(state.composerMode==='edit'){ state.editAttempt=null; return; }
         state.draftSavePending=true;
         cancelDraftSave();
@@ -6020,7 +6028,17 @@
       function pendingSnapshot(status){
         return {userId:currentUserId(),status:status||'draft',savedAt:Date.now(),title:el('postTitle').value,body:el('postBody').value,date:el('recordDate').value,category:el('category').value,mood:state.selectedMood,saveAttempt:state.saveAttempt,images:state.images.map(function(item){return {id:item.id,dataUrl:item.dataUrl,thumbnailDataUrl:item.thumbnailDataUrl,name:item.name,status:item.status==='processing'||item.status==='queued'?'error':item.status,error:item.status==='processing'||item.status==='queued'?'앱이 닫혀 압축이 중단됐어. 이 사진만 다시 선택해 줘.':item.error||'',width:item.width||0,height:item.height||0,uploadedPostId:item.uploadedPostId||''};})};
       }
-      function persistPendingSave(status){ var userId=currentUserId(); if(!userId||state.composerMode==='edit') return Promise.resolve(false); if(!state.images.length&&!state.saveAttempt) return idbRemove(pendingSaveKey(userId)).then(function(){return true;}).catch(function(){return false;}); return idbSet(pendingSaveKey(userId),pendingSnapshot(status)).then(function(){return true;}).catch(function(){return false;}); }
+      function persistPendingSave(status){
+        var userId=currentUserId();
+        if(!userId||state.composerMode==='edit') return Promise.resolve(false);
+        var key=pendingSaveKey(userId);
+        var snapshot=(state.images.length||state.saveAttempt)?pendingSnapshot(status):null;
+        // 비동기 사진 압축/자동저장 순서가 뒤바뀌어 새 초안을 덮어쓰지 않게 한다.
+        state.pendingPersistChain=state.pendingPersistChain.catch(function(){}).then(function(){
+          return snapshot?idbSet(key,snapshot):idbRemove(key);
+        });
+        return state.pendingPersistChain.then(function(){return true;}).catch(function(){return false;});
+      }
       function restorePendingSave(userId){
         var expectedUser=String(userId||'').toUpperCase();
         var expectedToken=state.session&&state.session.token?String(state.session.token):'';
@@ -6043,7 +6061,13 @@
           return true;
         }).catch(function(){return false;});
       }
-      function clearPendingSave(){ var userId=currentUserId(); hide(el('recoveryBanner')); state.pendingRestored=false; return userId?idbRemove(pendingSaveKey(userId)).catch(function(){}):Promise.resolve(); }
+      function clearPendingSave(){
+        var userId=currentUserId(); hide(el('recoveryBanner')); state.pendingRestored=false;
+        if(!userId) return Promise.resolve();
+        var key=pendingSaveKey(userId);
+        state.pendingPersistChain=state.pendingPersistChain.catch(function(){}).then(function(){ return idbRemove(key); });
+        return state.pendingPersistChain.catch(function(){});
+      }
       function discardPendingSave(){ if(!confirm('보관 중인 미완성 기록을 버릴까?')) return; var userId=currentUserId(); if(userId) storageRemove(draftKey(userId)); clearPendingSave().then(function(){ resetComposerView(); state.images=[]; state.saveAttempt=null; renderPreviews(); toast('미완성 기록을 정리했어.'); }); }
 
       function invalidateSaveAttempt(){ if(!state.saving) state.saveAttempt=null; }
@@ -6193,11 +6217,95 @@
         text(el('healthDetail'),details.join('\n'));
       }
 
+      function clearLogoutReadCache(){
+        // 사진 초안(pendingSaveKey)은 건드리지 않고, 로그인 없이 읽힐 수 있는
+        // 홈 스냅샷과 썸네일 IDB 캐시(인덱스 밖에 남은 항목 포함)만 지운다.
+        return Promise.all([
+          state.imagePersistChain.catch(function(){}),
+          state.homeSnapshotPersistChain.catch(function(){}),
+          state.pendingPersistChain.catch(function(){})
+        ]).then(function(){
+          return openDb().then(function(db){
+            return new Promise(function(resolve,reject){
+              var tx=db.transaction(DB_STORE,'readwrite');
+              var cursor=tx.objectStore(DB_STORE).openCursor();
+              cursor.onsuccess=function(){
+                var item=cursor.result;
+                if(!item) return;
+                var key=String(item.key||'');
+                if(key===IMAGE_CACHE_INDEX_KEY||key.indexOf(IMAGE_CACHE_PREFIX)===0||key.indexOf('ilkong_home_snapshot_')===0) item.delete();
+                item.continue();
+              };
+              tx.oncomplete=function(){ db.close(); resolve(true); };
+              tx.onerror=function(){ db.close(); reject(tx.error||new Error('기기 캐시를 지우지 못했어.')); };
+              tx.onabort=function(){ db.close(); reject(tx.error||new Error('기기 캐시 정리가 중단됐어.')); };
+            });
+          });
+        });
+      }
+
       function logout(){
-        if(!confirm('이 기기에서 로그아웃할까?')) return;
-        saveDraft(true);
-        var oldUser=currentUserId();
-        clearSession().then(function(){ stopAutoRefresh(); resetAppStateForLogout(); hide(el('appPage')); show(el('loginPage')); setLoginStatus('로그아웃했어.'); if(oldUser) return idbRemove(pendingSaveKey(oldUser)).catch(function(){}); });
+        if(state.logoutBusy||!state.session) return Promise.resolve(false);
+        if(state.saving||state.composerClosing||state.composerMode==='edit'){
+          toast('작성·수정 중인 기록을 마무리하고 로그아웃해 줘.');
+          return Promise.resolve(false);
+        }
+        if(!confirm('이 기기에서 로그아웃할까? 웹 저장소에 내려받은 기록과 사진 캐시는 정리할게.')) return Promise.resolve(false);
+        var oldUser=currentUserId(), keepDrafts=true;
+        state.logoutBusy=true;
+        return state.pendingPersistChain.catch(function(){}).then(function(){
+          return idbGet(pendingSaveKey(oldUser));
+        }).then(function(pending){
+          if(currentUserId()!==oldUser) return false;
+          var activeDraft=!!(String(el('postTitle').value||'').trim()||String(el('postBody').value||'').trim()||state.selectedMood||state.images.length||state.saveAttempt);
+          var hasDraft=activeDraft||!!pending||hasLocalDraft(draftKey(oldUser))||hasLocalDraft(checkinDraftKey(oldUser));
+          if(hasDraft&&!confirm('작성 중인 글·사진·오늘 한 줄을 이 기기에 보관할까? 같은 계정으로 다시 로그인하면 복구할 수 있지만, 공유 기기에서는 남아 있어.\n\n[확인] 보관하고 로그아웃 / [취소] 다른 선택')){
+            if(!confirm('초안을 이 기기에서 삭제하고 로그아웃할까? 삭제하면 글과 첨부 사진을 복구할 수 없어.\n\n[확인] 초안 삭제 / [취소] 로그아웃 취소')) return false;
+            keepDrafts=false;
+          }
+          if(!keepDrafts) return true;
+          if(state.images.some(function(item){return !item.dataUrl;})){
+            toast('보관할 수 없는 사진이 있어. 사진 처리가 끝나거나 실패한 사진을 다시 선택한 뒤 로그아웃해 줘.');
+            return false;
+          }
+          var storedText=true;
+          if(activeDraft) storedText=flushDraftSave();
+          var hasActivePhotos=!!(state.images.length||state.saveAttempt);
+          return (hasActivePhotos?persistPendingSave('logout'):Promise.resolve(true)).then(function(storedPhotos){
+            if((activeDraft&&!storedText)||(hasActivePhotos&&!storedPhotos)){
+              toast('초안을 기기에 보관하지 못했어. 로그아웃을 취소했어.');
+              return false;
+            }
+            return true;
+          });
+        }).then(function(prepared){
+          if(!prepared||currentUserId()!==oldUser) return false;
+          return clearLogoutReadCache().then(function(){
+            if(keepDrafts) return true;
+            return idbRemove(pendingSaveKey(oldUser)).then(function(){
+              storageRemove(draftKey(oldUser));
+              storageRemove(checkinDraftKey(oldUser));
+              return true;
+            });
+          }).then(function(){
+            // 서버 세션도 폐기를 시도한다. 네트워크가 끊겨도 기기 로그아웃은 진행하되 경고한다.
+            var oldSession=state.session;
+            if(!oldSession||oldSession.supabase!==true) return true;
+            return supabaseRequest({op:'logout',token:String(oldSession.token)},8000)
+              .then(function(){ return true; }).catch(function(){ return false; });
+          }).then(function(serverRevoked){
+            return clearSession().then(function(){
+              stopAutoRefresh(); resetAppStateForLogout(); hide(el('appPage')); show(el('loginPage'));
+              var message=keepDrafts?'로그아웃했어. 초안은 같은 계정으로 다시 로그인하면 이어 쓸 수 있어.':'로그아웃했어. 이 기기의 초안과 기록 캐시를 정리했어.';
+              if(!serverRevoked) message+=' 서버 세션 폐기를 확인하지 못했어. 보안을 위해 필요하면 PIN을 변경해 줘.';
+              setLoginStatus(message);
+              return true;
+            });
+          });
+        }).catch(function(error){
+          toast('기기 자료를 안전하게 정리하지 못해 로그아웃을 중단했어: '+errorMessage(error));
+          return false;
+        }).then(function(done){ state.logoutBusy=false; return done; });
       }
 
       function resetAppStateForLogout(){

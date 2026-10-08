@@ -67,5 +67,8 @@ assert(/if\(name==='apiLoginV221'\)\{[\s\S]{0,220}callSupabaseLogin/.test(appScr
 assert(appScript.includes("requestId:actionId"), 'each direct user action must provide an operation id');
 assert(appScript.includes('function send(){ return supabaseRequest(requestBody,timeout); }'), 'direct retries must reuse their original request body');
 assert(appScript.includes("if(name==='apiChangePinV320') return send();"), 'PIN changes must not be retried after a session may have been revoked');
+assert(appScript.includes('function clearLogoutReadCache(){'), 'logout privacy cache cleanup missing');
+assert(appScript.includes("supabaseRequest({op:'logout',token:String(oldSession.token)},8000)"), 'logout must revoke the active server session');
+assert(appScript.includes('외부에 원본을 백업했는지 확인했어?'), 'permanent Storage cleanup lacks a backup confirmation');
 
-console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, stable action retry ids, bridge isolation, Supabase routing coverage`);
+console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, stable action retry ids, logout privacy, cleanup confirmation, Supabase routing coverage`);
