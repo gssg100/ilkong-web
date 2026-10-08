@@ -22,11 +22,12 @@ const sources = [
   ['function clearLogoutReadCache(){', 'function resetAppStateForLogout(){'],
 ].map(([start, end]) => sliceBetween(start, end)).join('\n');
 
-function harness({ choices, photos = true, existingPending = true, failPhotoWrite = false, failTextWrite = false, failCacheCleanup = false, writingCache = false, serverSession = false, failServerLogout = false } = {}) {
+function harness({ choices, photos = true, existingPending = true, failPhotoWrite = false, failTextWrite = false, failCacheCleanup = false, writingCache = false, serverSession = false, failServerLogout = false, nativeDisk = '' } = {}) {
   const idb = new Map();
   const local = new Map();
   const notices = [];
   const revokeCalls = [];
+  const nativeCalls = [];
   const cacheKeys = [
     'ilkong_home_snapshot_U1',
     'ilkong_home_snapshot_OTHER',
@@ -56,6 +57,9 @@ function harness({ choices, photos = true, existingPending = true, failPhotoWrit
   let confirmationIndex = 0;
   const ctx = {
     state,
+    window: nativeDisk === 'old' ? { IlkongDisk: { getImage() { return ''; } } }
+      : nativeDisk ? { IlkongDisk: { clearImages() { nativeCalls.push('clearImages'); return nativeDisk === 'working'; } } }
+      : {},
     Promise,
     IMAGE_CACHE_INDEX_KEY: 'ilkong_v282_image_cache_index',
     IMAGE_CACHE_PREFIX: 'ilkong_v282_image_cache_',
@@ -135,7 +139,7 @@ function harness({ choices, photos = true, existingPending = true, failPhotoWrit
     state.imagePersistChain = Promise.resolve().then(() => idb.set('ilkong_v282_image_cache_late', 'late'));
     state.homeSnapshotPersistChain = Promise.resolve().then(() => idb.set('ilkong_home_snapshot_LATE', 'late'));
   }
-  return { ctx, state, idb, local, cacheKeys, notices, fields, revokeCalls };
+  return { ctx, state, idb, local, cacheKeys, notices, fields, revokeCalls, nativeCalls };
 }
 
 async function preservePhotoDraft() {
@@ -208,6 +212,23 @@ async function supabaseServerLogout() {
   assert.match(failure.state.loginStatus, /서버 세션 폐기를 확인하지 못했어/);
 }
 
+async function nativeStorageLogout() {
+  const modern = harness({ choices: [true, true], nativeDisk: 'working' });
+  assert.equal(await modern.ctx.logout(), true);
+  assert.deepEqual(modern.nativeCalls, ['clearImages']);
+  assert.doesNotMatch(modern.state.loginStatus, /사진 디스크 캐시/);
+
+  const oldApk = harness({ choices: [true, true], nativeDisk: 'old' });
+  assert.equal(await oldApk.ctx.logout(), true);
+  assert.match(oldApk.state.loginStatus, /구형 안드로이드 앱의 사진 디스크 캐시/);
+  assert.equal(oldApk.state.session, null, 'old APK must still be able to log out');
+
+  const failedDisk = harness({ choices: [true, true], nativeDisk: 'failed' });
+  assert.equal(await failedDisk.ctx.logout(), true);
+  assert.deepEqual(failedDisk.nativeCalls, ['clearImages']);
+  assert.match(failedDisk.state.loginStatus, /사진 디스크 캐시/);
+}
+
 async function failedCacheCleanupStopsLogout() {
   const t = harness({ choices: [true, true], failCacheCleanup: true });
   assert.equal(await t.ctx.logout(), false);
@@ -273,5 +294,6 @@ await failedTextSaveWithPhotosStopsLogout();
 await failedCacheCleanupStopsLogout();
 await incompletePhotoAndDiskOnlyDraft();
 await supabaseServerLogout();
+await nativeStorageLogout();
 await confirmPermanentCleanup();
-console.log('[logout-privacy-check] passed: draft preservation, explicit discard/cancel, write failures, cache purge, write races, Supabase revocation/fallback, cleanup confirmation');
+console.log('[logout-privacy-check] passed: draft preservation, explicit discard/cancel, write failures, web/native cache purge, write races, Supabase revocation/fallback, cleanup confirmation');

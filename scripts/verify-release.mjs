@@ -68,7 +68,10 @@ assert(appScript.includes("requestId:actionId"), 'each direct user action must p
 assert(appScript.includes('function send(){ return supabaseRequest(requestBody,timeout); }'), 'direct retries must reuse their original request body');
 assert(appScript.includes("if(name==='apiChangePinV320') return send();"), 'PIN changes must not be retried after a session may have been revoked');
 assert(appScript.includes('function clearLogoutReadCache(){'), 'logout privacy cache cleanup missing');
+assert(appScript.includes('function clearLogoutNativeCache(){'), 'native Android disk cache logout bridge is missing');
 assert(appScript.includes("supabaseRequest({op:'logout',token:String(oldSession.token)},8000)"), 'logout must revoke the active server session');
 assert(appScript.includes('외부에 원본을 백업했는지 확인했어?'), 'permanent Storage cleanup lacks a backup confirmation');
+assert(serviceWorker.includes("var CACHE_PREFIX = 'ilkong-shell-';"), 'service worker must scope cache deletion to its own namespace');
+assert(!serviceWorker.includes('cache.add(new Request(url, { cache: \'reload\' })).catch(function () {})'), 'incomplete offline shell would be activated');
 
-console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, stable action retry ids, logout privacy, cleanup confirmation, Supabase routing coverage`);
+console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, stable action retry ids, logout privacy, native cache compatibility, offline integrity, Supabase routing coverage`);

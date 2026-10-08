@@ -1,16 +1,19 @@
 /*
- * 일콩 기록 서비스워커 v4.8.7
+ * 일콩 기록 서비스워커 v4.8.8
  * 화면(껍데기)을 기기에 저장해 인터넷이 없어도 앱이 열리게 한다.
  * 백그라운드 Web Push 알림 수신 및 탭 이동 지원.
  */
-var CACHE = 'ilkong-shell-v4.8.7';
+var CACHE = 'ilkong-shell-v4.8.8';
+var CACHE_PREFIX = 'ilkong-shell-';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE).then(function (cache) {
+      // 오프라인 화면이 불완전한 상태로 새 SW가 활성화되면 예전 정상
+      // 셸마저 잃을 수 있다. 필수 자산 하나라도 실패하면 설치를 거부한다.
       return Promise.all(SHELL.map(function (url) {
-        return cache.add(new Request(url, { cache: 'reload' })).catch(function () {});
+        return cache.add(new Request(url, { cache: 'reload' }));
       }));
     }).then(function () { return self.skipWaiting(); })
   );
@@ -20,7 +23,8 @@ self.addEventListener('activate', function (event) {
   event.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(keys.map(function (key) {
-        return key === CACHE ? null : caches.delete(key);
+        // 같은 origin의 다른 앱 캐시에는 손대지 않는다.
+        return key !== CACHE && key.indexOf(CACHE_PREFIX) === 0 ? caches.delete(key) : null;
       }));
     }).then(function () { return self.clients.claim(); })
   );
@@ -44,7 +48,14 @@ self.addEventListener('fetch', function (event) {
           caches.open(CACHE).then(function (cache) { cache.put(request, copy); }).catch(function () {});
         }
         return response;
-      }).catch(function () { return caches.match(request, { ignoreSearch: true }); })
+      }).catch(function () {
+        // 쿼리 문자열·경로가 달라도 오프라인 기본 화면으로 복귀한다.
+        return caches.match(request, { ignoreSearch: true }).then(function (cached) {
+          if (cached) return cached;
+          return caches.match(new URL('./index.html', self.registration.scope).href)
+            .then(function (shell) { return shell || Response.error(); });
+        });
+      })
     );
     return;
   }
