@@ -64,5 +64,8 @@ const specialSupabaseApis = new Set(['apiLoginV221', 'apiGetHomeV221', 'apiGetIm
 const legacyOnlyCalls = calledApis.filter((name) => !directApis.has(name) && !specialSupabaseApis.has(name));
 assert(legacyOnlyCalls.length === 0, `active APIs still depend on browser GAS fallback: ${legacyOnlyCalls.join(', ')}`);
 assert(/if\(name==='apiLoginV221'\)\{[\s\S]{0,220}callSupabaseLogin/.test(appScript), 'login is not routed to Supabase first');
+assert(appScript.includes("requestId:actionId"), 'each direct user action must provide an operation id');
+assert(appScript.includes('function send(){ return supabaseRequest(requestBody,timeout); }'), 'direct retries must reuse their original request body');
+assert(appScript.includes("if(name==='apiChangePinV320') return send();"), 'PIN changes must not be retried after a session may have been revoked');
 
-console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, retry safeguards, bridge isolation, Supabase routing coverage`);
+console.log(`[release-check] ${version} passed: syntax, ids, versions, PIN policy, write/read cutover guards, stable action retry ids, bridge isolation, Supabase routing coverage`);

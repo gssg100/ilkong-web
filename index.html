@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.8.5 — legacy 세션 교환 결과를 기기에 영구 저장 -->
+<!-- 일콩 기록 v4.8.6 — PIN 교환 보호 및 기록 정확성 보완 -->
 <html lang="ko">
 <head>
   <base target="_top">
@@ -231,7 +231,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.8.5</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.8.6</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -247,7 +247,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.5</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.6</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -395,7 +395,7 @@
         </div>
         <div id="laborList" class="labor-list"></div>
         <div class="kick-tools"><button id="laborUndo" class="secondary" type="button">방금 지우기</button><button id="laborReset" class="secondary" type="button">처음부터</button></div>
-        <p class="kick-note">5-1-1 = 5분 간격 · 1분 지속 · 1시간 지속. 이 조건이 되면 병원에 연락할 때예요. 다만 둘째 이상이거나 병원이 멀면 더 빨리 출발해야 할 수 있어요. 양수가 터지거나 출혈이 있으면 간격과 상관없이 바로 연락하세요. 재던 중 앱을 닫아도 이 기기에 저장돼요.</p>
+        <p class="kick-note">5-1-1 = 5분 이내 간격 · 매회 1분 이상 지속 · 1시간 이상 이어짐. 기록은 참고용이며 의료진이 안내한 연락·내원 기준을 가장 먼저 따라 주세요. 양수가 터지거나 출혈이 있으면 간격과 상관없이 바로 연락하세요. 재던 중 앱을 닫아도 이 기기에 저장돼요.</p>
       </div>
     </div>
   </div>
@@ -427,7 +427,7 @@
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p>
         </div>
         <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.5 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.6 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -581,7 +581,7 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.8.5';
+      var VERSION = '4.8.6';
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -3757,17 +3757,33 @@
         return (l&&l.items?l.items:[]).filter(function(it){ return it.end&&it.end>it.start; });
       }
 
-      // 5-1-1 판정은 "최근 1시간" 기준으로만 본다.
+      // 5-1-1은 최근 1시간의 평균만으로 판정하지 않는다. 정확히 1시간을
+      // 이어 잰 기록이 최근 1시간 필터에서 잘릴 수 있으므로 전체 보관 기록의
+      // 마지막 연속 구간에서 각 지속 시간과 각 간격, 경과 시간을 확인한다.
       function laborSummary(){
         var done=completedLabor();
-        var cutoff=Date.now()-LABOR_WINDOW_MS;
+        var now=Date.now();
+        var cutoff=now-LABOR_WINDOW_MS;
         var recent=done.filter(function(it){ return it.start>cutoff; });
         var gaps=[];
         for(var i=1;i<recent.length;i++) gaps.push(recent[i].start-recent[i-1].start);
         var avgGap=gaps.length?gaps.reduce(function(a,b){return a+b;},0)/gaps.length:0;
         var avgDur=recent.length?recent.reduce(function(a,it){return a+(it.end-it.start);},0)/recent.length:0;
         var span=recent.length>1?(recent[recent.length-1].start-recent[0].start):0;
-        var meets=recent.length>=5&&avgGap>0&&avgGap<=300000&&avgDur>=45000&&span>=3300000;
+        var streakStart=0, streakLast=0, streakCount=0;
+        done.forEach(function(it){
+          var start=Number(it.start), end=Number(it.end);
+          if(!isFinite(start)||!isFinite(end)||start<now-LABOR_KEEP_MS||start>now||end>now||end-start<60000){
+            streakStart=0; streakLast=0; streakCount=0;
+            return;
+          }
+          if(!streakCount||start<=streakLast||start-streakLast>300000){
+            streakStart=start; streakCount=1;
+          } else streakCount++;
+          streakLast=start;
+        });
+        // 마지막 진통 뒤 너무 오래 지난 과거 기록을 새 경보로 표시하지 않는다.
+        var meets=streakCount>=2&&streakLast-streakStart>=LABOR_WINDOW_MS&&now-streakLast<=600000;
         return {recent:recent,count:recent.length,avgGap:avgGap,avgDur:avgDur,span:span,meets:meets};
       }
 
@@ -3788,7 +3804,7 @@
         if(signal){
           if(sum.meets){
             signal.className='labor-signal on';
-            signal.innerHTML='🚨 <strong>5-1-1 조건이 됐어요</strong><br>지금 병원에 연락할 때예요';
+            signal.innerHTML='🚨 <strong>기록상 5-1-1 조건에 해당해요</strong><br>병원에 연락하고 의료진 안내를 따라 주세요';
           } else if(sum.count>=3&&sum.avgGap&&sum.avgGap<=600000){
             signal.className='labor-signal warn';
             signal.innerHTML='간격이 좁아지고 있어요 · 준비를 시작해요';
@@ -3963,12 +3979,12 @@
         var target=String((el('healthDate')&&el('healthDate').value)||today());
         var found=null;
         healthState.logs.forEach(function(log){ if(log.date===target) found=log; });
-        if(!found){ healthState.picked=[]; renderSupplementPills(); return; }
-        if(el('healthWeight')) el('healthWeight').value=found.weight!=null?String(found.weight):'';
-        if(el('healthSys')) el('healthSys').value=found.systolic!=null?String(found.systolic):'';
-        if(el('healthDia')) el('healthDia').value=found.diastolic!=null?String(found.diastolic):'';
-        if(el('healthMemo')) el('healthMemo').value=found.memo||'';
-        healthState.picked=Array.isArray(found.supplements)?found.supplements.slice():[];
+        // 날짜별 폼은 그 날짜의 값만 표시한다. 기록이 없으면 이전 날짜 값까지 비운다.
+        if(el('healthWeight')) el('healthWeight').value=found&&found.weight!=null?String(found.weight):'';
+        if(el('healthSys')) el('healthSys').value=found&&found.systolic!=null?String(found.systolic):'';
+        if(el('healthDia')) el('healthDia').value=found&&found.diastolic!=null?String(found.diastolic):'';
+        if(el('healthMemo')) el('healthMemo').value=found&&found.memo||'';
+        healthState.picked=found&&Array.isArray(found.supplements)?found.supplements.slice():[];
         renderSupplementPills();
       }
 
@@ -4341,7 +4357,8 @@
           text(el('pinChangeStatus'),'PIN을 바꿨어 🔒');
           toast('PIN을 바꿨어 🔒');
         }).catch(function(error){
-          if(!isRequestTimeoutError(error)){
+          var code=String(error&&error.code||'');
+          if(!isRequestTimeoutError(error)&&code!=='AUTH'&&code!=='NETWORK'&&code!=='SERVER'&&code!=='FORMAT'&&code!==''){
             text(el('pinChangeStatus'),errorMessage(error));
             return;
           }
@@ -6539,8 +6556,14 @@
       function callSupabaseDirect(name,args,timeout){
         return ensureSupabaseSession().then(function(token){
           // 첫 번째 인자는 기존 GAS 세션이라 Edge에 절대 전달하지 않는다.
-          var requestBody={op:'direct_call',token:token,fn:name,args:(args||[]).slice(1)};
+          // 매 조작마다 새 요청번호를 발급하지만, 네트워크 재시도에는 같은 본문을 보낸다.
+          // 내용이 같아도 서로 다른 체크/해제/재체크 작업은 별도로 적용돼야 한다.
+          var actionId=(window.crypto&&typeof window.crypto.randomUUID==='function')?window.crypto.randomUUID():uuid();
+          var requestBody={op:'direct_call',token:token,fn:name,args:(args||[]).slice(1),requestId:actionId};
           function send(){ return supabaseRequest(requestBody,timeout); }
+          // PIN 변경은 성공 시 기존 세션을 폐기한다. 응답 유실 뒤에는 같은 세션으로
+          // 재시도할 수 없으므로, 결과가 불명확하면 로그인 화면에서 확인하게 한다.
+          if(name==='apiChangePinV320') return send();
           // 직접 저장은 요청번호/인자 해시로 멱등 처리된다. 그래서 게이트웨이·일시 네트워크
           // 오류만 한 번 재시도해도 같은 기록이 두 번 생기지 않는다.
           return send().catch(function(error){
