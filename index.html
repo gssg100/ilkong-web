@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.8.9 — 업데이트 정보 상시 표시 및 릴리스 정합성 -->
+<!-- 일콩 기록 v4.8.10 — 관리자 전체 백업·복원 도구 도입 안내 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.8.9">
+  <meta name="ilkong-release-version" content="4.8.10">
   <meta name="ilkong-release-date" content="2026-10-09">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -234,7 +234,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.8.9 · 2026.10.09 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.8.10 · 2026.10.09 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -243,7 +243,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.8.9 · 2026.10.09</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.8.10 · 2026.10.09</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -258,7 +258,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.8.9 · 2026.10.09 업데이트 (KST)</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.8.10 · 2026.10.09 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -418,7 +418,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-          <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.8.9 · 2026.10.09</div>
+          <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.8.10 · 2026.10.09</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -447,7 +447,8 @@
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p>
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.9 · 2026.10.09 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">이 화면은 실제 관리자 백업 성공 여부를 확인하지 못해. 백업 및 복원 시험이 끝났는지는 운영 기록에서 별도로 확인해 줘.</p></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.10 · 2026.10.09 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -603,18 +604,23 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.8.9';
+      var VERSION = '4.8.10';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-09',
         timezone: 'Asia/Seoul',
         notes: [
-          '업데이트 날짜·버전·변경내역 항상 표시',
-          '릴리스 정합성 검사 강화',
-          '기록 내보내기는 사진 원본을 포함하지 않는 JSON이며 완전 백업이 아님을 명확히 안내',
-          '저장공간 정리는 자동 실행이 아닌 수동 작업임을 명확히 안내'
+          '관리자용 DB 및 사진 원본 백업·복원 점검 도구 도입',
+          '실제 관리자 백업 실행 여부와 개인 기기 JSON 내보내기를 명확하게 구분',
+          '백업 시나리오와 복원 검증 절차 마련 (운영 복원은 별도 검증 필요)'
         ],
         history: [
+          {version:'4.8.9',date:'2026-10-09',notes:[
+            '업데이트 날짜·버전·변경내역 항상 표시',
+            '릴리스 정합성 검사 강화',
+            '기록 내보내기는 사진 원본을 포함하지 않는 JSON이며 완전 백업이 아님을 명확히 안내',
+            '저장공간 정리는 자동 실행이 아닌 수동 작업임을 명확히 안내'
+          ]},
           {version:'4.8.8',date:'2026-10-08',notes:[
             '안드로이드 사진 디스크 캐시 로그아웃 정리 연동',
             '서비스워커 오프라인 안정성 및 터치 조작 영역 개선'
