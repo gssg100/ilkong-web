@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.8.8 — 네이티브 캐시 보호, 터치 영역, 오프라인 안정화 -->
+<!-- 일콩 기록 v4.8.9 — 업데이트 정보 상시 표시 및 릴리스 정합성 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="ilkong-release-version" content="4.8.9">
+  <meta name="ilkong-release-date" content="2026-10-09">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -56,14 +58,14 @@
     .login{display:grid;place-items:center;padding:calc(32px + var(--safe-top)) 20px calc(32px + var(--safe-bottom));background:radial-gradient(circle at 50% 12%,#fffdf9 0,#f5efe6 52%,#e9dfd2 100%)}
     .login-card{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:28px;padding:28px 22px;box-shadow:0 18px 50px rgba(66,52,40,.12)}
     .logo{width:76px;height:76px;border-radius:27px;margin:0 auto 16px;display:grid;place-items:center;background:var(--accent2);font-size:40px}
-    h1{font-size:27px;letter-spacing:-.04em;text-align:center;margin:0}.login-desc{text-align:center;color:var(--muted);line-height:1.65;font-size:14px;margin:10px 0 20px}.login-version{text-align:center;color:#9a8f84;font-size:11px;letter-spacing:.02em;margin:-10px 0 18px}
+    h1{font-size:27px;letter-spacing:-.04em;text-align:center;margin:0}.login-desc{text-align:center;color:var(--muted);line-height:1.65;font-size:14px;margin:10px 0 20px}.login-version{text-align:center;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.01em;margin:-10px 0 18px}
     .users{display:grid;grid-template-columns:1fr 1fr;gap:10px}.user-btn{min-height:62px;border:1px solid var(--line);border-radius:18px;background:white;font-weight:800;font-size:18px;color:var(--ink)}
     .user-btn.active{background:var(--accent2);border-color:var(--accent);box-shadow:0 0 0 3px rgba(113,128,107,.12)}
     .pin{width:100%;height:56px;margin-top:12px;border:1px solid var(--line);border-radius:17px;background:white;text-align:center;font-size:23px;letter-spacing:.28em;outline:none}
     .primary{border:0;border-radius:16px;background:var(--ink);color:white;font-weight:800;min-height:52px;padding:0 18px}.login-go{width:100%;margin-top:12px}
     .login-status{min-height:22px;margin-top:10px;text-align:center;color:var(--danger);font-size:13px;line-height:1.5}
     .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + var(--safe-top)) 16px 12px;background:#f5efe6;border-bottom:1px solid var(--line)}
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}.brand-icon{width:40px;height:40px;border-radius:15px;background:var(--accent2);display:grid;place-items:center;font-size:22px}.brand strong{display:block;font-size:16px}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}.brand>div:last-child{min-width:0}.brand-icon{width:40px;height:40px;flex:0 0 40px;border-radius:15px;background:var(--accent2);display:grid;place-items:center;font-size:22px}.brand strong{display:block;font-size:16px}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px;line-height:1.45;overflow-wrap:anywhere}
     .user-chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 12px;color:var(--ink);font-weight:700}
     .hero{margin:16px;border:1px solid var(--line);background:linear-gradient(145deg,#fffdf9,#eee5d9);border-radius:25px;padding:20px;box-shadow:0 10px 28px rgba(66,52,40,.08)}
     .hero-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.hero-head>div{min-width:0}.hero-toggle{flex:0 0 auto;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--muted);padding:8px 10px;font-size:12px;font-weight:800}.hero.compact{padding:15px 18px}.hero.compact h2{font-size:23px;margin-bottom:0}.hero.compact #heroDetails{display:none}
@@ -92,6 +94,7 @@
     .moods{display:flex;gap:7px;flex-wrap:wrap}.mood-btn{border:1px solid var(--line);border-radius:999px;background:var(--card);min-height:42px;padding:8px 12px;color:var(--ink)}.mood-btn.active{background:var(--accent2);border-color:var(--accent);box-shadow:0 0 0 2px rgba(113,128,107,.12);font-weight:800}
     .photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.secondary{border:1px solid var(--line);border-radius:14px;background:var(--card);min-height:48px;color:var(--ink);font-weight:700}.previews{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.preview{position:relative;aspect-ratio:1;border-radius:13px;overflow:hidden;background:#e5ddd3}.preview img{width:100%;height:100%;object-fit:cover}.remove{position:absolute;top:5px;right:5px;border:0;width:40px;height:40px;border-radius:50%;background:rgba(25,22,19,.75);color:white}.upload-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px}
     .settings{padding:16px}.settings-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px}.settings-box h3{margin:0 0 8px}.settings-box p{color:var(--muted);font-size:13px;line-height:1.6}.danger{border:1px solid #e5b5b1;background:#fff8f7;color:var(--danger);border-radius:13px;padding:10px 13px}
+    .release-box{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:13px 14px;color:var(--ink)}.release-box.login-release{margin-top:8px;background:var(--bg)}.release-box.settings-release{margin-bottom:10px}.release-box h3{margin:0 0 9px;font-size:14px}.release-stamp{display:inline-block;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:11px;background:var(--accent2);font-size:12px;font-weight:800;line-height:1.5;overflow-wrap:anywhere}.release-footnote{margin:7px 0 0;color:var(--muted);font-size:11px;line-height:1.55}.release-details{margin-top:7px;border-top:1px solid var(--line)}.release-details summary{min-height:44px;padding:12px 2px;cursor:pointer;color:var(--ink);font-size:13px;font-weight:750;line-height:1.4}.release-details summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}.release-history{max-height:min(42vh,340px);overflow-y:auto;overscroll-behavior:contain;padding:0 1px 2px}.release-entry{padding:11px 0;border-top:1px dashed var(--line)}.release-entry h4{margin:0 0 6px;font-size:13px;line-height:1.45}.release-entry time{display:inline-block;margin-left:8px;color:var(--muted);font-size:11px;font-weight:500}.release-entry ul{margin:0;padding-left:19px;color:var(--muted);font-size:12px;line-height:1.65}.release-entry li+li{margin-top:3px}
     .toast{position:fixed;left:50%;bottom:calc(92px + var(--safe-bottom));transform:translateX(-50%);z-index:300;background:#302a25;color:white;border-radius:14px;padding:11px 14px;width:max-content;max-width:calc(100% - 32px);font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
     .progress{height:8px;background:#e6ddd2;border-radius:999px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
     noscript{display:block;padding:20px;background:#8f403b;color:white}
@@ -231,7 +234,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.8.8</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.8.9 · 2026.10.09 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -239,6 +242,14 @@
       <input id="pin" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="PIN" autocomplete="current-password" aria-label="숫자 4~12자리 로그인 PIN">
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
+      <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.8.9 · 2026.10.09</div>
+        <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
+        <details class="release-details" id="releaseHistory">
+          <summary>버전별 업데이트 내역 보기</summary>
+          <div id="loginReleaseHistory" class="release-history" aria-label="버전별 변경내역"></div>
+        </details>
+      </div>
     </div>
   </section>
 
@@ -247,7 +258,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">일콩 기록 v4.8.8</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.8.9 · 2026.10.09 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -405,10 +416,19 @@
       <div class="sheet-head"><button id="closeSettings" class="icon" type="button" aria-label="설정 닫기">✕</button><h2 id="settingsTitle">이 기기 설정</h2><span></span></div>
       <div class="settings">
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
+        <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
+          <h3>앱 업데이트</h3>
+          <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.8.9 · 2026.10.09</div>
+          <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
+          <details class="release-details">
+            <summary>버전별 업데이트 내역 보기</summary>
+            <div id="settingsReleaseHistory" class="release-history" aria-label="버전별 변경내역"></div>
+          </details>
+        </div>
         <div class="settings-box"><h3>다음 검진일 🏥</h3><p id="checkupStatus">검진일을 넣어두면 홈 화면 위에 D-day가 떠.</p><input id="checkupDateInput" type="date"><button id="checkupSave" class="save" type="button">검진일 저장</button><button id="checkupClear" class="secondary hidden" type="button">검진일 지우기</button><div id="checkupSuggestBox" class="hidden" style="margin-top:8px"><p id="checkupSuggestText" class="upload-note" style="margin:0 0 6px"></p><button id="checkupSuggest" class="secondary" type="button" style="width:100%">이 날짜로 넣기</button></div></div>
         <div class="settings-box"><h3>일콩이 시간</h3><p id="birthStatus">임신 정보를 불러오는 중이야.</p><div id="birthControls" class="hidden"><label class="upload-note" for="birthDateInput">실제 출생일</label><input id="birthDateInput" type="date"><button id="birthConfirm" class="save" type="button">일콩이가 태어났어요 🎉</button></div><button id="birthRevert" class="secondary hidden" type="button">임신 모드로 되돌리기</button></div>
         <div class="settings-box"><h3>화면 테마 🌙</h3><p id="themeStatus">시스템 설정을 따라가는 중</p><div class="photo-actions" style="grid-template-columns:1fr 1fr 1fr" role="group"><button id="themeSystem" class="secondary" type="button">시스템</button><button id="themeLight" class="secondary" type="button">☀️ 라이트</button><button id="themeDark" class="secondary" type="button">🌙 다크</button></div></div>
-        <div class="settings-box"><h3>저장공간 정리 🧹</h3><p id="storageStatus" class="upload-note" style="margin:0 0 10px">지운 기록의 사진은 되돌릴 수 있도록 30일간 보관했다가 비워요.</p><button id="runCleanup" class="secondary" type="button" style="width:100%">지금 정리하기</button></div><div class="settings-box"><h3>PIN 변경 🔒</h3><p>로그인할 때 쓰는 숫자 4~12자리를 바꿔. 상대방 것은 각자 폰에서 바꾸면 돼.</p><input id="pinCurrent" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="지금 PIN" aria-label="지금 PIN"><input id="pinNew" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN" aria-label="새 PIN"><input id="pinNew2" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN 다시" aria-label="새 PIN 확인"><button id="changePin" class="save" type="button" style="width:100%;margin-top:10px">PIN 바꾸기</button><p id="pinChangeStatus" class="upload-note" style="margin-top:8px"></p></div>
+        <div class="settings-box"><h3>저장공간 정리 🧹</h3><p id="storageStatus" class="upload-note" style="margin:0 0 10px">삭제한 기록의 사진은 복구를 위해 일정 기간 보관돼. 보관 기간이 지난 사진은 아래 버튼으로 직접 정리할 수 있어. 자동 삭제되는 건 아니야.</p><button id="runCleanup" class="secondary" type="button" style="width:100%">지금 정리하기</button></div><div class="settings-box"><h3>PIN 변경 🔒</h3><p>로그인할 때 쓰는 숫자 4~12자리를 바꿔. 상대방 것은 각자 폰에서 바꾸면 돼.</p><input id="pinCurrent" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="지금 PIN" aria-label="지금 PIN"><input id="pinNew" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN" aria-label="새 PIN"><input id="pinNew2" class="pin" type="password" inputmode="numeric" maxlength="12" placeholder="새 PIN 다시" aria-label="새 PIN 확인"><button id="changePin" class="save" type="button" style="width:100%;margin-top:10px">PIN 바꾸기</button><p id="pinChangeStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>실시간 푸시 알림 🔔</h3>
           <p id="pushGuideText" class="upload-note" style="margin:0 0 10px">앱이 닫혀 있거나 화면이 꺼져 있어도 상대방의 새 글·사진·댓글 소식을 휴대폰 알림으로 바로 받을 수 있어.</p>
           <div id="pushBannerBox" style="margin-bottom:12px">
@@ -426,8 +446,8 @@
           <label style="display:flex;align-items:center;gap:9px;padding:5px 0;font-size:14px"><input id="notifyQuiet" type="checkbox" style="width:20px;height:20px"> 밤에는 조용히 (23시~7시)</label>
           <p id="notifyStatus" class="upload-note" style="margin-top:6px"></p>
         </div>
-        <div class="settings-box"><h3>전체 백업 내보내기 💾</h3><p>기록·댓글 원문과 사진 목록을 파일 하나로 내려받아 보관할 수 있어. 사진 원본은 구글 드라이브에 그대로 있어.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.8 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.9 · 2026.10.09 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -581,7 +601,35 @@
     (function () {
       'use strict';
 
-      var VERSION = '4.8.8';
+      // The inline VERSION literal also identifies the OTA screen to older Android shells.
+      // All visible release information and both change histories use one metadata record.
+      var VERSION = '4.8.9';
+      var RELEASE_INFO = {
+        version: VERSION,
+        date: '2026-10-09',
+        timezone: 'Asia/Seoul',
+        notes: [
+          '업데이트 날짜·버전·변경내역 항상 표시',
+          '릴리스 정합성 검사 강화',
+          '기록 내보내기는 사진 원본을 포함하지 않는 JSON이며 완전 백업이 아님을 명확히 안내',
+          '저장공간 정리는 자동 실행이 아닌 수동 작업임을 명확히 안내'
+        ],
+        history: [
+          {version:'4.8.8',date:'2026-10-08',notes:[
+            '안드로이드 사진 디스크 캐시 로그아웃 정리 연동',
+            '서비스워커 오프라인 안정성 및 터치 조작 영역 개선'
+          ]},
+          {version:'4.8.7',date:'2026-10-08',notes:[
+            '로그아웃 시 미완성 글·사진 초안 보관 또는 삭제 선택',
+            '기기에 남는 기록·썸네일 캐시 정리 및 저장공간 정리 전 확인 강화'
+          ]},
+          {version:'4.8.6',date:'2026-10-08',notes:[
+            'PIN 인증 전환 안정성 보완',
+            '엄마 건강 기록 날짜 변경 시 입력값 잔존 방지',
+            '진통 5-1-1 조건 판정과 안전 안내 정합성 개선'
+          ]}
+        ]
+      };
       var SESSION_KEY = 'ilkong_v22_session';
       var LEGACY_SESSION_KEY = 'ilkong_v21_session';
       var OLDER_SESSION_KEY = 'ilkong_v2_session';
@@ -627,6 +675,45 @@
       function show(node){ if(node) node.classList.remove('hidden'); }
       function hide(node){ if(node) node.classList.add('hidden'); }
       function text(node,value){ if(node) node.textContent = value == null ? '' : String(value); }
+      function releaseDateLabel(isoDate){ return String(isoDate||'').replace(/-/g,'.'); }
+      function releaseVersionLine(){
+        var zone=RELEASE_INFO.timezone==='Asia/Seoul'?'KST':RELEASE_INFO.timezone;
+        return 'v'+RELEASE_INFO.version+' · '+releaseDateLabel(RELEASE_INFO.date)+' 업데이트 ('+zone+')';
+      }
+      function renderReleaseHistory(id){
+        var target=el(id);
+        if(!target) return;
+        target.textContent='';
+        var releases=[{version:RELEASE_INFO.version,date:RELEASE_INFO.date,notes:RELEASE_INFO.notes}].concat(RELEASE_INFO.history);
+        releases.forEach(function(release){
+          var section=document.createElement('section');
+          section.className='release-entry';
+          var heading=document.createElement('h4');
+          heading.appendChild(document.createTextNode('v'+release.version));
+          var date=document.createElement('time');
+          date.dateTime=release.date;
+          text(date,releaseDateLabel(release.date));
+          heading.appendChild(date);
+          section.appendChild(heading);
+          var items=document.createElement('ul');
+          (release.notes||[]).forEach(function(note){
+            var item=document.createElement('li');
+            text(item,note);
+            items.appendChild(item);
+          });
+          section.appendChild(items);
+          target.appendChild(section);
+        });
+      }
+      function renderReleaseInfo(){
+        text(el('loginVersion'),'일콩 기록 '+releaseVersionLine());
+        text(el('versionText'),releaseVersionLine());
+        var stamp='최신 버전 v'+RELEASE_INFO.version+' · '+releaseDateLabel(RELEASE_INFO.date);
+        text(el('loginReleaseStamp'),stamp);
+        text(el('settingsReleaseStamp'),stamp);
+        renderReleaseHistory('loginReleaseHistory');
+        renderReleaseHistory('settingsReleaseHistory');
+      }
       function markComposerMutation(){ state.composerMutationGeneration++; }
 
       // Android WebView에서는 한글 조합 중 포커스 이동·DOM 교체·동기 저장이 겹치면
@@ -936,13 +1023,13 @@
 
       function boot(){
         try {
+          renderReleaseInfo();
           initTheme();
           initHeroDensity();
           bind();
           bindOfflineWatchers();
           setupPwa();
           el('recordDate').value=today();
-          text(el('loginVersion'),'일콩 기록 v'+VERSION);
           prunePersistentImageCache().catch(function(){});
           var session=readSessionSync();
           if(session){
@@ -1876,7 +1963,7 @@
         state.hasMore=!!home.hasMore;
         state.nextOffset=Number(home.nextOffset||((home.posts||[]).length));
         state.loadedCount=Math.max(PAGE_SIZE,(home.posts||[]).length);
-        text(el('versionText'),'일콩 기록 v'+VERSION);
+        text(el('versionText'),releaseVersionLine());
         var pregnancy=home.app&&home.app.pregnancy?home.app.pregnancy:null;
         var week=pregnancy?Number(pregnancy.week):NaN;
         var day=pregnancy?Number(pregnancy.day):NaN;
@@ -5166,7 +5253,7 @@
         exportBusy=true; el('exportData').disabled=true; text(el('exportStatus'),'기록을 모으는 중… 잠시만');
         callApi('apiExportDataV370',[state.session.token],120000).then(unwrap).then(function(data){
           var json=JSON.stringify(data,null,2);
-          var name='일콩기록_백업_'+today()+'.json';
+          var name='일콩기록_데이터_'+today()+'.json';
           var base64='';
           try{ base64=btoa(unescape(encodeURIComponent(json))); }catch(encodeError){ base64=''; }
           if(base64&&window.IlkongFiles&&typeof window.IlkongFiles.saveToDownloads==='function'){
@@ -5184,7 +5271,7 @@
           document.body.appendChild(link); link.click(); document.body.removeChild(link);
           if(revoke) setTimeout(function(){ try{ URL.revokeObjectURL(url); }catch(revokeError){} },4000);
           markBackupComplete();
-          text(el('exportStatus'),'백업 파일을 내려받았어 💾 (기록 '+(data.counts&&data.counts.posts||0)+'개 · 댓글 '+(data.counts&&data.counts.comments||0)+'개)');
+          text(el('exportStatus'),'기록 데이터 JSON 파일을 내려받았어 💾 (기록 '+(data.counts&&data.counts.posts||0)+'개 · 댓글 '+(data.counts&&data.counts.comments||0)+'개)');
         }).catch(function(error){ text(el('exportStatus'),'내보내지 못했어: '+errorMessage(error)); })
         .then(function(){ exportBusy=false; el('exportData').disabled=false; });
       }
@@ -6201,7 +6288,7 @@
       }
       function renderOperationalHealth(){
         var userId=currentUserId();
-        var summary='화면 v'+VERSION+' · Supabase 초고속 저장 · 실시간 푸시 알림';
+        var summary='화면 '+releaseVersionLine()+' · Supabase 초고속 저장 · 실시간 푸시 알림';
         var details=[];
         if(state.lastSyncAt) details.push('마지막 동기화 '+formatOperationalTime(state.lastSyncAt));
         else details.push('아직 동기화 확인 전');
@@ -6212,7 +6299,7 @@
         if(state.pendingRestored||state.images.length||state.saveAttempt) drafts.push('사진 포함 임시저장');
         details.push(drafts.length?('이 기기에 보관 중: '+drafts.join(' · ')):'보관 중인 임시저장 없음');
         var backupAt=userId?Number(storageGet(backupStatusKey(userId))||0):0;
-        text(el('backupStatus'),backupAt?('이 기기에서 마지막 백업: '+formatOperationalTime(backupAt)):'이 기기에서 아직 백업한 기록이 없어');
+        text(el('backupStatus'),backupAt?('이 기기에서 마지막 데이터 내보내기: '+formatOperationalTime(backupAt)):'이 기기에서 아직 데이터를 내보낸 적 없어');
         text(el('healthText'),summary);
         text(el('healthDetail'),details.join('\n'));
       }

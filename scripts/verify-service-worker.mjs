@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../sw.js', import.meta.url), 'utf8');
+const activeCache = source.match(/var CACHE = '([^']+)'/)?.[1];
+assert.ok(activeCache && activeCache.startsWith('ilkong-shell-v'), 'service worker cache version missing');
 const listeners = {};
 const calls = [];
 let failInstall = false;
@@ -30,7 +32,7 @@ const runtime = {
       },
       async put() {},
     }),
-    keys: async () => ['other-app-cache', 'ilkong-shell-v4.8.7', 'ilkong-shell-v4.8.8'],
+    keys: async () => ['other-app-cache', 'ilkong-shell-v4.8.7', 'ilkong-shell-v4.8.8', activeCache],
     async delete(key) { calls.push(`delete:${key}`); },
     async match(request) {
       const value = typeof request === 'string' ? request : request.url;
@@ -62,10 +64,10 @@ listeners.activate({ waitUntil(promise) { job = promise; } });
 await job;
 assert.ok(calls.includes('delete:ilkong-shell-v4.8.7'));
 assert.ok(!calls.includes('delete:other-app-cache'), 'SW must not remove another app cache');
-assert.ok(!calls.includes('delete:ilkong-shell-v4.8.8'));
+assert.ok(!calls.includes(`delete:${activeCache}`));
 
 offline = true;
-const request = { method: 'GET', url: scope + '?updated=4.8.8', mode: 'navigate' };
+const request = { method: 'GET', url: scope + '?updated=' + activeCache.slice('ilkong-shell-v'.length), mode: 'navigate' };
 listeners.fetch({ request, respondWith(promise) { job = promise; } });
 assert.equal(await job, cacheResponse, 'deep-link navigation should find cached offline shell');
 console.log('[sw-check] passed: incomplete-install rejection, owned caches only, offline navigation fallback');

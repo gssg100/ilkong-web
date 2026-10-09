@@ -10,7 +10,11 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
+      # Keep the previous commit so release checks can detect silent UI upgrades
+      # that forgot to bump the version or release date.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: 24

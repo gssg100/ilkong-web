@@ -1,8 +1,8 @@
 {
   "name": "ilkong-web-release-checks",
   "private": true,
-  "version": "4.8.8",
+  "version": "4.8.9",
   "scripts": {
-    "verify:release": "node scripts/verify-release.mjs && node scripts/verify-health-labor.mjs && node scripts/verify-logout-privacy.mjs && node scripts/verify-service-worker.mjs"
+    "verify:release": "node scripts/verify-release.mjs && node scripts/verify-release-metadata.mjs && node scripts/verify-health-labor.mjs && node scripts/verify-logout-privacy.mjs && node scripts/verify-service-worker.mjs"
   }
 }
