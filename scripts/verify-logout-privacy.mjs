@@ -12,6 +12,7 @@ function sliceBetween(start, end) {
 }
 
 const sources = [
+  ['function composerDraftLocked(){', 'function applyComposerDraftLock(){'],
   ['function clearSession(){', 'function boot(){'],
   ['function flushDraftSave(){', 'function saveDraft(force,preserveAttempt){'],
   ['function saveDraft(force,preserveAttempt){', 'function restoreDraft(userId){'],

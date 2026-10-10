@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.8.10 — 관리자 전체 백업·복원 도구 도입 안내 -->
+<!-- 일콩 기록 v4.9.0 — 사진 표시·저장·재시도 및 사진 편집 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.8.10">
-  <meta name="ilkong-release-date" content="2026-10-09">
+  <meta name="ilkong-release-version" content="4.9.0">
+  <meta name="ilkong-release-date" content="2026-10-10">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -222,7 +222,8 @@
     .plan-q{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:9px}
     .plan-q>strong{display:block;font-size:13px;margin-bottom:7px}
     .plan-opts{display:flex;flex-wrap:wrap;gap:6px}
-</style>
+    #downloadPhoto{width:auto;min-width:70px;white-space:nowrap;font-size:14px}
+  </style>
 </head>
 <body>
   <noscript>자바스크립트가 꺼져 있어서 앱을 열 수 없어. 브라우저 설정에서 자바스크립트를 켜 줘.</noscript>
@@ -234,7 +235,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.8.10 · 2026.10.09 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.0 · 2026.10.10 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -243,7 +244,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.8.10 · 2026.10.09</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.0 · 2026.10.10</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -258,7 +259,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.8.10 · 2026.10.09 업데이트 (KST)</span></div></div>
+        <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.0 · 2026.10.10 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -304,7 +305,7 @@
         <div id="photoField" class="field"><span id="photoLabel" class="upload-note">사진 · 최대 8장</span><div class="photo-actions" role="group" aria-labelledby="photoLabel"><button id="pickPhotos" class="secondary" type="button">앨범에서 고르기</button><button id="takePhoto" class="secondary" type="button">바로 찍기</button></div>
           <input id="photoInput" type="file" accept="image/*" multiple class="hidden" data-source="album">
           <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" data-source="camera">
-          <div id="previews" class="previews"></div><div class="upload-note">사진은 한 장씩 순서대로 압축하고, 앱이 닫혀도 이어서 저장할 수 있게 이 기기에 임시 보관해.</div>
+          <div id="existingPreviews" class="previews"></div><div id="previews" class="previews"></div><div class="upload-note">사진은 한 장씩 순서대로 압축하고, 앱이 닫혀도 이어서 저장할 수 있게 이 기기에 임시 보관해.</div>
         </div>
         <div id="saveProgress" class="hidden" role="status" aria-live="polite"><div id="saveMessage" class="upload-note"></div><div id="saveProgressBar" class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="progressBar"></i></div></div>
       </div>
@@ -418,7 +419,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-          <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.8.10 · 2026.10.09</div>
+          <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.0 · 2026.10.10</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -448,7 +449,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">이 화면은 실제 관리자 백업 성공 여부를 확인하지 못해. 백업 및 복원 시험이 끝났는지는 운영 기록에서 별도로 확인해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.8.10 · 2026.10.09 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.0 · 2026.10.10 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -594,7 +595,7 @@
 
   <div id="lapseViewer" class="viewer hidden" role="dialog" aria-modal="true" aria-label="배 타임랩스"><div class="viewer-head"><button id="closeLapse" type="button" aria-label="타임랩스 닫기">✕</button><strong>배 타임랩스 🤰</strong><button id="lapsePlay" type="button" aria-label="자동 재생">▶</button></div><div id="lapseStage" class="viewer-stage"><span class="viewer-loading">사진 불러오는 중…</span></div><div class="viewer-nav"><button id="lapsePrev" type="button" aria-label="이전">‹</button><div id="lapseCount" class="viewer-count">1 / 1</div><button id="lapseNext" type="button" aria-label="다음">›</button><button id="lapseShoot" type="button" aria-label="이번 주 배 사진 찍기">📷</button><button id="lapseExport" type="button" aria-label="영상으로 저장">🎬</button></div></div>
 
-  <div id="photoViewer" class="viewer hidden" role="dialog" aria-modal="true" aria-label="사진 크게 보기"><div class="viewer-head"><button id="closeViewer" type="button" aria-label="사진 닫기">✕</button><strong>기록 사진</strong><span></span></div><div id="viewerStage" class="viewer-stage"><span class="viewer-loading">사진 불러오는 중…</span></div><div class="viewer-nav"><button id="viewerPrev" type="button" aria-label="이전 사진">‹</button><div id="viewerCount" class="viewer-count">1 / 1</div><button id="viewerNext" type="button" aria-label="다음 사진">›</button></div></div>
+  <div id="photoViewer" class="viewer hidden" role="dialog" aria-modal="true" aria-label="사진 크게 보기"><div class="viewer-head"><button id="closeViewer" type="button" aria-label="사진 닫기">✕</button><strong>기록 사진</strong><button id="downloadPhoto" type="button" aria-label="사진 원본 저장">저장 ↓</button></div><div id="viewerStage" class="viewer-stage"><span class="viewer-loading">사진 불러오는 중…</span></div><div class="viewer-nav"><button id="viewerPrev" type="button" aria-label="이전 사진">‹</button><div id="viewerCount" class="viewer-count">1 / 1</div><button id="viewerNext" type="button" aria-label="다음 사진">›</button></div></div>
 
   <div id="toast" class="toast hidden" role="status" aria-live="polite" aria-atomic="true"><span id="toastText"></span><button id="toastAction" class="hidden" type="button"></button></div>
 
@@ -604,17 +605,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.8.10';
+      var VERSION = '4.9.0';
       var RELEASE_INFO = {
         version: VERSION,
-        date: '2026-10-09',
+        date: '2026-10-10',
         timezone: 'Asia/Seoul',
         notes: [
-          '관리자용 DB 및 사진 원본 백업·복원 점검 도구 도입',
-          '실제 관리자 백업 실행 여부와 개인 기기 JSON 내보내기를 명확하게 구분',
-          '백업 시나리오와 복원 검증 절차 마련 (운영 복원은 별도 검증 필요)'
+          '큰 사진·타임랩스 표시와 만료된 사진 주소 재발급 개선',
+          '사진 저장 중 입력 보호 및 중단된 작성·수정 초안 이어 저장',
+          '기존 사진 삭제·순서 변경·교체와 사진 저장 버튼 추가'
         ],
         history: [
+          {version:'4.8.10',date:'2026-10-09',notes:[
+            '관리자용 DB 및 사진 원본 백업·복원 점검 도구 도입',
+            '실제 관리자 백업 실행 여부와 개인 기기 JSON 내보내기를 명확하게 구분',
+            '백업 시나리오와 복원 검증 절차 마련 (운영 복원은 별도 검증 필요)'
+          ]},
           {version:'4.8.9',date:'2026-10-09',notes:[
             '업데이트 날짜·버전·변경내역 항상 표시',
             '릴리스 정합성 검사 강화',
@@ -1059,7 +1065,7 @@
         enterAppImmediately(session.user);
         restoreHomeSnapshot();
         restorePendingSave(session.user.id).then(function(restored){
-          if(restored&&state.saveAttempt){ state.offlineQueued=true; renderOfflineBanner(); scheduleOfflineFlush(4000); }
+          if(restored&&state.composerMode==='create'&&state.saveAttempt){ state.offlineQueued=true; renderOfflineBanner(); scheduleOfflineFlush(4000); }
         });
         loadHome({source:'initial',force:true});
       }
@@ -1102,7 +1108,9 @@
         el('takePhoto').addEventListener('click',function(){ el('cameraInput').click(); });
         el('photoInput').addEventListener('change',function(e){ addFiles(e.target.files); e.target.value=''; });
         el('cameraInput').addEventListener('change',function(e){ addFiles(e.target.files); e.target.value=''; });
+        el('composer').addEventListener('click',function(event){if((state.saving||composerDraftLocked())&&event.target.closest('summary')){event.preventDefault();event.stopPropagation();}},true);
         el('savePost').addEventListener('click',savePost);
+        el('downloadPhoto').addEventListener('click',downloadCurrentPhoto);
         el('settingsButton').addEventListener('click',openSettings);
         el('closeSettings').addEventListener('click',closeSettings);
         el('settings').addEventListener('click',function(e){ if(e.target===el('settings')) closeSettings(); });
@@ -3006,7 +3014,19 @@
 
       // v3.6.0: 캐시 키 네임스페이스를 올려, 예전에 잘못 저장된 항목은 자동으로 무시하고 새로 받는다.
       function imageRequestKey(imageId,variant){ return 'v36:'+String(variant||'thumbnail')+':'+String(imageId||''); }
-      function looksLikeImageUrl(url){ return /^data:image\//i.test(String(url||''))&&String(url).length>64; }
+      function isPersistentImageDataUrl(url){ return /^data:image\/(?:jpeg|png|webp|gif);base64,[A-Za-z0-9+/]+={0,2}$/i.test(String(url||''))&&String(url).length>64; }
+      function approvedSignedImageUrl(url){
+        try{
+          var parsed=new URL(String(url||'')), allowed=new URL(SUPABASE_API_EXEC);
+          if(parsed.protocol!=='https:'||parsed.host!==allowed.host||parsed.username||parsed.password||parsed.hash||!/^\/storage\/v1\/object\/sign\/ilkong-media\/.+/.test(parsed.pathname)) return null;
+          var token=parsed.searchParams.get('token'); if(!token) return null;
+          var encoded=token.split('.')[1]; if(!encoded) return null;
+          var claims=JSON.parse(atob(encoded.replace(/-/g,'+').replace(/_/g,'/')));
+          if(!Number(claims.exp)||Number(claims.exp)*1000<=Date.now()+15000) return null;
+          return parsed;
+        }catch(error){ return null; }
+      }
+      function looksLikeImageUrl(url){ return isPersistentImageDataUrl(url)||!!approvedSignedImageUrl(url); }
       function persistentImageKey(cacheKey){ return IMAGE_CACHE_PREFIX+String(cacheKey||''); }
       function estimateDataUrlBytes(url){
         url=String(url||'');
@@ -3016,7 +3036,7 @@
         return /;base64/i.test(url.slice(0,comma))?Math.floor(payload.length*0.75):payload.length;
       }
       function rememberImageMemory(cacheKey,url){
-        if(!cacheKey||!url) return;
+        if(!cacheKey||!looksLikeImageUrl(url)) return;
         state.imageCache[cacheKey]=url;
         state.imageCacheOrder=state.imageCacheOrder.filter(function(id){ return id!==cacheKey; });
         state.imageCacheOrder.push(cacheKey);
@@ -3043,7 +3063,7 @@
         if(window.IlkongDisk&&typeof window.IlkongDisk.getImage==='function'){
           try{
             var nativeUrl=String(window.IlkongDisk.getImage(key)||'');
-            if(looksLikeImageUrl(nativeUrl)){
+            if(isPersistentImageDataUrl(nativeUrl)){
               state.imagePersistentKnown[key]=true;
               rememberImageMemory(key,nativeUrl);
               return Promise.resolve(nativeUrl);
@@ -3054,7 +3074,7 @@
         var promise=idbGet(persistentImageKey(key)).then(function(record){
           delete state.imagePersistentReads[key];
           if(state.logoutBusy||!state.session||currentUserId()!==expectedUser) return '';
-          if(!record||!looksLikeImageUrl(record.url)) return '';
+          if(!record||!isPersistentImageDataUrl(record.url)) return '';
           var savedAt=Number(record.savedAt||0);
           if(!savedAt||Date.now()-savedAt>IMAGE_CACHE_MAX_AGE_MS){
             idbRemove(persistentImageKey(key)).catch(function(){});
@@ -3070,7 +3090,7 @@
       function persistImageUrl(imageId,variant,url){
         variant=variant||'thumbnail';
         if(state.logoutBusy||!state.session) return;
-        if(variant!=='thumbnail'||!/^data:image\//i.test(String(url||''))) return;
+        if(variant!=='thumbnail'||!isPersistentImageDataUrl(url)) return;
         var bytes=estimateDataUrlBytes(url);
         if(!bytes||bytes>IMAGE_CACHE_MAX_ITEM_BYTES) return;
         var key=imageRequestKey(imageId,variant);
@@ -3207,7 +3227,8 @@
         if(group.length===1||state.imageBatchSupport===false) return runImageGroupSequential(group);
         var checks=group.map(function(entry){
           var key=imageRequestKey(entry.imageId,entry.variant);
-          if(state.imageCache[key]) return Promise.resolve({entry:entry,url:state.imageCache[key]});
+          if(looksLikeImageUrl(state.imageCache[key])) return Promise.resolve({entry:entry,url:state.imageCache[key]});
+          delete state.imageCache[key];
           return readPersistentImageUrl(entry.imageId,entry.variant)
             .catch(function(){ return ''; })
             .then(function(stored){ return {entry:entry,url:stored||''}; });
@@ -3238,7 +3259,7 @@
             var byKey={};
             var items=data&&data.items||[];
             for(var i=0;i<items.length;i++){
-              if(items[i]&&items[i].url) byKey[imageRequestKey(items[i].imageId,items[i].variant)]=items[i].url;
+              if(items[i]&&looksLikeImageUrl(items[i].url)) byKey[imageRequestKey(items[i].imageId,items[i].variant)]=items[i].url;
             }
             return Promise.all(entries.map(function(entry){
               var url=byKey[imageRequestKey(entry.imageId,entry.variant)];
@@ -3276,18 +3297,18 @@
       function persistRemoteThumbnail(imageId,variant,url){
         variant=variant||'thumbnail';
         if(variant!=='thumbnail') return;
-        if(!/^https?:\/\//i.test(String(url||''))) return;
+        if(!approvedSignedImageUrl(url)) return;
         if(typeof fetch!=='function'||typeof FileReader!=='function') return;
-        var key=imageRequestKey(imageId,variant);
+        var key=imageRequestKey(imageId,variant),expectedUser=currentUserId(),expectedToken=state.session&&state.session.token;
         if(state.imagePersistentKnown[key]) return;
         if(!state.remoteThumbFetching) state.remoteThumbFetching={};
         if(state.remoteThumbFetching[key]) return;
         state.remoteThumbFetching[key]=true;
-        fetch(url,{mode:'cors',credentials:'omit'}).then(function(response){
-          if(!response||!response.ok) throw new Error('원격 썸네일 응답 실패');
+        fetch(url,{mode:'cors',credentials:'omit',redirect:'error'}).then(function(response){
+          if(!response||!response.ok||(response.url&&!approvedSignedImageUrl(response.url))) throw new Error('원격 썸네일 응답 실패');
           return response.blob();
         }).then(function(blob){
-          if(!blob||!blob.size||blob.size>IMAGE_CACHE_MAX_ITEM_BYTES) throw new Error('보관하기엔 너무 큰 썸네일');
+          if(!blob||!blob.size||blob.size>IMAGE_CACHE_MAX_ITEM_BYTES||!/^image\/(jpeg|png|webp|gif)$/i.test(blob.type)) throw new Error('보관할 수 없는 썸네일');
           return new Promise(function(resolve,reject){
             var reader=new FileReader();
             reader.onload=function(){ resolve(String(reader.result||'')); };
@@ -3295,7 +3316,7 @@
             reader.readAsDataURL(blob);
           });
         }).then(function(dataUrl){
-          if(/^data:image\//i.test(dataUrl)) persistImageUrl(imageId,variant,dataUrl);
+          if(currentUserId()===expectedUser&&state.session&&state.session.token===expectedToken&&isPersistentImageDataUrl(dataUrl)) persistImageUrl(imageId,variant,dataUrl);
         }).catch(function(){
           // 오프라인 보관은 부가 기능이라 실패해도 화면에 영향을 주지 않는다.
         }).then(function(){
@@ -3341,7 +3362,7 @@
           return requestCompatibleImageData(imageId,variant)
             .then(function(data){
               if(!data||!looksLikeImageUrl(data.url)) throw new Error('사진 주소가 비어 있어.');
-              rememberImageMemory(key,data.url);
+              cacheImageUrl(imageId,variant,data.url);
               return data.url;
             });
         }).then(function(url){ delete state.imageInFlight[key]; return url; })
@@ -3353,9 +3374,11 @@
       function displayImage(box,url,imageId,variant,attempt){
         return new Promise(function(resolve,reject){
           if(!box||!box.isConnected){ resolve(false); return; }
+          if(!looksLikeImageUrl(url)){ reject(new Error('사진 표시 실패: 허용되지 않거나 만료된 주소')); return; }
           var img=new Image();
           img.alt='기록 사진';
-          img.loading='lazy';
+          // IntersectionObserver queues near-visible photos; this detached image must load now.
+          img.loading='eager';
           img.decoding='async';
           img.onload=function(){
             if(box.isConnected){
@@ -3414,6 +3437,52 @@
         if(!box) return;
         box.removeAttribute('data-image-queued'); box.removeAttribute('data-image-loaded');
         enqueueImageLoad(imageId,box,variant||'thumbnail',true);
+      }
+
+      function loadApprovedImage(imageId,variant,attempt){
+        attempt=Number(attempt||0);
+        return fetchImageUrl(imageId,variant,attempt>0).then(function(url){
+          return new Promise(function(resolve,reject){
+            if(!looksLikeImageUrl(url)){ reject(new Error('사진 표시 실패')); return; }
+            var img=new Image(); img.loading='eager'; img.onload=function(){resolve(img);}; img.onerror=function(){reject(new Error('사진 표시 실패'));}; img.src=url;
+          });
+        }).catch(function(error){
+          if(attempt<1&&/사진 표시 실패/.test(errorMessage(error))) return invalidateImageCache(imageId,variant).then(function(){return loadApprovedImage(imageId,variant,1);});
+          throw error;
+        });
+      }
+
+      function fetchOriginalPhotoBlob(imageId,attempt){
+        return fetchImageUrl(imageId,'original',true).then(function(url){
+          if(!looksLikeImageUrl(url)) throw new Error('사진 원본 주소를 확인하지 못했어.');
+          return fetch(url,{mode:'cors',credentials:'omit',redirect:'error'});
+        }).then(function(response){
+          if(!response.ok) throw new Error('사진 원본을 내려받지 못했어.');
+          return response.blob();
+        }).then(function(blob){
+          if(!blob.size||!/^image\/(jpeg|png|webp|gif)$/i.test(blob.type)) throw new Error('사진 원본 형식을 확인하지 못했어.');
+          return blob;
+        }).catch(function(error){ if(!attempt) return fetchOriginalPhotoBlob(imageId,1); throw error; });
+      }
+
+      function downloadCurrentPhoto(){
+        var item=state.viewerImages[state.viewerIndex], button=el('downloadPhoto');
+        if(!item||button.disabled) return;
+        button.disabled=true; text(button,'준비 중…');
+        fetchOriginalPhotoBlob(item.id,0).then(function(blob){
+          var ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'}[blob.type.toLowerCase()], name='일콩_사진_'+today()+'_'+String(item.id).replace(/[^A-Za-z0-9_-]/g,'').slice(0,32)+'.'+ext;
+          if(window.IlkongFiles&&typeof window.IlkongFiles.saveToDownloads==='function') return blobToBase64(blob).then(function(base64){
+            var saved=String(window.IlkongFiles.saveToDownloads(name,blob.type,base64)||'');
+            if(!saved) throw new Error('사진 파일을 저장하지 못했어. 저장공간을 확인해 줘.');
+            toast('사진 파일을 저장했어 📷');
+          });
+          var file=typeof File==='function'?new File([blob],name,{type:blob.type}):null;
+          if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})) return navigator.share({files:[file],title:'일콩 사진'}).catch(function(error){ if(error&&error.name==='AbortError') return; downloadPhotoBlob(blob,name); });
+          downloadPhotoBlob(blob,name);
+        }).catch(function(error){toast(errorMessage(error));}).then(function(){button.disabled=false;text(button,'저장 ↓');});
+      }
+      function downloadPhotoBlob(blob,name){
+        var url=URL.createObjectURL(blob), link=document.createElement('a'); link.href=url; link.download=name; document.body.appendChild(link); link.click(); link.remove(); setTimeout(function(){URL.revokeObjectURL(url);},60000); toast('사진 파일 다운로드를 시작했어 📷');
       }
 
       // v3.7.1: 사진 확대. 리스너를 스테이지에 '한 번만' 붙이고 현재 이미지만 바꿔 끼운다.
@@ -3530,7 +3599,7 @@
           img.src=url;
         };
         var thumbKey=imageRequestKey(item.id,'thumbnail');
-        if(state.imageCache[thumbKey]) showPreview(state.imageCache[thumbKey]);
+        if(looksLikeImageUrl(state.imageCache[thumbKey])) showPreview(state.imageCache[thumbKey]);
         else readPersistentImageUrl(item.id,'thumbnail').then(showPreview).catch(function(){});
         var showOriginalFailure=function(){
           originalState.failed=true;
@@ -3539,19 +3608,15 @@
           if(preview){ var tag=stage.querySelector('.viewer-original-tag'); if(tag) tag.textContent='원본을 불러오지 못했어 · 미리보기 표시 중'; }
           else stage.innerHTML='<span class="viewer-loading">사진을 불러오지 못했어.</span>';
         };
-        fetchImageUrl(item.id,'original').then(function(url){
+        loadApprovedImage(item.id,'original',0).then(function(img){
           if(!stillCurrent()) return;
-          var img=new Image(); img.alt='기록 사진 원본'; img.className='viewer-final'; img.loading='eager';
-          img.onload=function(){
+          img.alt='기록 사진 원본'; img.className='viewer-final';
             originalState.done=true; if(!stillCurrent()) return;
             stage.innerHTML=''; stage.appendChild(img);
             attachZoom(img,stage);
             var hint=document.createElement('span'); hint.className='viewer-zoom-hint'; hint.textContent='두 손가락으로 확대 · 두 번 탭';
             stage.appendChild(hint);
             setTimeout(function(){ if(hint.parentNode) hint.parentNode.removeChild(hint); },2200);
-          };
-          img.onerror=showOriginalFailure;
-          img.src=url;
         }).catch(showOriginalFailure);
       }
 
@@ -4935,7 +5000,7 @@
         var message=String(error&&error.message?error.message:error||'');
         var code=String(error&&error.code||'');
         if(code==='AUTH'||code==='CONFLICT'||code==='VALIDATION') return false;
-        return /NETWORK|network|연결|인터넷|응답이 너무 늦|failed to fetch|timeout|Timeout/.test(message);
+        return error&&error.name==='AbortError'||/NETWORK|network|연결|인터넷|응답이 너무 늦|failed to fetch|timeout|Timeout|aborted/i.test(message);
       }
       function renderOfflineBanner(){
         var box=el('offlineBanner');
@@ -4965,7 +5030,7 @@
           if(!state.images.length&&!String(el('postBody').value||'').trim()&&!String(el('postTitle').value||'').trim()){
             state.offlineQueued=false; renderOfflineBanner(); return false;
           }
-          state.composerMode='create';
+          if(state.composerMode==='edit'){state.offlineQueued=false;renderOfflineBanner();return false;}
           savePost();
           return true;
         }).catch(function(){ scheduleOfflineFlush(30000); return false; });
@@ -5412,18 +5477,14 @@
         if(!item) return;
         var current=lapse.index;
         stage.innerHTML='<span class="viewer-loading">사진 불러오는 중…</span>';
-        fetchImageUrl(item.imageId,'thumbnail').then(function(url){
+        loadApprovedImage(item.imageId,'thumbnail',0).then(function(img){
           if(lapse.index!==current||el('lapseViewer').classList.contains('hidden')) return;
-          var img=new Image(); img.alt='배 사진'; img.loading='eager';
-          img.onload=function(){
+          img.alt='배 사진';
             if(lapse.index!==current) return;
             stage.innerHTML='';
             stage.appendChild(img);
             var caption=document.createElement('span'); caption.className='lapse-caption'; caption.textContent='🤰 '+item.label;
             stage.appendChild(caption);
-          };
-          img.onerror=function(){ if(lapse.index===current) stage.innerHTML='<span class="viewer-loading">사진을 불러오지 못했어.</span>'; };
-          img.src=url;
         }).catch(function(){ if(lapse.index===current) stage.innerHTML='<span class="viewer-loading">사진을 불러오지 못했어.</span>'; });
       }
       function moveLapse(delta){ if(!lapse.items.length) return; lapse.index=(lapse.index+delta+lapse.items.length)%lapse.items.length; renderLapse(); }
@@ -5649,7 +5710,7 @@
 
       function openComposer(){
         if(state.saving) return;
-        if(state.composerMode!=='edit'){ state.composerMode='create'; state.editingPostId=''; text(el('composerTitle'),'기록 남기기'); text(el('savePost'),'저장'); hide(el('editNote')); show(el('photoField')); el('advancedFields').open=false; }
+        configureComposerMode();
         state.dialogReturnFocus=document.activeElement;
         show(el('composer'));
         // 모바일 WebView에서는 표시와 같은 틱의 focus가 한글 IME 연결을 깨뜨릴 수 있다.
@@ -5657,32 +5718,74 @@
       }
 
       function backupCreateComposer(){
-        state.composerBackup={title:el('postTitle').value,body:el('postBody').value,date:el('recordDate').value,category:el('category').value,mood:state.selectedMood,images:state.images,saveAttempt:state.saveAttempt};
+        cancelDraftSave();
+        var userId=currentUserId(),backup={title:el('postTitle').value,body:el('postBody').value,date:el('recordDate').value,category:el('category').value,mood:state.selectedMood,images:state.images,saveAttempt:state.saveAttempt};
+        if(!userId||!storageSet(draftKey(userId),JSON.stringify({title:backup.title,body:backup.body,date:backup.date,category:backup.category,mood:backup.mood})))return false;
+        state.composerBackup=backup;return true;
       }
       function restoreCreateComposer(){
         var b=state.composerBackup; state.composerBackup=null; state.composerMode='create'; state.editingPostId=''; state.editAttempt=null;
         if(b){ el('postTitle').value=b.title||''; el('postBody').value=b.body||''; el('recordDate').value=b.date||today(); el('category').value=b.category||'일상'; state.selectedMood=b.mood||''; state.images=b.images||[]; state.saveAttempt=b.saveAttempt||null; }
         else { resetComposerView(); }
-        hide(el('editNote')); show(el('photoField')); text(el('composerTitle'),'기록 남기기'); text(el('savePost'),'저장'); renderMoodChoices(); renderPreviews();
+        hide(el('editNote')); show(el('photoField')); text(el('composerTitle'),'기록 남기기'); text(el('savePost'),'저장'); renderMoodChoices(); renderPreviews();renderExistingPreviews();
       }
       function openEditComposer(post){
         if(state.saving) return;
-        backupCreateComposer();
+        if(state.composerMode==='edit'){
+          if(String(state.editingPostId)!==String(post.id)) toast('보관 중인 수정을 먼저 저장하거나 버려 줘.');
+          openComposer(); return;
+        }
+        if(!backupCreateComposer()){toast('작성 중인 새 기록을 기기에 보관하지 못했어. 작성 화면을 유지했어. 저장공간을 확인한 뒤 다시 수정해 줘.');openComposer();return;}
         state.composerMode='edit'; state.editingPostId=String(post.id); state.editAttempt=null; state.images=[]; state.saveAttempt=null;
-        state.editExistingPhotoCount=Array.isArray(post.images)?post.images.length:0;
+        state.editExistingImages=(Array.isArray(post.images)?post.images:[]).map(function(item){return {id:String(item.id)};});
+        state.editExpectedImageIds=state.editExistingImages.map(function(item){return item.id;});
+        state.editExistingPhotoCount=state.editExistingImages.length;
         el('recordDate').value=post.recordDate||today(); el('category').value=post.category||'일상'; el('postTitle').value=post.title||''; el('postBody').value=post.body||''; state.selectedMood=post.mood||''; renderMoodChoices(); renderPreviews();
-        text(el('composerTitle'),'기록 수정'); text(el('savePost'),'수정 저장'); show(el('editNote')); show(el('photoField')); el('advancedFields').open=true; openComposer();
-        text(el('editNote'),'글 내용을 수정할 수 있어. 기존 사진 '+state.editExistingPhotoCount+'장은 그대로 유지되고, 아래에서 사진을 더 추가할 수 있어.');
+        configureComposerMode(); openComposer(); persistPendingSave();
       }
 
+      function composerDraftLocked(){return state.composerMode==='create'&&!!(state.saveAttempt&&state.saveAttempt.postId);}
+      function applyComposerDraftLock(){
+        var locked=composerDraftLocked(),controls=el('composer').querySelectorAll('input,textarea,select,button,summary');
+        for(var i=0;i<controls.length;i++){
+          var control=controls[i];
+          if(locked&&control.id!=='savePost'&&control.id!=='closeComposer'){if(typeof control.__ilkongDraftDisabled==='undefined')control.__ilkongDraftDisabled=!!control.disabled;control.disabled=true;control.setAttribute('aria-disabled','true');}
+          else if(typeof control.__ilkongDraftDisabled!=='undefined'){control.disabled=control.__ilkongDraftDisabled;delete control.__ilkongDraftDisabled;control.removeAttribute('aria-disabled');}
+        }
+        if(locked){show(el('editNote'));text(el('editNote'),'중단된 사진 저장을 먼저 완료하면 내용을 수정할 수 있어. 같은 저장 버튼으로 이어서 저장해 줘.');}
+      }
+      function configureComposerMode(){
+        var editing=state.composerMode==='edit';
+        text(el('composerTitle'),editing?'기록 수정':'기록 남기기'); text(el('savePost'),editing?'수정 저장':'저장');
+        if(editing){show(el('editNote'));text(el('editNote'),'기존 사진은 삭제하거나 순서를 바꿀 수 있어. 저장을 마칠 때 변경 사항을 확정해.');}
+        else hide(el('editNote'));
+        show(el('photoField')); el('advancedFields').open=editing; renderExistingPreviews();applyComposerDraftLock();
+      }
+      function renderExistingPreviews(){
+        var wrap=el('existingPreviews'); if(!wrap) return; wrap.innerHTML='';
+        if(state.composerMode!=='edit') return;
+        (state.editExistingImages||[]).forEach(function(item,index){
+          var box=document.createElement('div');box.className='preview';
+          var imageBox=document.createElement('div');imageBox.style.cssText='position:absolute;inset:0';imageBox.innerHTML='<span class="photo-fail">기존 사진</span>';box.appendChild(imageBox);
+          observeImage(item.id,imageBox,'thumbnail');
+          var controls=document.createElement('div');controls.style.cssText='position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;background:rgba(25,22,19,.75)';
+          [['←','앞으로 이동',-1],['→','뒤로 이동',1],['✕','기존 사진 삭제',0]].forEach(function(action){
+            var button=document.createElement('button');button.type='button';button.textContent=action[0];button.setAttribute('aria-label',action[1]);button.style.cssText='color:white;background:transparent;border:0;min-width:40px;min-height:40px';button.disabled=state.saving||!!(action[2]&&!(state.editExistingImages||[])[index+action[2]]);
+            button.addEventListener('click',function(){
+              if(state.saving) return;
+              if(action[2]){var other=index+action[2],list=state.editExistingImages;list[index]=list[other];list[other]=item;}
+              else state.editExistingImages=state.editExistingImages.filter(function(photo){return photo.id!==item.id;});
+              markComposerMutation();state.editAttempt=null;state.editExistingPhotoCount=state.editExistingImages.length;renderExistingPreviews();persistPendingSave();
+            });controls.appendChild(button);
+          });
+          box.appendChild(controls);wrap.appendChild(box);
+        });
+      }
       function closeComposer(){
         if(state.saving||state.composerClosing) return;
-        if(state.composerMode==='edit'){
-          hide(el('composer')); restoreCreateComposer(); restoreDialogFocus(); return;
-        }
         if(state.images.length&&!confirm('사진과 글을 이 기기에 보관한 뒤 닫을까?')) return;
         var draftStored=flushDraftSave();
-        var needsPending=!!(state.images.length||state.saveAttempt);
+        var needsPending=!!(state.composerMode==='edit'||state.images.length||state.saveAttempt);
         if(!needsPending){
           if(draftStored===false&&(String(el('postTitle').value||'').trim()||String(el('postBody').value||'').trim()||state.selectedMood)){
             if(!confirm('작성 내용을 기기에 보관하지 못했어. 그래도 닫을까? 닫으면 지금 내용이 사라질 수 있어.')) return;
@@ -5691,7 +5794,7 @@
           return;
         }
         state.composerClosing=true;
-        el('closeComposer').disabled=true;
+        setSaving(true,'사진과 작성 상태를 기기에 보관하는 중…',0);
         persistPendingSave().then(function(stored){
           if(stored){
             state.pendingRestored=true;
@@ -5706,10 +5809,10 @@
           hide(el('composer')); restoreDialogFocus();
         }).then(function(){
           state.composerClosing=false;
-          el('closeComposer').disabled=false;
+          setSaving(false,'',0);
         },function(){
           state.composerClosing=false;
-          el('closeComposer').disabled=false;
+          setSaving(false,'',0);
           toast('기기 저장소를 확인하지 못했어. 작성 화면은 그대로 유지했어.');
         });
       }
@@ -5721,11 +5824,16 @@
       }
 
       function addFiles(fileList){
-        var used=state.composerMode==='edit'?Number(state.editExistingPhotoCount||0):0;
+        if(state.saving||state.composerClosing) return;
+        if(composerDraftLocked()){toast('중단된 사진 저장을 먼저 완료하면 내용을 수정할 수 있어.');return;}
+        var used=state.composerMode==='edit'?(state.editExistingImages||[]).length:0;
         var files=Array.prototype.slice.call(fileList||[]), room=Math.max(0,MAX_IMAGES-used-state.images.length); files=files.slice(0,room);
         if(!files.length&&fileList&&fileList.length){ toast('사진은 최대 '+MAX_IMAGES+'장까지 가능해.'); return; }
         if(files.length) markComposerMutation();
-        files.forEach(function(file){ state.images.push({id:uuid(),file:file,dataUrl:'',thumbnailDataUrl:'',name:file.name||'사진',status:'queued',width:0,height:0,uploadedPostId:''}); });
+        files.forEach(function(file){
+          var replacements=state.composerMode==='edit'?(state.editExpectedImageIds||[]).filter(function(id){return !(state.editExistingImages||[]).some(function(photo){return photo.id===id;})&&!state.images.some(function(photo){return photo.replaceImageId===id||photo.uploadedImageId===id;});}):[];
+          state.images.push({id:uuid(),file:file,dataUrl:'',thumbnailDataUrl:'',name:file.name||'사진',status:'queued',width:0,height:0,uploadedPostId:'',uploadedImageId:'',replaceImageId:replacements[0]||''});
+        });
         if(files.length){ invalidateSaveAttempt(); renderPreviews(); processImageQueue(); persistPendingSave(); }
         if(fileList&&fileList.length>room) toast('사진은 최대 '+MAX_IMAGES+'장까지 가능해.');
       }
@@ -5769,12 +5877,13 @@
           else if(item.status==='error') box.innerHTML='<div class="photo-fail">변환 실패<br>'+escapeHtml(item.error||'')+'</div><button class="remove" type="button">✕</button>';
           else box.innerHTML='<div class="photo-fail">'+(item.status==='queued'?'압축 대기 중…':'사진 준비 중…')+'</div><button class="remove" type="button">✕</button>';
           box.querySelector('.remove').addEventListener('click',function(){
+            if(state.saving||state.composerClosing||composerDraftLocked()) return;
             markComposerMutation();
             state.images=state.images.filter(function(x){ return x.id!==item.id; });
             invalidateSaveAttempt();
             renderPreviews(); persistPendingSave();
           });
-          box.querySelector('.remove').setAttribute('aria-label','선택한 사진 삭제');
+          box.querySelector('.remove').setAttribute('aria-label','선택한 사진 삭제');box.querySelector('.remove').disabled=state.saving||composerDraftLocked();
           wrap.appendChild(box);
         })(state.images[i]);
       }
@@ -5784,6 +5893,7 @@
       }
 
       function prepareCreateSaveAttempt(signature){
+        if(state.saveAttempt&&state.saveAttempt.postId)return state.saveAttempt;
         var reusable=state.saveAttempt&&state.saveAttempt.signature===signature&&validClientRequestId(state.saveAttempt.requestId);
         if(!reusable){
           state.saveAttempt={requestId:uuid(),postId:'',signature:signature};
@@ -5801,128 +5911,103 @@
               state.saveAttempt={requestId:uuid(),postId:'',signature:signature};
               state.images.forEach(function(item){ item.uploadedPostId=''; });
               payload.requestId=state.saveAttempt.requestId;
-              return persistPendingSave('saving').then(function(){ return startPostSafely(payload,signature,true); });
+              return requirePendingSave('saving').then(function(){ return startPostSafely(payload,signature,true); });
             }
             throw error;
           });
       }
 
       function savePost(){
-        if(state.saving) return;
-        if(isImeComposing(state.compositionTarget)){
-          setTimeout(function(){ if(!state.saving&&!isImeComposing(state.compositionTarget)) savePost(); },170);
-          return;
-        }
-        var body=el('postBody').value.trim(), title=el('postTitle').value.trim();
-        if(state.composerMode==='edit'){
-          invalidateHomeResponses();
-          state.saving=true; setSaving(true,'수정 내용을 저장하는 중…',35);
-          var payload={recordDate:el('recordDate').value,title:title,body:body,category:el('category').value,mood:state.selectedMood};
-          var editSignature=JSON.stringify(payload); if(!state.editAttempt||state.editAttempt.signature!==editSignature) state.editAttempt={signature:editSignature,id:uuid()};
-          var pendingEdit=state.images.filter(function(x){ return x.status==='processing'||x.status==='queued'; });
-          if(pendingEdit.length){ state.saving=false; setSaving(false,'',0); toast('사진 준비가 끝날 때까지만 잠깐 기다려 줘.'); return; }
-          callApi('apiUpdatePostV280',[state.session.token,state.editingPostId,payload,state.editAttempt.id],20000).then(unwrap)
-            .then(function(){ return addEditedPhotos(state.editingPostId,0); })
-            .then(function(){ toast(state.images.length?'기록과 사진을 저장했어 🌿':'기록을 수정했어 🌿'); hide(el('composer')); restoreCreateComposer(); restoreDialogFocus(); return loadHome({source:'edit',force:true}); })
-            .catch(function(error){ toast(errorMessage(error)); }).then(function(){state.saving=false;setSaving(false,'',0);});
-          return;
-        }
-        var pending=state.images.filter(function(x){ return x.status==='processing'||x.status==='queued'; }); if(pending.length){ toast('사진 준비가 끝날 때까지만 잠깐 기다려 줘.'); return; }
-        var failed=state.images.filter(function(x){ return x.status==='error'; }); if(failed.length){ toast('변환에 실패한 사진을 빼고 다시 저장해 줘.'); return; }
-        if(!body&&!title&&!state.images.length){ toast('글이나 사진을 하나는 남겨 줘.'); return; }
-        var payload={recordDate:el('recordDate').value,title:title,body:body,category:el('category').value,mood:state.selectedMood,imageCount:state.images.length};
-        var signature=JSON.stringify({recordDate:payload.recordDate,title:payload.title,body:payload.body,category:payload.category,mood:payload.mood,imageIds:state.images.map(function(item){ return item.id; })});
-        var attempt=prepareCreateSaveAttempt(signature);
-        // 중요: 서버의 중복 방지 키를 실제 저장 payload에 반드시 넣는다.
-        // v2.8.3에서는 이 한 줄이 빠져 모든 신규 게시글이 검증 단계에서 거절됐다.
-        payload.requestId=attempt.requestId;
-        invalidateHomeResponses();
-        state.saving=true; setSaving(true,attempt.postId?'저장을 이어서 준비하고 있어…':'기록을 준비하고 있어…',5);
-        // 서버에 행을 만들기 전에 요청번호·본문·사진을 기기 저장소에 먼저 확정한다.
-        var startPromise=persistPendingSave('saving').then(function(){ return startPostSafely(payload,signature,false); });
-        startPromise.then(function(result){
-            if(!result||!result.postId) throw new Error('저장할 글 번호를 받지 못했어.');
-            state.saveAttempt.postId=String(result.postId);
-            // 서버 글 번호도 기기에 기록한 뒤 사진 업로드를 시작한다.
-            return persistPendingSave('saving').then(function(){
-              return uploadImagesSequential(result.postId,0).then(function(){ return callApi('apiFinishPostV221',[state.session.token,result.postId],22000); });
-            });
+        if(state.saving||state.composerClosing) return;
+        if(isImeComposing(state.compositionTarget)){setTimeout(function(){if(!state.saving&&!isImeComposing(state.compositionTarget))savePost();},170);return;}
+        var body=el('postBody').value.trim(),title=el('postTitle').value.trim();
+        if(state.images.some(function(item){return item.status==='queued'||item.status==='processing';})){toast('사진 준비가 끝날 때까지만 잠깐 기다려 줘.');return;}
+        if(state.images.some(function(item){return item.status==='error'||!isPersistentImageDataUrl(item.dataUrl);})){toast('변환에 실패한 사진을 빼고 다시 저장해 줘.');return;}
+        var editing=state.composerMode==='edit',existing=editing?(state.editExistingImages||[]).length:0;
+        if(!body&&!title&&!existing&&!state.images.length){toast('글이나 사진을 하나는 남겨 줘.');return;}
+        cancelDraftSave();
+        var operation={mode:state.composerMode,postId:state.editingPostId,payload:{recordDate:el('recordDate').value,title:title,body:body,category:el('category').value,mood:state.selectedMood},images:state.images.map(function(item){return Object.assign({},item);})};
+        state.images=operation.images;state.activeSaveOperation=operation;
+        invalidateHomeResponses();state.saving=true;setSaving(true,editing?'수정 내용을 준비하는 중…':'기록을 준비하는 중…',5);
+        var work;
+        if(editing){
+          var editSignature=JSON.stringify({payload:operation.payload,images:operation.images.map(function(item){return item.id;}),existing:(state.editExistingImages||[]).map(function(item){return item.id;})});
+          if(!state.editAttempt||state.editAttempt.signature!==editSignature) state.editAttempt={signature:editSignature,id:uuid(),bodySaved:false,photosRequestId:uuid()};
+          work=requirePendingSave('saving').then(function(){return addEditedPhotos(operation.postId,0,operation.images);}).then(function(){
+            if(state.editAttempt.bodySaved) return;
+            return callApi('apiUpdatePostV280',[state.session.token,operation.postId,operation.payload,state.editAttempt.id],20000).then(unwrap).then(function(){state.editAttempt.bodySaved=true;return requirePendingSave('saving');});
           })
-          .then(unwrap).then(function(){ state.offlineQueued=false; renderOfflineBanner(); toast('기록을 저장했어 🌿'); clearPendingSave(); clearComposer(); hide(el('composer')); restoreDialogFocus(); return loadHome({source:'save',force:true}); })
+            .then(function(){
+              var imageIds=(state.editExistingImages||[]).map(function(item){return item.id;}).concat(operation.images.map(function(item){return item.uploadedImageId;}));
+              return callApi('apiSetPostPhotosV490',[state.session.token,operation.postId,{imageIds:imageIds,expectedImageIds:(state.editExpectedImageIds||[]).slice(),requestId:state.editAttempt.photosRequestId}],22000).then(unwrap);
+            }).then(function(){return clearPendingSave();}).then(function(){toast('기록과 사진 변경을 저장했어 🌿');hide(el('composer'));restoreCreateComposer();return persistPendingSave();});
+        }else{
+          operation.payload.imageCount=operation.images.length;
+          var signature=JSON.stringify({recordDate:operation.payload.recordDate,title:title,body:body,category:operation.payload.category,mood:operation.payload.mood,imageIds:operation.images.map(function(item){return item.id;})});
+          var attempt=prepareCreateSaveAttempt(signature);operation.payload.requestId=attempt.requestId;
+          work=requirePendingSave('saving').then(function(){return startPostSafely(operation.payload,signature,false);}).then(function(result){
+            if(!result||!result.postId)throw new Error('저장할 글 번호를 받지 못했어.');
+            state.saveAttempt.postId=String(result.postId);return requirePendingSave('saving').then(function(){return uploadImagesSequential(result.postId,0,operation.images);}).then(function(){return callApi('apiFinishPostV221',[state.session.token,result.postId],22000).then(unwrap);});
+          }).then(function(){state.offlineQueued=false;renderOfflineBanner();return clearPendingSave();}).then(function(){toast('기록을 저장했어 🌿');clearComposer();hide(el('composer'));});
+        }
+        work.then(function(){restoreDialogFocus();return loadHome({source:editing?'edit':'save',force:true}).catch(function(){toast('저장은 완료됐어. 최신 기록을 다시 불러와 줘.');});})
           .catch(function(error){
-            return persistPendingSave('failed').then(function(){
-              // v3.8.0: 인터넷 문제면 기기에 보관하고 연결되면 자동으로 다시 보낸다(여행·지하철 대비).
-              if(looksOffline(error)){
-                state.offlineQueued=true;
-                hide(el('composer'));
-                restoreDialogFocus();
-                renderOfflineBanner();
-                toast('연결이 불안해서 기기에 보관했어. 연결되면 자동으로 올릴게 ✈️');
-                scheduleOfflineFlush(15000);
-              } else {
-                toast('저장을 끝내지 못했어. 같은 저장 버튼을 누르면 이어서 시도해: '+errorMessage(error));
+            return persistPendingSave('failed').then(function(stored){
+              if(editing){
+                var uploaded=operation.images.filter(function(item){return String(item.uploadedPostId||'')===String(operation.postId);}).length;
+                var partial=(state.editAttempt&&state.editAttempt.bodySaved?'글 저장 완료 · ':'')+(uploaded?'사진 '+uploaded+' / '+operation.images.length+'장 전송 완료. ':'');
+                toast(partial+(stored?'같은 저장 버튼으로 이어서 시도해 줘: ':'기기 보관에 실패했어. 화면을 닫지 말고 다시 시도해 줘: ')+errorMessage(error));return;
               }
+              if(stored&&looksOffline(error)){
+                state.offlineQueued=true;hide(el('composer'));restoreDialogFocus();renderOfflineBanner();toast('연결이 불안해서 기기에 보관했어. 연결되면 자동으로 올릴게 ✈️');scheduleOfflineFlush(15000);
+              }else toast((stored?'저장을 끝내지 못했어. 같은 저장 버튼으로 이어서 시도해: ':'기기 보관에 실패했어. 화면을 닫지 말고 다시 시도해: ')+errorMessage(error));
             });
-          })
-          .then(function(){ state.saving=false; setSaving(false,'',0); });
+          }).then(function(){state.saving=false;state.activeSaveOperation=null;setSaving(false,'',0);});
       }
 
+      function requirePendingSave(status){
+        return persistPendingSave(status).then(function(stored){if(!stored){var error=new Error('사진과 작성 상태를 기기 저장소에 보관하지 못했어.');error.code='STORAGE';throw error;}return true;});
+      }
       // v3.7.0: 이미 게시된 기록에 사진을 이어 붙인다(수정 화면에서 추가한 사진).
-      function addEditedPhotos(postId,index){
-        var ready=state.images.filter(function(x){ return x.status==='ready'; });
-        if(index>=ready.length) return Promise.resolve();
-        var item=ready[index];
-        if(String(item.uploadedPostId||'')===String(postId)) return addEditedPhotos(postId,index+1);
-        setSaving(true,'사진 '+(index+1)+' / '+ready.length+' 추가 중…',40+Math.round(index/Math.max(1,ready.length)*50));
-        var payload={clientImageId:item.id,dataUrl:item.dataUrl,thumbnailDataUrl:item.thumbnailDataUrl,width:item.width,height:item.height};
+      function addEditedPhotos(postId,index,images){
+        images=images||state.images;
+        if(index>=images.length)return Promise.resolve();
+        var item=images[index];
+        if(String(item.uploadedPostId||'')===String(postId)&&item.uploadedImageId)return addEditedPhotos(postId,index+1,images);
+        setSaving(true,'사진 '+(index+1)+' / '+images.length+' 추가 중…',40+Math.round(index/Math.max(1,images.length)*50));
+        var payload={clientImageId:item.id,dataUrl:item.dataUrl,thumbnailDataUrl:item.thumbnailDataUrl,width:item.width,height:item.height,replaceImageId:item.replaceImageId||''};
         return callApi('apiAddPhotosV370',[state.session.token,postId,payload],30000).then(unwrap).then(function(result){
-          try{
-            var seedUrl=item.thumbnailDataUrl||item.dataUrl;
-            if(result&&result.imageId&&seedUrl){
-              rememberImageMemory(imageRequestKey(result.imageId,'thumbnail'),seedUrl);
-              persistImageUrl(result.imageId,'thumbnail',seedUrl);
-            }
-          }catch(seedError){}
-          item.uploadedPostId=String(postId);
-          return addEditedPhotos(postId,index+1);
+          if(!result||!result.imageId)throw new Error('추가한 사진 번호를 받지 못했어.');
+          item.uploadedPostId=String(postId);item.uploadedImageId=String(result.imageId);
+          state.editExpectedImageIds=(state.editExpectedImageIds||[]).filter(function(id){return id!==item.replaceImageId;});
+          if(state.editExpectedImageIds.indexOf(item.uploadedImageId)<0)state.editExpectedImageIds.push(item.uploadedImageId);
+          var seedUrl=item.thumbnailDataUrl||item.dataUrl;cacheImageUrl(item.uploadedImageId,'thumbnail',seedUrl);
+          return requirePendingSave('saving').then(function(){return addEditedPhotos(postId,index+1,images);});
         });
       }
 
-      function uploadImagesSequential(postId,index){
-        if(index>=state.images.length) return Promise.resolve();
-        var item=state.images[index];
-        if(String(item.uploadedPostId||'')===String(postId)) return uploadImagesSequential(postId,index+1);
-        setSaving(true,'사진 '+(index+1)+' / '+state.images.length+' 저장 중…',10+Math.round(index/state.images.length*80));
+      function uploadImagesSequential(postId,index,images){
+        images=images||state.images.slice();
+        if(index>=images.length)return Promise.resolve();
+        var item=images[index];
+        if(String(item.uploadedPostId||'')===String(postId))return uploadImagesSequential(postId,index+1,images);
+        setSaving(true,'사진 '+(index+1)+' / '+images.length+' 저장 중…',10+Math.round(index/images.length*80));
         var payload={clientImageId:item.id,dataUrl:item.dataUrl,thumbnailDataUrl:item.thumbnailDataUrl,order:index,width:item.width,height:item.height};
-        return callApi('apiUploadPostImageV221',[state.session.token,postId,payload],30000)
-          .then(unwrap)
-          .then(function(uploadResult){
-            // v2.8.7: 방금 올린 사진의 썸네일을 기기 캐시에 미리 심는다.
-            // 저장 직후 홈에서 서버 재요청 없이 즉시 보인다. 실패해도 저장 흐름에는 영향 없음.
-            try {
-              var seedUrl=item.thumbnailDataUrl||item.dataUrl;
-              if(uploadResult&&uploadResult.imageId&&seedUrl){
-                rememberImageMemory(imageRequestKey(uploadResult.imageId,'thumbnail'),seedUrl);
-                persistImageUrl(uploadResult.imageId,'thumbnail',seedUrl);
-              }
-            } catch(seedError){}
-            item.uploadedPostId=String(postId);
-            // 업로드 완료 표식을 기기에 확정한 뒤 다음 사진으로 넘어간다.
-            return persistPendingSave('saving').then(function(){ return uploadImagesSequential(postId,index+1); });
-          });
+        return callApi('apiUploadPostImageV221',[state.session.token,postId,payload],30000).then(unwrap).then(function(result){
+          if(!result||!result.imageId)throw new Error('저장한 사진 번호를 받지 못했어.');
+          item.uploadedPostId=String(postId);item.uploadedImageId=String(result.imageId);cacheImageUrl(item.uploadedImageId,'thumbnail',item.thumbnailDataUrl||item.dataUrl);
+          return requirePendingSave('saving').then(function(){return uploadImagesSequential(postId,index+1,images);});
+        });
       }
 
       function setSaving(busy,message,percent){
-        el('savePost').disabled=busy;
-        text(el('savePost'),busy?'저장 중…':(state.composerMode==='edit'?'수정 저장':'저장'));
-        if(busy){
-          show(el('saveProgress'));
-          text(el('saveMessage'),message);
-          el('progressBar').style.width=percent+'%';
-          el('saveProgressBar').setAttribute('aria-valuenow',String(Math.max(0,Math.min(100,Number(percent)||0))));
-        } else {
-          hide(el('saveProgress'));
-        }
+        var controls=el('composer').querySelectorAll('input,textarea,select,button,summary');
+        if(busy&&!state.composerControlState){state.composerControlState=[];for(var i=0;i<controls.length;i++)state.composerControlState.push({node:controls[i],disabled:typeof controls[i].__ilkongDraftDisabled==='undefined'?!!controls[i].disabled:controls[i].__ilkongDraftDisabled});}
+        if(busy){for(var j=0;j<controls.length;j++){controls[j].disabled=true;controls[j].setAttribute('aria-disabled','true');}}
+        else { (state.composerControlState||[]).forEach(function(item){item.node.disabled=item.disabled;item.node.removeAttribute('aria-disabled');});state.composerControlState=null; }
+        el('savePost').disabled=busy;text(el('savePost'),busy?'저장 중…':(state.composerMode==='edit'?'수정 저장':'저장'));
+        if(busy){show(el('saveProgress'));text(el('saveMessage'),message);el('progressBar').style.width=percent+'%';el('saveProgressBar').setAttribute('aria-valuenow',String(Math.max(0,Math.min(100,Number(percent)||0))));}
+        else {hide(el('saveProgress'));applyComposerDraftLock();}
       }
 
       // 오늘 한 줄은 일반 기록과 같은 안전 저장 API를 쓰되, 사진·작성 화면 상태와
@@ -6048,8 +6133,8 @@
       }
 
       function scheduleDraftSave(){
-        if(state.logoutBusy) return;
-        if(state.composerMode==='edit'){ state.editAttempt=null; return; }
+        if(state.logoutBusy||state.saving||composerDraftLocked()) return;
+        if(state.composerMode==='edit'){ state.editAttempt=null; persistPendingSave(); return; }
         state.draftSavePending=true;
         cancelDraftSave();
         if(isImeComposing(state.compositionTarget)) return;
@@ -6068,7 +6153,8 @@
       }
 
       function saveDraft(force,preserveAttempt){
-        if(state.composerMode==='edit'){ state.editAttempt=null; return true; }
+        if(state.saving||composerDraftLocked())return true;
+        if(state.composerMode==='edit'){ if(!state.saving&&preserveAttempt!==true) state.editAttempt=null; persistPendingSave(); return true; }
         if(force!==true&&isImeComposing(state.compositionTarget)){ state.draftSavePending=true; return false; }
         cancelDraftSave();
         state.draftSavePending=false;
@@ -6119,13 +6205,15 @@
       }
 
       function pendingSnapshot(status){
-        return {userId:currentUserId(),status:status||'draft',savedAt:Date.now(),title:el('postTitle').value,body:el('postBody').value,date:el('recordDate').value,category:el('category').value,mood:state.selectedMood,saveAttempt:state.saveAttempt,images:state.images.map(function(item){return {id:item.id,dataUrl:item.dataUrl,thumbnailDataUrl:item.thumbnailDataUrl,name:item.name,status:item.status==='processing'||item.status==='queued'?'error':item.status,error:item.status==='processing'||item.status==='queued'?'앱이 닫혀 압축이 중단됐어. 이 사진만 다시 선택해 줘.':item.error||'',width:item.width||0,height:item.height||0,uploadedPostId:item.uploadedPostId||''};})};
+        function savedImage(item){return {id:item.id,dataUrl:item.dataUrl,thumbnailDataUrl:item.thumbnailDataUrl,name:item.name,status:item.status==='processing'||item.status==='queued'?'error':item.status,error:item.status==='processing'||item.status==='queued'?'앱이 닫혀 압축이 중단됐어. 이 사진만 다시 선택해 줘.':item.error||'',width:item.width||0,height:item.height||0,uploadedPostId:item.uploadedPostId||'',uploadedImageId:item.uploadedImageId||'',replaceImageId:item.replaceImageId||''};}
+        var backup=state.composerBackup?Object.assign({},state.composerBackup,{images:(state.composerBackup.images||[]).map(savedImage)}):null;
+        return {userId:currentUserId(),mode:state.composerMode,editingPostId:state.editingPostId||'',editAttempt:state.editAttempt||null,editExistingImages:state.editExistingImages||[],editExpectedImageIds:state.editExpectedImageIds||[],composerBackup:backup,status:status||'draft',savedAt:Date.now(),title:el('postTitle').value,body:el('postBody').value,date:el('recordDate').value,category:el('category').value,mood:state.selectedMood,saveAttempt:state.saveAttempt,images:state.images.map(savedImage)};
       }
       function persistPendingSave(status){
         var userId=currentUserId();
-        if(!userId||state.composerMode==='edit') return Promise.resolve(false);
+        if(!userId) return Promise.resolve(false);
         var key=pendingSaveKey(userId);
-        var snapshot=(state.images.length||state.saveAttempt)?pendingSnapshot(status):null;
+        var snapshot=(state.composerMode==='edit'||state.images.length||state.saveAttempt)?JSON.parse(JSON.stringify(pendingSnapshot(status))):null;
         // 비동기 사진 압축/자동저장 순서가 뒤바뀌어 새 초안을 덮어쓰지 않게 한다.
         state.pendingPersistChain=state.pendingPersistChain.catch(function(){}).then(function(){
           return snapshot?idbSet(key,snapshot):idbRemove(key);
@@ -6139,10 +6227,11 @@
         return idbGet(pendingSaveKey(userId)).then(function(data){
           var activeUser=currentUserId().toUpperCase();
           var activeToken=state.session&&state.session.token?String(state.session.token):'';
-          if(!expectedToken||activeUser!==expectedUser||activeToken!==expectedToken||state.composerMode!=='create'||state.saving||expectedGeneration!==state.composerMutationGeneration) return false;
+          if(!expectedToken||activeUser!==expectedUser||activeToken!==expectedToken||(state.composerMode!=='create'&&!el('composer').classList.contains('hidden'))||state.saving||expectedGeneration!==state.composerMutationGeneration) return false;
           if(!data||String(data.userId||'').toUpperCase()!==expectedUser){ hide(el('recoveryBanner')); return false; }
           state.images=Array.isArray(data.images)?data.images:[];
           state.saveAttempt=data.saveAttempt||null;
+          state.composerMode=data.mode==='edit'?'edit':'create'; state.editingPostId=state.composerMode==='edit'?String(data.editingPostId||''):'';state.editAttempt=data.editAttempt||null;state.editExistingImages=Array.isArray(data.editExistingImages)?data.editExistingImages:[];state.editExpectedImageIds=Array.isArray(data.editExpectedImageIds)?data.editExpectedImageIds:state.editExistingImages.map(function(photo){return photo.id;});state.editExistingPhotoCount=state.editExistingImages.length;state.composerBackup=data.composerBackup||null;configureComposerMode();
           el('postTitle').value=data.title||'';
           el('postBody').value=data.body||'';
           el('recordDate').value=data.date||today();
@@ -6161,11 +6250,12 @@
         state.pendingPersistChain=state.pendingPersistChain.catch(function(){}).then(function(){ return idbRemove(key); });
         return state.pendingPersistChain.catch(function(){});
       }
-      function discardPendingSave(){ if(!confirm('보관 중인 미완성 기록을 버릴까?')) return; var userId=currentUserId(); if(userId) storageRemove(draftKey(userId)); clearPendingSave().then(function(){ resetComposerView(); state.images=[]; state.saveAttempt=null; renderPreviews(); toast('미완성 기록을 정리했어.'); }); }
+      function discardPendingSave(){ if(!confirm('보관 중인 미완성 기록을 버릴까?')) return; var userId=currentUserId(); if(userId) storageRemove(draftKey(userId)); clearPendingSave().then(function(){ if(state.composerMode==='edit') restoreCreateComposer();else resetComposerView(); return persistPendingSave(); }).then(function(){toast('미완성 기록을 정리했어.');}); }
 
-      function invalidateSaveAttempt(){ if(!state.saving) state.saveAttempt=null; }
+      function invalidateSaveAttempt(){ if(!state.saving&&!composerDraftLocked()) state.saveAttempt=null; }
 
       function selectMood(mood){
+        if(state.saving||state.composerClosing||composerDraftLocked()) return;
         markComposerMutation();
         state.selectedMood=state.selectedMood===String(mood||'')?'':String(mood||'');
         renderMoodChoices();
@@ -6191,6 +6281,7 @@
         state.images=[];
         state.selectedMood='';
         state.saveAttempt=null;
+        state.editExistingImages=[];state.editExpectedImageIds=[];state.editAttempt=null;state.editingPostId='';state.composerMode='create';state.composerBackup=null;configureComposerMode();
         renderMoodChoices();
         renderPreviews();
       }
@@ -6766,7 +6857,7 @@
         apiAddCapsuleV310:true,apiDeleteCapsuleV310:true,apiSaveCheckupNoteV310:true,apiDeleteCheckupNoteV310:true,
         apiAddChecklistItemV320:true,apiToggleChecklistItemV320:true,apiDeleteChecklistItemV320:true,apiUpdateChecklistItemV450:true,apiRestoreChecklistItemV450:true,
         apiGetStorageReportV450:true,apiRunCleanupV450:true,apiGetHealthLogsV470:true,apiSaveHealthLogV470:true,apiSaveHealthProfileV470:true,apiSaveBirthPlanV470:true,
-        apiChangePinV320:true,apiAddPhotosV370:true,
+        apiChangePinV320:true,apiAddPhotosV370:true,apiSetPostPhotosV490:true,
         apiSubscribePush:true,apiUnsubscribePush:true,apiSendTestPush:true
       };
       function callSupabaseDirect(name,args,timeout){
