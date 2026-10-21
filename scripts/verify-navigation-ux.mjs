@@ -65,7 +65,7 @@ test('record-only search, comments and date filters do not leak into home or que
 });
 
 test('home summary is hidden on record/question tabs and restored when returning home', () => {
-  const state = { ...baseState(), recordSegment: 'ALL', home: { posts } };
+  const state = { ...baseState(), activeTab: 'home', recordSegment: 'ALL', home: { posts } };
   const classes = {};
   const tabs = ['home', 'records', 'question', 'guide', 'more'].map((tab) => ({
     getAttribute: () => tab,
@@ -79,6 +79,7 @@ test('home summary is hidden on record/question tabs and restored when returning
     openGuidebook() { throw new Error('should not open guide'); },
     openOverlaySheet() { throw new Error('should not open sheet'); },
     syncSegUI() {}, renderQuestionHead() {}, ensureAllPostsForLibrary() {}, renderPosts() {},
+    captureFeedView: () => ({ scrollY: 0 }), restoreFeedView() {},
     window: { scrollTo() {} },
   });
   c.activateTab('records');
@@ -229,4 +230,132 @@ test('photo viewer moves focus inside on open and returns it to the photo on clo
   assert.equal(nodes.photoViewer.hidden, true);
   assert.equal(state.viewerReturnFocus, null);
   assert.equal(original.focusCalls, 1);
+});
+
+test('switching tabs restores the last reading position; reselecting clears it', () => {
+  const state = { ...baseState(), activeTab: 'home', home: { posts }, tabViews: {}, recordSegment: 'ALL' };
+  let y = 930;
+  const restored = [], scrolled = [], rendered = [];
+  const tabs = ['home', 'records', 'question'].map((name) => ({
+    getAttribute: () => name,
+    classList: { toggle() {} },
+    setAttribute() {},
+  }));
+  const elements = {};
+  const c = run(['activateTab', 'scrollFeedTop'], {
+    state,
+    document: { querySelectorAll: () => tabs },
+    el(id) { return elements[id] ||= { classList: { toggle() {} } }; },
+    captureFeedView: () => ({ scrollY: y }),
+    restoreFeedView: (view, tab) => restored.push({ tab, y: view.scrollY }),
+    syncSegUI() {}, renderQuestionHead() {}, ensureAllPostsForLibrary() {},
+    renderPosts: () => rendered.push(true),
+    window: { scrollTo(value) { scrolled.push(value); } },
+  });
+  c.activateTab('records');
+  assert.equal(state.tabViews.home.scrollY, 930);
+  assert.equal(restored.at(-1).y, 0);
+  y = 620;
+  c.activateTab('question');
+  assert.equal(state.tabViews.records.scrollY, 620);
+  y = 230;
+  c.activateTab('records');
+  assert.equal(restored.at(-1).y, 620);
+  c.activateTab('records');
+  assert.equal(state.tabViews.records, undefined);
+  assert.equal(scrolled.length, 1);
+  assert.equal(rendered.length, 3);
+  c.activateTab('home');
+  assert.equal(restored.at(-1).y, 930);
+});
+
+test('deferred feed scroll restoration ignores a tab already left', () => {
+  const state = { ...baseState(), activeTab: 'question' };
+  const queued = [];
+  const c = run(['restoreFeedView'], {
+    state, requestAnimationFrame: (fn) => queued.push(fn),
+    window: { scrollTo() { throw new Error('stale tab changed scroll position'); } },
+  });
+  c.restoreFeedView({ scrollY: 410 }, 'records');
+  assert.equal(queued.length, 1);
+  queued[0]();
+});
+
+test('composer adjusts to the visible mobile viewport and cleans up when hidden', () => {
+  const classes = new Set();
+  const props = {};
+  const composer = {
+    classList: {
+      add: (name) => classes.add(name),
+      remove: (name) => classes.delete(name),
+      contains: (name) => classes.has(name),
+    },
+    style: {
+      setProperty: (name, value) => { props[name] = value; },
+      removeProperty: (name) => { delete props[name]; },
+    },
+  };
+  const win = { innerWidth: 390, innerHeight: 800, visualViewport: { offsetTop: 55, height: 430 } };
+  const c = run(['syncComposerViewport'], { el: () => composer, window: win });
+  c.syncComposerViewport();
+  assert.ok(classes.has('viewport-fit'));
+  assert.equal(props['--composer-visible-top'], '55px');
+  assert.equal(props['--composer-visible-height'], '430px');
+  win.visualViewport.height = 790;
+  c.syncComposerViewport();
+  assert.equal(props['--composer-visible-height'], '790px');
+  classes.add('hidden');
+  c.syncComposerViewport();
+  assert.ok(!classes.has('viewport-fit'));
+  assert.equal(props['--composer-visible-height'], undefined);
+  classes.delete('hidden');
+  win.innerWidth = 900;
+  c.syncComposerViewport();
+  assert.ok(!classes.has('viewport-fit'));
+  assert.match(html, /#composer\.viewport-fit\{top:var\(--composer-visible-top/);
+  assert.match(html, /visualViewport\.addEventListener\('resize',syncComposerViewport\)/);
+});
+
+test('photo preparation tells users how many files are ready, waiting or failed', () => {
+  const added = [];
+  const statusClasses = new Set(['hidden']);
+  const photoStatus = {
+    textContent: '',
+    classList: {
+      add(name) { statusClasses.add(name); },
+      remove(name) { statusClasses.delete(name); },
+    },
+  };
+  const wrap = { innerHTML: '', appendChild(node) { added.push(node); } };
+  const state = { saving: false, composerClosing: false, images: [
+    { id: 'ready', status: 'ready', dataUrl: 'data:image/jpeg;base64,AAA' },
+    { id: 'busy', status: 'processing' },
+    { id: 'waiting', status: 'queued' },
+    { id: 'failed', status: 'error', error: '읽기 실패' },
+  ] };
+  const c = run(['renderPreviews'], {
+    state,
+    el: (id) => id === 'previews' ? wrap : photoStatus,
+    document: {
+      createElement() {
+        const button = { addEventListener() {}, setAttribute() {}, disabled: false };
+        return { className: '', innerHTML: '', querySelector: () => button };
+      },
+    },
+    escapeHtml: (value) => value,
+    composerDraftLocked: () => false,
+    text: (node, value) => { node.textContent = value; },
+    show: (node) => node.classList.remove('hidden'),
+    hide: (node) => node.classList.add('hidden'),
+  });
+  c.renderPreviews();
+  assert.equal(added.length, 4);
+  assert.match(photoStatus.textContent, /새 사진 4장 · 준비 완료 1장/);
+  assert.match(photoStatus.textContent, /변환 중 1장 · 대기 1장 · 실패 1장/);
+  assert.ok(!statusClasses.has('hidden'));
+  state.images = [];
+  c.renderPreviews();
+  assert.equal(photoStatus.textContent, '');
+  assert.ok(statusClasses.has('hidden'));
+  assert.match(html, /id="photoQueueStatus"[^>]*role="status" aria-live="polite"/);
 });

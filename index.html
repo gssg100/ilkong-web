@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.3 — 모바일 검색 및 메뉴 복귀 사용성 개선 -->
+<!-- 일콩 기록 v4.9.4 — 작성·사진 준비·탭별 읽던 위치 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.3">
+  <meta name="ilkong-release-version" content="4.9.4">
   <meta name="ilkong-release-date" content="2026-10-21">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -89,10 +89,12 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .fab{position:fixed;right:max(19px,calc((100vw - 760px)/2 + 19px));bottom:calc(84px + var(--safe-bottom));width:62px;height:62px;border:0;border-radius:21px;background:var(--ink);color:white;font-size:30px;box-shadow:0 15px 30px rgba(51,45,39,.28);z-index:40}
     .overlay{position:fixed;inset:0;z-index:100;background:rgba(38,32,28,.48);display:flex;align-items:flex-end;justify-content:center}.sheet{width:min(760px,100%);max-height:94vh;background:var(--bg);border-radius:27px 27px 0 0;overflow:auto;padding-bottom:calc(20px + var(--safe-bottom))}
+    #composer.viewport-fit{top:var(--composer-visible-top,0px);bottom:auto;height:var(--composer-visible-height,100dvh)}
     .sheet-head{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:12px 15px}.sheet-head h2{font-size:18px;margin:0}.icon{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.save{border:0;border-radius:14px;background:var(--accent);color:white;padding:11px 15px;min-height:44px;font-weight:800}
     .form{padding:15px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:var(--card);border-radius:15px;padding:12px;outline:none}.field textarea{min-height:130px;resize:vertical;line-height:1.65}
     .moods{display:flex;gap:7px;flex-wrap:wrap}.mood-btn{border:1px solid var(--line);border-radius:999px;background:var(--card);min-height:42px;padding:8px 12px;color:var(--ink)}.mood-btn.active{background:var(--accent2);border-color:var(--accent);box-shadow:0 0 0 2px rgba(113,128,107,.12);font-weight:800}
     .photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.secondary{border:1px solid var(--line);border-radius:14px;background:var(--card);min-height:48px;color:var(--ink);font-weight:700}.previews{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.preview{position:relative;aspect-ratio:1;border-radius:13px;overflow:hidden;background:#e5ddd3}.preview img{width:100%;height:100%;object-fit:cover}.remove{position:absolute;top:5px;right:5px;border:0;width:40px;height:40px;border-radius:50%;background:rgba(25,22,19,.75);color:white}.upload-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px}
+    .photo-queue-status{margin-top:10px;padding:9px 11px;border-radius:12px;background:var(--accent2);color:var(--ink);font-size:12px;line-height:1.5;font-weight:700}
     .settings{padding:16px}.settings-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px}.settings-box h3{margin:0 0 8px}.settings-box p{color:var(--muted);font-size:13px;line-height:1.6}.danger{border:1px solid #e5b5b1;background:#fff8f7;color:var(--danger);border-radius:13px;padding:10px 13px}
     .release-box{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:13px 14px;color:var(--ink)}.release-box.login-release{margin-top:8px;background:var(--bg)}.release-box.settings-release{margin-bottom:10px}.release-box h3{margin:0 0 9px;font-size:14px}.release-stamp{display:inline-block;max-width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:11px;background:var(--accent2);font-size:12px;font-weight:800;line-height:1.5;overflow-wrap:anywhere}.release-footnote{margin:7px 0 0;color:var(--muted);font-size:11px;line-height:1.55}.release-details{margin-top:7px;border-top:1px solid var(--line)}.release-details summary{min-height:44px;padding:12px 2px;cursor:pointer;color:var(--ink);font-size:13px;font-weight:750;line-height:1.4}.release-details summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}.release-history{max-height:min(42vh,340px);overflow-y:auto;overscroll-behavior:contain;padding:0 1px 2px}.release-entry{padding:11px 0;border-top:1px dashed var(--line)}.release-entry h4{margin:0 0 6px;font-size:13px;line-height:1.45}.release-entry time{display:inline-block;margin-left:8px;color:var(--muted);font-size:11px;font-weight:500}.release-entry ul{margin:0;padding-left:19px;color:var(--muted);font-size:12px;line-height:1.65}.release-entry li+li{margin-top:3px}
     .toast{position:fixed;left:50%;bottom:calc(92px + var(--safe-bottom));transform:translateX(-50%);z-index:300;background:#302a25;color:white;border-radius:14px;padding:11px 14px;width:max-content;max-width:calc(100% - 32px);font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
@@ -239,7 +241,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.3 · 2026.10.21 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.4 · 2026.10.21 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -248,7 +250,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.3 · 2026.10.21</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.4 · 2026.10.21</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -263,7 +265,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.3 · 2026.10.21 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.4 · 2026.10.21 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -309,7 +311,7 @@
         <div id="photoField" class="field"><span id="photoLabel" class="upload-note">사진 · 최대 8장</span><div class="photo-actions" role="group" aria-labelledby="photoLabel"><button id="pickPhotos" class="secondary" type="button">앨범에서 고르기</button><button id="takePhoto" class="secondary" type="button">바로 찍기</button></div>
           <input id="photoInput" type="file" accept="image/*" multiple class="hidden" data-source="album">
           <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" data-source="camera">
-          <div id="existingPreviews" class="previews"></div><div id="previews" class="previews"></div><div class="upload-note">사진은 한 장씩 순서대로 압축하고, 앱이 닫혀도 이어서 저장할 수 있게 이 기기에 임시 보관해.</div>
+          <div id="existingPreviews" class="previews"></div><div id="previews" class="previews"></div><div id="photoQueueStatus" class="photo-queue-status hidden" role="status" aria-live="polite"></div><div class="upload-note">사진은 한 장씩 순서대로 압축하고, 앱이 닫혀도 이어서 저장할 수 있게 이 기기에 임시 보관해.</div>
         </div>
         <div id="saveProgress" class="hidden" role="status" aria-live="polite"><div id="saveMessage" class="upload-note"></div><div id="saveProgressBar" class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="progressBar"></i></div></div>
       </div>
@@ -423,7 +425,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.3 · 2026.10.21</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.4 · 2026.10.21</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -453,7 +455,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.3 · 2026.10.21 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.4 · 2026.10.21 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -609,17 +611,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.3';
+      var VERSION = '4.9.4';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-21',
         timezone: 'Asia/Seoul',
         notes: [
-          '결과가 없는 기록 검색에서 필터를 한 번에 해제할 수 있도록 버튼 추가',
-          '작은 휴대폰의 날짜 검색 배치 및 시작일·종료일 오류 안내 개선',
-          '더보기 하위 화면과 사진 확대 화면을 닫은 후 메뉴·키보드 초점 복귀 개선'
+          '홈·기록·질문 탭을 오갈 때 각각 읽던 위치를 기억하고 다시 누르면 맨 위로 이동',
+          '기록 작성 중 모바일 키보드 높이에 맞춰 작성 화면을 조정',
+          '사진 추가 시 준비 완료·변환 중·대기·실패 장수를 바로 확인하도록 개선'
         ],
         history: [
+          {version:'4.9.3',date:'2026-10-21',notes:[
+            '결과가 없는 기록 검색에서 필터를 한 번에 해제할 수 있도록 버튼 추가',
+            '작은 휴대폰의 날짜 검색 배치 및 시작일·종료일 오류 안내 개선',
+            '더보기 하위 화면과 사진 확대 화면을 닫은 후 메뉴·키보드 초점 복귀 개선'
+          ]},
           {version:'4.9.2',date:'2026-10-21',notes:[
             '기록 탭에서 사진만 보기 및 기분별 보기 필터가 실제로 작동하도록 수정',
             '검색·기간 필터를 기록 탭에서만 적용해 홈·질문 목록이 사라지지 않도록 개선',
@@ -698,7 +705,7 @@
         imagePersistentReads:{},remoteThumbFetching:{}, imagePersistentKnown:{}, imagePersistChain:Promise.resolve(), homeSnapshotPersistChain:Promise.resolve(), pendingPersistChain:Promise.resolve(), logoutBusy:false, imageCacheReady:false,
         imageLoadQueue:[], imageLoadActive:0, imageLoadSerial:0, imageFallbackTimers:{},
         imageQueueRunning:false, imageBatchSupport:null, imageDataApiName:'', composerMode:'create', editingPostId:'', editExistingPhotoCount:0, offlineQueued:false, offlineFlushTimer:null, pendingRestored:false, composerMutationGeneration:0, composerClosing:false,
-        searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false,
+        searchQuery:'', viewFilter:'ALL', monthFilter:'', rangeFrom:'', rangeTo:'', activeTab:'home', tabViews:{}, recordSegment:'ALL', catFilter:'', viewerImages:[], viewerIndex:0, viewerTouchX:0, composerBackup:null, editAttempt:null, weekGuideOpen:false, birthBusy:false, kick:null, kickTimer:null, checkupBusy:false,
         checkinMood:'', checkinCondition:'', checkinAttempt:null, checkinBusy:false, homeSummaryChecklist:[], homeSummaryChecklistAt:0, homeSummaryChecklistLoading:false, memoryMonth:'', memoryVisibleLimit:36, loadingMemoryPosts:false, heroExpanded:false, lastSyncAt:0, lastSyncError:''
       };
 
@@ -1283,6 +1290,11 @@
         },{passive:true});
         el('logout').addEventListener('click',logout);
         el('postBody').addEventListener('input',function(e){ state.lastInteractionAt=Date.now(); markComposerMutation(); if(!e.isComposing&&!isImeComposing(this)) scheduleDraftSave(); });
+        if(window.visualViewport){
+          window.visualViewport.addEventListener('resize',syncComposerViewport);
+          window.visualViewport.addEventListener('scroll',syncComposerViewport);
+        }
+        window.addEventListener('resize',syncComposerViewport);
         el('postTitle').addEventListener('input',function(e){ state.lastInteractionAt=Date.now(); markComposerMutation(); if(!e.isComposing&&!isImeComposing(this)) scheduleDraftSave(); });
         el('recordDate').addEventListener('change',function(){ markComposerMutation(); saveDraft(); });
         el('category').addEventListener('change',function(){ markComposerMutation(); saveDraft(); });
@@ -2402,8 +2414,9 @@
         return view;
       }
 
-      function restoreFeedView(view){
+      function restoreFeedView(view,expectedTab){
         requestAnimationFrame(function(){
+          if(expectedTab&&state.activeTab!==expectedTab) return;
           Object.keys(state.commentDrafts||{}).forEach(function(postId){
             var cards=el('feed').querySelectorAll('.post');
             for(var i=0;i<cards.length;i++){
@@ -3665,6 +3678,9 @@
       function activateTab(name){
         if(name==='guide'){ openGuidebook(); return; }
         if(name==='more'){ openOverlaySheet('moreSheet'); return; }
+        if(name===state.activeTab){ scrollFeedTop(); return; }
+        state.tabViews=state.tabViews||{};
+        if(state.activeTab) state.tabViews[state.activeTab]=captureFeedView();
         state.activeTab=name;
         var tabs=document.querySelectorAll('.tab');
         for(var i=0;i<tabs.length;i++){
@@ -3683,7 +3699,7 @@
         else if(isRecords){ state.viewFilter=state.recordSegment||'ALL'; syncSegUI(); }
         else if(isQuestion){ state.viewFilter='QUESTION'; renderQuestionHead(); ensureAllPostsForLibrary(); }
         if(state.home) renderPosts(state.home.posts||[]);
-        try{ window.scrollTo(0,0); }catch(scrollError){}
+        restoreFeedView(state.tabViews[name]||{scrollY:0},name);
       }
       function syncSegUI(){
         var segs=document.querySelectorAll('#recordsSeg .seg');
@@ -3716,6 +3732,7 @@
         scrollFeedTop();
       }
       function scrollFeedTop(){
+        if(state.tabViews) delete state.tabViews[state.activeTab];
         try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(scrollError){ try{ window.scrollTo(0,0); }catch(e){} }
       }
       function openWeeklyAnswer(question){
@@ -5773,8 +5790,22 @@
         configureComposerMode();
         state.dialogReturnFocus=document.activeElement;
         show(el('composer'));
+        syncComposerViewport();
         // 모바일 WebView에서는 표시와 같은 틱의 focus가 한글 IME 연결을 깨뜨릴 수 있다.
         focusTextEntryForDesktop(el('postBody'),100);
+      }
+      function syncComposerViewport(){
+        var dialog=el('composer'), viewport=window.visualViewport;
+        if(!dialog) return;
+        if(!viewport||window.innerWidth>540||dialog.classList.contains('hidden')){
+          dialog.classList.remove('viewport-fit');
+          dialog.style.removeProperty('--composer-visible-top');
+          dialog.style.removeProperty('--composer-visible-height');
+          return;
+        }
+        dialog.style.setProperty('--composer-visible-top',Math.max(0,Math.round(viewport.offsetTop||0))+'px');
+        dialog.style.setProperty('--composer-visible-height',Math.max(1,Math.round(viewport.height||window.innerHeight))+'px');
+        dialog.classList.add('viewport-fit');
       }
 
       function backupCreateComposer(){
@@ -5946,6 +5977,22 @@
           box.querySelector('.remove').setAttribute('aria-label','선택한 사진 삭제');box.querySelector('.remove').disabled=state.saving||composerDraftLocked();
           wrap.appendChild(box);
         })(state.images[i]);
+        var queueStatus=el('photoQueueStatus');
+        if(!queueStatus) return;
+        if(!state.images.length){ hide(queueStatus); text(queueStatus,''); return; }
+        var ready=0,queued=0,processing=0,errors=0;
+        state.images.forEach(function(item){
+          if(item.status==='error') errors++;
+          else if(item.status==='queued') queued++;
+          else if(item.status==='processing') processing++;
+          else ready++;
+        });
+        var parts=['새 사진 '+state.images.length+'장','준비 완료 '+ready+'장'];
+        if(processing) parts.push('변환 중 '+processing+'장');
+        if(queued) parts.push('대기 '+queued+'장');
+        if(errors) parts.push('실패 '+errors+'장 · 삭제 후 다시 선택');
+        text(queueStatus,parts.join(' · '));
+        show(queueStatus);
       }
 
       function validClientRequestId(value){
@@ -6632,7 +6679,7 @@
         state.imageFallbackTimers={};
         state.imageObserver=null;
         state.selectedUser='';
-        state.dialogReturnFocus=null; state.composerMode='create'; state.editingPostId=''; state.editAttempt=null; state.composerBackup=null; state.searchQuery=''; state.viewFilter='ALL'; state.monthFilter=''; hide(el('recoveryBanner')); closePhotoViewer();
+        state.dialogReturnFocus=null; state.composerMode='create'; state.editingPostId=''; state.editAttempt=null; state.composerBackup=null; state.searchQuery=''; state.viewFilter='ALL'; state.monthFilter=''; state.activeTab=''; state.tabViews={}; hide(el('recoveryBanner')); closePhotoViewer();
         el('searchInput').value=''; el('viewFilter').value='ALL'; el('monthFilter').value='';
         resetComposerView();
         el('pin').value='';
