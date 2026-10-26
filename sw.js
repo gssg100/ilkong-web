@@ -1,9 +1,9 @@
 /*
- * 일콩 기록 서비스워커 v4.9.8 (업데이트 기준일 2026-10-26 KST)
+ * 일콩 기록 서비스워커 v4.9.9 (업데이트 기준일 2026-10-26 KST)
  * 화면(껍데기)을 기기에 저장해 인터넷이 없어도 앱이 열리게 한다.
  * 백그라운드 Web Push 알림 수신 및 탭 이동 지원.
  */
-var CACHE = 'ilkong-shell-v4.9.8';
+var CACHE = 'ilkong-shell-v4.9.9';
 var CACHE_PREFIX = 'ilkong-shell-';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
@@ -107,25 +107,28 @@ self.addEventListener('push', function (event) {
  */
 self.addEventListener('notificationclick', function (event) {
   event.notification.close();
+  // 기준은 사이트 루트(gssg100.github.io)가 아니라 앱 폴더(/ilkong-web/)다.
+  // 루트 기준으로 './'를 풀면 깃허브 사용자 페이지로 빠져나가므로 scope를 쓴다.
+  var scope = (self.registration && self.registration.scope) || self.location.href;
   var targetUrl = (event.notification.data && event.notification.data.url) || './';
-  var targetAbsolute = new URL(targetUrl, self.location.origin).href;
+  var targetAbsolute = new URL(targetUrl, scope).href;
+  // 서버가 보낸 주소라도 앱 밖으로는 절대 나가지 않는다.
+  if (targetAbsolute.indexOf(scope) !== 0) targetAbsolute = scope;
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
       for (var i = 0; i < clientList.length; i++) {
         var client = clientList[i];
-        if (client.url && 'focus' in client) {
-          if (client.url === targetAbsolute || client.url.indexOf(self.location.origin) === 0) {
-            client.focus();
-            if ('navigate' in client && client.url !== targetAbsolute) {
-              client.navigate(targetAbsolute);
-            }
-            return;
+        if (client.url && client.url.indexOf(scope) === 0 && 'focus' in client) {
+          client.focus();
+          if ('navigate' in client && client.url !== targetAbsolute) {
+            client.navigate(targetAbsolute);
           }
+          return;
         }
       }
-      if (clients.openWindow) {
-        return clients.openWindow(targetAbsolute);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetAbsolute);
       }
     })
   );
