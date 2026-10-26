@@ -70,4 +70,51 @@ offline = true;
 const request = { method: 'GET', url: scope + '?updated=' + activeCache.slice('ilkong-shell-v'.length), mode: 'navigate' };
 listeners.fetch({ request, respondWith(promise) { job = promise; } });
 assert.equal(await job, cacheResponse, 'deep-link navigation should find cached offline shell');
-console.log('[sw-check] passed: incomplete-install rejection, owned caches only, offline navigation fallback');
+
+// Exercise notification clicks against the actual worker. In particular, './'
+// must resolve inside the app even when no existing window can hide a bad URL.
+async function clickNotification(url, windows = [], dataPresent = true) {
+  const actions = [];
+  runtime.self.clients.matchAll = async (options) => {
+    assert.equal(options.type, 'window');
+    assert.equal(options.includeUncontrolled, true);
+    return windows.map((window) => ({
+      url: window,
+      async focus() { actions.push(['focus', window]); },
+      async navigate(target) { actions.push(['navigate', target]); },
+    }));
+  };
+  runtime.self.clients.openWindow = async (target) => { actions.push(['open', target]); };
+  let clickJob;
+  listeners.notificationclick({
+    notification: {
+      ...(dataPresent ? { data: { url } } : {}),
+      close() { actions.push(['close']); },
+    },
+    waitUntil(promise) { clickJob = promise; },
+  });
+  assert.ok(clickJob, 'notification navigation must extend the event lifetime');
+  await clickJob;
+  assert.deepEqual(actions[0], ['close']);
+  return actions.slice(1);
+}
+
+assert.deepEqual(await clickNotification('./'), [['open', scope]], 'closed app must open its folder, never the GitHub user root');
+assert.deepEqual(await clickNotification(undefined, [], false), [['open', scope]], 'old notifications without data must open the app');
+assert.deepEqual(await clickNotification('?from=notification#record'), [['open', scope + '?from=notification#record']]);
+assert.deepEqual(await clickNotification('./', [scope]), [['focus', scope]], 'an existing app window should be reused');
+assert.deepEqual(await clickNotification('./', [scope + '?old=1']), [['focus', scope + '?old=1'], ['navigate', scope]]);
+assert.deepEqual(await clickNotification('./', ['https://gssg100.github.io/']), [['open', scope]], 'another GitHub Pages window must not be focused');
+for (const outside of [
+  '../',
+  '/',
+  'https://example.com/',
+  '//example.com/ilkong-web/',
+  'https://gssg100.github.io/another-app/',
+  'https://gssg100.github.io/ilkong-web-lookalike/',
+]) {
+  assert.deepEqual(await clickNotification(outside), [['open', scope]], `outside target must fall back to app scope: ${outside}`);
+}
+assert.deepEqual(await clickNotification('./', ['https://gssg100.github.io/another-app/', scope]), [['focus', scope]]);
+
+console.log('[sw-check] passed: incomplete-install rejection, owned caches only, offline navigation fallback, notification scope and window reuse (13 cases)');
