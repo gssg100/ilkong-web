@@ -47,7 +47,7 @@ test('record select applies PHOTO, MOOD, CAT and resets ALL', () => {
   c.setLibraryCategoryFilter('ALL');
   assert.equal(state.catFilter, '');
   assert.equal(calls.at(-1), 'photo,hospital');
-  assert.equal(calls.filter((item) => item === 'category').length, 3);
+  assert.equal(calls.filter((item) => item === 'category').length, 0, 'filters never download the whole feed');
   assert.match(html, /viewFilter'\)\.addEventListener\('change',function\(\)\{ setLibraryCategoryFilter\(this\.value\); \}\)/);
 });
 
@@ -174,8 +174,8 @@ test('reversed date range gives an inline warning and avoids unnecessary loading
   assert.equal(nodes.rangeWarning.textContent, '');
   assert.equal(nodes.rangeWarning.classList.hidden, true);
   assert.equal(attributes.to, 'false');
-  assert.deepEqual(loaded, ['range']);
-  assert.equal(shown.length, 2);
+  assert.deepEqual(loaded, [], 'date filters use paged server search');
+  assert.equal(shown.length, 1, 'invalid ranges do not start a search');
   assert.match(html, /class="date-range-controls(?: hidden)?"/);
   assert.match(html, /@media\(max-width:540px\)\{\.date-range-controls\{display:grid/);
 });

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.7 — 모바일 필터·가독성·개인 바로가기 개선 -->
+<!-- 일콩 기록 v4.9.8 — 모바일 필터·가독성·개인 바로가기 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.7">
+  <meta name="ilkong-release-version" content="4.9.8">
   <meta name="ilkong-release-date" content="2026-10-26">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -260,6 +260,16 @@
     .shortcut-choices{display:grid;grid-template-columns:1fr 1fr;gap:6px}.shortcut-choices label{display:flex;align-items:center;min-height:44px;gap:8px;font-size:14px}
     .shortcut-choices input{width:22px;height:22px;accent-color:var(--accent)}.shortcut-save-note{margin:0 0 12px;font-size:13px;color:var(--muted)}
     @media(max-width:540px){.library-tools{display:block}.library-tools .date-range-controls input{grid-column:auto}.library-search-row input{grid-column:auto}.library-filter-panel input{grid-column:auto}}
+
+    .question-eyebrow{font-size:13px;color:var(--accent);font-weight:800}
+    #questionHead h2{font-size:19px;line-height:1.5;margin:8px 0}#questionHead .save{width:100%}
+    .question-group{margin:0 0 20px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:20px;min-width:0}
+    .question-group>h2{font-size:19px;line-height:1.5;margin:0;overflow-wrap:anywhere}
+    .question-progress{font-size:13px;color:var(--muted);margin:8px 0 16px}.question-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .question-answer{min-width:0;padding:14px;border:1px solid var(--line);border-radius:15px}.answer-status{font-size:14px;font-weight:750;color:var(--muted);margin:0 0 12px}.answer-status.answered{color:var(--accent)}
+    .question-answer .post{margin:0;border:0;border-radius:0;box-shadow:none;background:transparent}.question-answer .post-head,.question-answer .post-body{padding-left:0;padding-right:0}.question-answer .post-head .avatar{display:none}.question-answer .post-actions{flex-wrap:wrap}
+    .answer-empty{font-size:15px;line-height:1.6;color:var(--muted)}.answer-action{width:100%;margin-top:12px;min-height:44px}.question-history{border-top:1px solid var(--line);margin-top:16px;padding-top:10px}.question-history>summary{padding:10px 0;min-height:44px;font-weight:700;cursor:pointer}.question-history .post{margin-top:12px}
+    @media(max-width:680px){.question-pair{grid-template-columns:minmax(0,1fr)}.question-group{padding:14px}.question-group>h2{font-size:18px}}
   </style>
 </head>
 <body>
@@ -272,7 +282,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.7 · 2026.10.26 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.8 · 2026.10.26 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -281,7 +291,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.7 · 2026.10.26</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.8 · 2026.10.26</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -296,7 +306,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.7 · 2026.10.26 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.8 · 2026.10.26 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><p id="dateFreshness" class="hidden" style="margin:10px 0 0;color:var(--ink);font-size:13px;line-height:1.5" role="status"></p><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -311,14 +321,14 @@
       <div id="recordsSeg" class="segbar hidden"><button class="seg active" data-seg="ALL" type="button">전체</button><button class="seg" data-seg="JISU" type="button">🌿 지수</button><button class="seg" data-seg="HAKONG" type="button">🌼 하콩</button><button class="seg" data-seg="PHOTO" type="button">📷 사진</button><button class="seg" data-seg="FAVORITE" type="button">★ 즐겨찾기</button><button id="segTrip" class="seg hidden" data-seg="TRIP" type="button">✈️ 여행</button></div>
       <div id="questionHead" class="question-head hidden"></div>
       <div id="libraryTools" class="library-tools hidden">
-        <div class="library-search-row"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><button id="toggleLibraryFilters" class="library-filter-toggle" type="button" aria-label="검색 필터" aria-expanded="false" aria-controls="libraryFilterPanel">필터</button></div>
+        <div class="library-search-row"><input id="searchInput" type="search" maxlength="300" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><button id="toggleLibraryFilters" class="library-filter-toggle" type="button" aria-label="검색 필터" aria-expanded="false" aria-controls="libraryFilterPanel">필터</button></div>
         <div id="libraryFilterPanel" class="library-filter-panel hidden">
           <label>기록 분류<select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="PHOTO">📷 사진 있는 기록만</option><option value="MOOD:🥰">🥰 행복한 순간</option><option value="MOOD:🥹">🥹 뭉클한 순간</option><option value="MOOD:😂">😂 웃긴 순간</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:진통">⏱️ 진통</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select></label>
           <label>기간 선택<select id="libraryPeriodType" aria-label="기간 선택"><option value="all">전체 기간</option><option value="month">월별 보기</option><option value="range">기간 직접 지정</option></select></label>
           <label id="monthFilterField" class="hidden">조회할 월<input id="monthFilter" type="month" aria-label="월별 기록"></label>
           <div id="rangeFilterFields" class="date-range-controls hidden"><label>시작일<input id="rangeFrom" type="date" aria-label="검색 시작일"></label><label>종료일<input id="rangeTo" type="date" aria-label="검색 종료일"></label><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div>
           <div id="rangeWarning" class="range-warning hidden" role="status" aria-live="polite"></div>
-          <div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div>
+          <div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">결과 새로고침</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div>
         </div>
         <p id="libraryActiveFilters" class="library-active-filters hidden" role="status" aria-live="polite"></p>
         <div id="libraryCount" class="library-count" role="status" aria-live="polite"></div>
@@ -469,7 +479,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.7 · 2026.10.26</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.8 · 2026.10.26</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -499,7 +509,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.7 · 2026.10.26 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.8 · 2026.10.26 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -662,17 +672,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.7';
+      var VERSION = '4.9.8';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-26',
         timezone: 'Asia/Seoul',
         notes: [
+          '질문별로 두 사람의 답변·답변 여부를 모아 보고 작성·수정과 지난 답변 연결',
+          '기록·댓글 검색과 분류·기간 조건을 서버에서 처리하고 결과만 페이지별로 표시',
+          '화면·스타일·검색·질문·사진·API 소스를 기능별로 분리하고 단일 화면 빌드 검증 추가'
+        ],
+        history: [
+          {version:'4.9.7',date:'2026-10-26',notes:[
           '모바일 기록 검색에서 상세 필터를 접고 분류·월별·기간 조건을 구분',
           '설명 글자와 버튼 영역을 키우고 밝은 화면·어두운 화면의 색상 대비 개선',
           '홈 바로가기와 더보기 상단 메뉴를 계정별로 선택하고 전체 메뉴를 용도별로 정리'
-        ],
-        history: [
+          ]},
           {version:'4.9.6',date:'2026-10-26',notes:[
           '검사 안내 시기와 실제 완료를 구분하고 지난 시기를 완료로 표시하지 않도록 수정',
           '저장된 주수와 검진 D-day를 오늘 기준으로 계산하고 날짜 변경 시 다시 확인',
@@ -974,7 +989,6 @@
           if(isImeComposing(input)) return;
           state.searchApplyPending=false;
           state.searchQuery=String(input.value||'').trim().toLowerCase();
-          if(state.searchQuery) ensureAllPostsForLibrary('search');
           renderPosts(state.home&&state.home.posts||[]);
         },typeof delay==='number'?delay:120);
       }
@@ -1236,7 +1250,7 @@
         el('viewFilter').addEventListener('change',function(){ setLibraryCategoryFilter(this.value); });
         el('toggleLibraryFilters').addEventListener('click',toggleLibraryFilters);
         el('libraryPeriodType').addEventListener('change',function(){ setLibraryPeriod(this.value); });
-        el('monthFilter').addEventListener('change',function(){ state.monthFilter=this.value; if(this.value) ensureAllPostsForLibrary('month'); renderPosts(state.home&&state.home.posts||[]); });
+        el('monthFilter').addEventListener('change',function(){ state.monthFilter=this.value; renderPosts(state.home&&state.home.posts||[]); });
         function applyRange(){
           state.rangeFrom=el('rangeFrom').value||''; state.rangeTo=el('rangeTo').value||'';
           var invalid=!!(state.rangeFrom&&state.rangeTo&&state.rangeFrom>state.rangeTo);
@@ -1244,13 +1258,12 @@
           el('rangeWarning').classList.toggle('hidden',!invalid);
           el('rangeFrom').setAttribute('aria-invalid',invalid?'true':'false');
           el('rangeTo').setAttribute('aria-invalid',invalid?'true':'false');
-          if(!invalid&&(state.rangeFrom||state.rangeTo)) ensureAllPostsForLibrary('range');
-          renderPosts(state.home&&state.home.posts||[]);
+          if(!invalid) renderPosts(state.home&&state.home.posts||[]);
         }
         el('rangeFrom').addEventListener('change',applyRange);
         el('rangeTo').addEventListener('change',applyRange);
         el('rangeClear').addEventListener('click',function(){ setLibraryPeriod('all'); });
-        el('loadAllRecords').addEventListener('click',function(){ ensureAllPostsForLibrary('manual'); });
+        el('loadAllRecords').addEventListener('click',refreshPagedFeed);
         el('clearLibraryFilters').addEventListener('click',resetLibraryFilters);
         el('feed').addEventListener('click',function(e){
           if(e.target&&e.target.closest&&e.target.closest('#resetEmptyFilters')) resetLibraryFilters();
@@ -2378,6 +2391,11 @@
       }
 
       function renderLoadMore(){
+        if(state.activeTab==='records'||state.activeTab==='question'){
+          var cache=pagedCache(state.activeTab), more=el('feedMore'), next=el('loadMore');
+          if(!cache||!cache.hasMore){hide(more);return;}
+          show(more);next.disabled=!!cache.loading;text(next,cache.loading?'불러오는 중…':(state.activeTab==='question'?'이전 질문 더 보기':'검색 결과 더 보기'));return;
+        }
         var wrap=el('feedMore');
         var button=el('loadMore');
         if(!state.home||!state.hasMore){ hide(wrap); return; }
@@ -2387,6 +2405,11 @@
       }
 
       function loadMorePosts(){
+        if(state.activeTab==='records'||state.activeTab==='question'){
+          var cache=pagedCache(state.activeTab);
+          if(cache&&cache.hasMore&&!cache.loading) return fetchPagedFeed(state.activeTab,true);
+          return;
+        }
         if(!state.session||state.loadingMore||state.loadingAll||!state.hasMore) return;
         var requestToken=state.session.token;
         var requestGeneration=state.homeApplyGeneration;
@@ -2526,6 +2549,7 @@
         }
         if(state.pendingFeedRenderTimer){ clearTimeout(state.pendingFeedRenderTimer); state.pendingFeedRenderTimer=null; }
         state.pendingFeedRender=null;
+        if(state.activeTab==='records'||state.activeTab==='question') return renderPagedFeed();
         var feed=el('feed');
         captureLoadedImageSources(feed);
         feed.innerHTML='';
@@ -3140,7 +3164,14 @@
       function localDateString(value){ return kstDateString(value); }
 
       function findPost(postId){
-        var posts=state.home&&Array.isArray(state.home.posts)?state.home.posts:[];
+        var posts=[], feeds=state.pagedFeeds||{};
+        Object.keys(feeds).forEach(function(kind){
+          var cache=feeds[kind];if(!cache) return;
+          posts=posts.concat(cache.posts||[]);
+          (cache.groups||[]).concat(cache.weekly?[cache.weekly]:[]).forEach(function(group){(group.authors||[]).forEach(function(author){if(author.post) posts.push(author.post);});});
+          Object.keys(cache.histories||{}).forEach(function(key){posts=posts.concat(cache.histories[key].posts||[]);});
+        });
+        posts=posts.concat(state.home&&Array.isArray(state.home.posts)?state.home.posts:[]);
         for(var i=0;i<posts.length;i++) if(String(posts[i].id)===String(postId)) return posts[i];
         return null;
       }
@@ -3921,6 +3952,7 @@
         }).catch(showOriginalFailure);
       }
 
+
       // ===== v3.5.0 탭 UI =====
       function activateTab(name){
         if(name==='guide'){ openGuidebook(); return; }
@@ -3944,7 +3976,7 @@
         el('questionHead').classList.toggle('hidden',!isQuestion);
         if(isHome){ state.viewFilter='ALL'; }
         else if(isRecords){ state.viewFilter=state.recordSegment||'ALL'; syncSegUI(); }
-        else if(isQuestion){ state.viewFilter='QUESTION'; renderQuestionHead(); ensureAllPostsForLibrary(); }
+        else if(isQuestion){ state.viewFilter='QUESTION'; renderQuestionHead(); }
         if(state.home) renderPosts(state.home.posts||[]);
         restoreFeedView(state.tabViews[name]||{scrollY:0},name);
       }
@@ -3956,14 +3988,12 @@
         state.recordSegment=seg||'ALL';
         state.viewFilter=state.recordSegment;
         syncSegUI();
-        if(state.recordSegment!=='ALL') ensureAllPostsForLibrary('segment');
         if(state.home) renderPosts(state.home.posts||[]);
         scrollFeedTop();
       }
       function setLibraryCategoryFilter(value){
         // 선택 메뉴에는 사진(PHOTO), 기분(MOOD:…), 분류(CAT:…)가 함께 들어 있다.
         state.catFilter=value==='ALL'?'':String(value||'');
-        if(state.catFilter) ensureAllPostsForLibrary('category');
         renderPosts(state.home&&state.home.posts||[]);
         scrollFeedTop();
       }
@@ -4019,24 +4049,8 @@
         if(state.tabViews) delete state.tabViews[state.activeTab];
         try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(scrollError){ try{ window.scrollTo(0,0); }catch(e){} }
       }
-      function openWeeklyAnswer(question){
-        openComposer();
-        var body=el('postBody');
-        if(question&&!String(body.value||'').trim()){ body.value='Q. '+question+'\nA. '; scheduleDraftSave(); }
-      }
-      function renderQuestionHead(){
-        var box=el('questionHead');
-        if(!box) return;
-        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||{};
-        var week=Number(pregnancy.week);
-        var q=isFinite(week)?WEEKLY_QUESTIONS[((week%WEEKLY_QUESTIONS.length)+WEEKLY_QUESTIONS.length)%WEEKLY_QUESTIONS.length]:WEEKLY_QUESTIONS[0];
-        box.innerHTML='<div style="font-size:12px;color:var(--accent);font-weight:800;margin-bottom:6px">💬 이번 주 질문</div>'
-          +'<div style="font-size:16px;font-weight:800;letter-spacing:-.02em;line-height:1.5;margin-bottom:12px">'+escapeHtml(q)+'</div>'
-          +'<button id="answerQuestionBtn" class="save" type="button" style="width:100%">이 질문에 답하기 ✍️</button>'
-          +'<p class="upload-note" style="margin:11px 0 0">아래는 지금까지 우리가 남긴 질문 답변들이야. 질문·답변은 "Q."로 시작하는 기록으로 모여.</p>';
-        var btn=box.querySelector('#answerQuestionBtn');
-        if(btn) btn.addEventListener('click',function(){ openWeeklyAnswer(q); });
-      }
+
+
 
       // ===== v3.3.0 과학 가이드북 =====
       // ACOG·NHS·Mayo Clinic·표준 산전관리 지침 기반의 일반 교육 정보. 진단·처방 아님.
@@ -4425,6 +4439,7 @@
       }
 
       // --- 저장공간 정리 ---
+
       function formatBytes(bytes){
         var n=Number(bytes||0);
         if(n<1024) return n+'B';
@@ -4746,6 +4761,7 @@
       }
 
       // --- 화면 테마 ---
+
       var THEME_KEY='ilkong_theme_v320';
       var themeMediaBound=false;
       function themeMode(){ return storageGet(THEME_KEY)||'system'; }
@@ -6913,6 +6929,8 @@
         state.compositionTarget=null;
         state.compositionSerial++;
         state.homeApplyGeneration++;
+        state.pagedFeeds={};
+        state.questionAnswerBusy=false;
         hide(el('settings'));
         hide(el('composer'));
         hide(el('checkin'));
@@ -6982,6 +7000,7 @@
         var buttons=document.querySelectorAll('.user-btn');
         for(var i=0;i<buttons.length;i++) buttons[i].classList.remove('active');
       }
+
 
       function unwrap(response){
         if(response===null||response===undefined){
@@ -7057,6 +7076,206 @@
       // 보이지 않는 브리지 창을 통해 기존 서버 함수를 그대로 호출한다(CORS 없이 동작).
       // PWA의 브라우저→GAS iframe fallback은 운영에서 사용하지 않는다.
       // 구형 데이터 호환은 Supabase Edge가 서버→서버로 처리하므로 공개 화면에는 배포 URL도 넣지 않는다.
+      // Paged library state is separate from the home feed and is never persisted.
+      function libraryFilters(){
+        var segment=state.recordSegment||'ALL', category=state.catFilter||'';
+        return {query:state.searchQuery||'',author:segment==='JISU'||segment==='HAKONG'?segment:'',favorite:segment==='FAVORITE',photo:segment==='PHOTO'||category==='PHOTO',trip:segment==='TRIP',category:category.indexOf('CAT:')===0?category.slice(4):'',mood:category.indexOf('MOOD:')===0?category.slice(5):'',month:state.monthFilter||'',from:state.rangeFrom||'',to:state.rangeTo||''};
+      }
+      function pagedSignature(kind){
+        return JSON.stringify([state.session&&state.session.token||'',state.revision||'',state.homeApplyGeneration||0,kind,kind==='records'?libraryFilters():weeklyQuestion()]);
+      }
+      function pagedRequest(op,values){
+        return ensureSupabaseSession().then(function(token){ return supabaseRequest(Object.assign({op:op,token:token},values),24000); }).then(unwrap);
+      }
+      function pagedCache(kind){
+        return state.pagedFeeds&&state.pagedFeeds[kind];
+      }
+      function refreshPagedFeed(){
+        if(state.pagedFeeds) delete state.pagedFeeds[state.activeTab];
+        renderPosts(state.home&&state.home.posts||[]);
+      }
+      function pagedResponseIsCurrent(kind,cache,token){
+        return !!(state.session&&state.session.token===token&&pagedCache(kind)===cache&&cache.signature===pagedSignature(kind));
+      }
+      function fetchPagedFeed(kind,append){
+        if(!state.session) return Promise.resolve(false);
+        state.pagedFeeds=state.pagedFeeds||{};
+        var signature=pagedSignature(kind), cache=pagedCache(kind);
+        if(!cache||cache.signature!==signature||!append){
+          cache={signature:signature,posts:[],groups:[],partners:[],histories:{},offset:0,total:0,hasMore:false,loading:false,error:'',weekly:null};
+          state.pagedFeeds[kind]=cache;
+        }
+        if(cache.loading) return cache.promise;
+        var token=state.session.token, offset=append?cache.offset:0;
+        cache.loading=true; cache.error='';
+        var request=kind==='records'?pagedRequest('search_posts',{filters:libraryFilters(),offset:offset,limit:20}):pagedRequest('question_groups',{offset:offset,limit:10});
+        if(kind==='question'&&!append){
+          request=Promise.all([request,pagedRequest('question_groups',{questionKey:questionKey(weeklyQuestion()),offset:0,limit:1})]).then(function(pages){
+            var page=pages[0]; page.weekly=(pages[1].groups||[])[0]||null;
+            if(page.revision!==pages[1].revision) throw new Error('답변이 바뀌었어. 다시 불러와 줘.');
+            return page;
+          });
+        }
+        cache.promise=request.then(function(page){
+          if(!pagedResponseIsCurrent(kind,cache,token)) return false;
+          if(append&&cache.revision&&page.revision!==cache.revision){
+            delete state.pagedFeeds[kind];
+            if(state.activeTab===kind) renderPosts(state.home&&state.home.posts||[]);
+            return false;
+          }
+          var field=kind==='records'?'posts':'groups';
+          cache[field]=(append?cache[field]:[]).concat(page[field]||[]);
+          cache.offset=Number(page.nextOffset||0); cache.total=Number(page.total||0); cache.hasMore=!!page.hasMore; cache.revision=page.revision;
+          if(kind==='question') { cache.partners=page.partners||[]; if(!append) cache.weekly=page.weekly; }
+          return true;
+        }).catch(function(error){
+          if(pagedResponseIsCurrent(kind,cache,token)) cache.error=errorMessage(error);
+          return false;
+        }).then(function(ok){
+          cache.loading=false;
+          if(pagedResponseIsCurrent(kind,cache,token)&&state.activeTab===kind) renderPosts(state.home&&state.home.posts||[]);
+          return ok;
+        });
+        return cache.promise;
+      }
+      function renderPagedFeed(){
+        hide(el('feedStatus'));
+        var kind=state.activeTab, cache=pagedCache(kind);
+        if(!cache||cache.signature!==pagedSignature(kind)){ fetchPagedFeed(kind,false); cache=pagedCache(kind); }
+        var feed=el('feed'); captureLoadedImageSources(feed); feed.innerHTML='';
+        var refresh=el('loadAllRecords'); refresh.disabled=cache.loading; text(refresh,cache.loading?'검색 중…':'결과 새로고침');
+        if(kind==='records'){
+          text(el('libraryCount'),cache.loading&&!cache.posts.length?'전체 기록에서 검색 중…':('전체 '+cache.total+'개 중 '+cache.posts.length+'개 표시'+(cache.loading?' · 더 불러오는 중…':'')));
+          var lastGroup=null;
+          cache.posts.forEach(function(post){
+            var group=feedGroupLabel(post.recordDate);
+            if(group&&group!==lastGroup){var head=document.createElement('div');head.className='feed-daygroup';head.textContent=group;feed.appendChild(head);lastGroup=group;}
+            feed.appendChild(postCard(post));
+          });
+        }else{
+          renderQuestionHead();
+          var groups=cache.groups.slice(), weekly=cache.weekly;
+          if(weekly){ groups=groups.filter(function(group){return group.questionKey!==weekly.questionKey;}); groups.unshift(weekly); }
+          else if(!cache.loading&&!cache.error) groups.unshift({questionKey:questionKey(weeklyQuestion()),questionText:weeklyQuestion(),authors:[],totalAnswers:0});
+          groups.forEach(function(group){ feed.appendChild(questionGroupCard(group,cache)); });
+        }
+        if(cache.error){
+          var message=document.createElement('div');message.className='status-card';message.setAttribute('role','status');
+          var detail=document.createElement('p');detail.textContent='불러오지 못했어: '+cache.error;message.appendChild(detail);
+          var retry=document.createElement('button');retry.className='secondary';retry.type='button';retry.textContent='다시 불러오기';
+          retry.addEventListener('click',function(){ if(cache.offset) fetchPagedFeed(kind,true); else refreshPagedFeed(); });message.appendChild(retry);feed.appendChild(message);
+        }else if(!feed.children.length){
+          if(cache.loading) { var loading=document.createElement('p');loading.className='status-card';loading.textContent=kind==='question'?'질문과 두 사람의 답변을 불러오는 중…':'검색 결과를 불러오는 중…';feed.appendChild(loading); }
+          else feed.innerHTML=emptyStateHtml();
+        }
+        renderLoadMore();
+        return true;
+      }
+      function questionKey(question){ return String(question||'').trim().replace(/\s+/g,' ').toLowerCase(); }
+      function weeklyQuestion(){
+        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||{},week=Number(pregnancy.week);
+        return isFinite(week)?WEEKLY_QUESTIONS[((week%WEEKLY_QUESTIONS.length)+WEEKLY_QUESTIONS.length)%WEEKLY_QUESTIONS.length]:WEEKLY_QUESTIONS[0];
+      }
+      function questionPartners(cache){
+        var partners=cache.partners||[];
+        return ['JISU','HAKONG'].map(function(id){ return partners.filter(function(partner){return partner.id===id;})[0]||{id:id,name:id==='JISU'?'지수':'하콩',emoji:id==='JISU'?'🌿':'🌼'}; });
+      }
+      function answerFor(group,userId){
+        return group&&(group.authors||[]).filter(function(author){ return author.authorId===userId; })[0]||null;
+      }
+      function openWeeklyAnswer(question,existingPost,checked){
+        if(existingPost){ openEditComposer(findPost(existingPost.id)||existingPost); return; }
+        if(!checked){
+          if(!state.session||state.questionAnswerBusy) return;
+          var token=state.session.token;state.questionAnswerBusy=true;
+          pagedRequest('question_groups',{questionKey:questionKey(question),offset:0,limit:1}).then(function(page){
+            if(!state.session||state.session.token!==token) return;
+            var mine=answerFor((page.groups||[])[0],currentUserId());
+            openWeeklyAnswer(question,mine&&mine.post,true);
+          }).catch(function(error){if(state.session&&state.session.token===token) toast(errorMessage(error));}).then(function(){if(state.session&&state.session.token===token) state.questionAnswerBusy=false;});
+          return;
+        }
+        if(state.saving) return;
+        var body=el('postBody');
+        if(state.composerMode==='edit'||String(body.value||'').trim()||String(el('postTitle').value||'').trim()||(state.images||[]).length||composerDraftLocked()){
+          openComposer(); toast('작성 중인 기록을 먼저 마무리해 줘. 질문 답변은 그다음에 남길 수 있어.'); return;
+        }
+        openComposer();
+        if(question){ body.value='Q. '+question+'\nA. '; scheduleDraftSave(); }
+      }
+      function renderQuestionHead(){
+        var box=el('questionHead'); if(!box) return;
+        var cache=pagedCache('question'), q=weeklyQuestion(), mine=cache&&answerFor(cache.weekly,currentUserId());
+        box.innerHTML='<div class="question-eyebrow">💬 이번 주 질문</div><h2>'+escapeHtml(q)+'</h2>'
+          +'<p class="upload-note">질문별로 두 사람의 답변을 함께 볼 수 있어. 지난 답변도 모두 남아 있어.</p>'
+          +'<button id="answerQuestionBtn" class="save" type="button">'+(mine?'내 답변 수정하기':'이 질문에 답하기 ✍️')+'</button>'
+          +'<button id="refreshQuestions" class="secondary" type="button" style="width:100%;margin-top:10px">질문 새로고침</button>';
+        var button=box.querySelector('#answerQuestionBtn');
+        button.disabled=!cache||cache.loading||!!cache.error;
+        button.addEventListener('click',function(){ openWeeklyAnswer(q,mine&&mine.post,true); });
+        box.querySelector('#refreshQuestions').addEventListener('click',refreshPagedFeed);
+      }
+      function questionGroupCard(group,cache){
+        var card=document.createElement('section');card.className='question-group';
+        var title=document.createElement('h2');title.textContent=group.questionText;card.appendChild(title);
+        var total=document.createElement('p');total.className='question-progress';
+        var partners=questionPartners(cache), answered=partners.filter(function(partner){return !!answerFor(group,partner.id);}).length;
+        total.textContent=answered+' / '+partners.length+'명 답변';card.appendChild(total);
+        var pair=document.createElement('div');pair.className='question-pair';card.appendChild(pair);
+        partners.forEach(function(partner){
+          var answer=answerFor(group,partner.id), panel=document.createElement('div');panel.className='question-answer';
+          var status=document.createElement('p');status.className='answer-status'+(answer?' answered':'');status.textContent=partner.emoji+' '+partner.name+' · '+(answer?'답변 완료':'아직 답변 없음');panel.appendChild(status);
+          if(answer&&answer.post){
+            var post=postCard(answer.post), body=post.querySelector('.post-text');
+            if(body) body.textContent=String(answer.post.body||'').replace(/^Q\.[ \t]+[^\r\n]+\r?\n?/,'').replace(/^A\.[ \t]*/,'');
+            panel.appendChild(post);
+          }else{
+            var empty=document.createElement('p');empty.className='answer-empty';empty.textContent=partner.id===currentUserId()?'지금 떠오르는 마음을 남겨봐.':'답변을 남기면 여기에 함께 보여.';panel.appendChild(empty);
+          }
+          if(partner.id===currentUserId()){
+            var action=document.createElement('button');action.className='secondary answer-action';action.type='button';action.textContent=answer?'내 답변 수정':'답변 남기기';
+            action.addEventListener('click',function(){openWeeklyAnswer(group.questionText,answer&&answer.post,true);});panel.appendChild(action);
+          }
+          pair.appendChild(panel);
+        });
+        if(group.totalAnswers>(group.authors||[]).length){
+          var details=document.createElement('details');details.className='question-history';
+          var summary=document.createElement('summary');summary.textContent='이전 답변 '+(group.totalAnswers-(group.authors||[]).length)+'개 보기';details.appendChild(summary);
+          var history=document.createElement('div');details.appendChild(history);
+          var saved=cache.histories[group.questionKey]; if(saved&&saved.open) details.open=true;
+          details.addEventListener('toggle',function(){
+            var current=cache.histories[group.questionKey];if(current) current.open=details.open;
+            if(details.open&&!current) loadQuestionHistory(group,cache,false,history); else if(details.open) renderQuestionHistory(group,cache,history);
+          });
+          if(details.open) renderQuestionHistory(group,cache,history);
+          card.appendChild(details);
+        }
+        return card;
+      }
+      function loadQuestionHistory(group,cache,append,container){
+        var history=cache.histories[group.questionKey];
+        if(!history) history=cache.histories[group.questionKey]={posts:[],offset:0,hasMore:true,loading:false,error:'',open:true};
+        if(history.loading) return;
+        var token=state.session&&state.session.token;history.loading=true;history.error='';renderQuestionHistory(group,cache,container);
+        pagedRequest('search_posts',{filters:{questionKey:group.questionKey},offset:append?history.offset:0,limit:20}).then(function(page){
+          if(!pagedResponseIsCurrent('question',cache,token)) return;
+          if(page.revision!==cache.revision){ history.error='답변이 바뀌었어. 질문 탭을 새로 불러와 줘.';return; }
+          history.posts=(append?history.posts:[]).concat(page.posts||[]);history.offset=page.nextOffset;history.hasMore=!!page.hasMore;
+        }).catch(function(error){if(pagedResponseIsCurrent('question',cache,token)) history.error=errorMessage(error);}).then(function(){
+          history.loading=false;
+          if(pagedResponseIsCurrent('question',cache,token)&&container.isConnected) renderQuestionHistory(group,cache,container);
+        });
+      }
+      function renderQuestionHistory(group,cache,container){
+        var history=cache.histories[group.questionKey];if(!history) return;
+        var latest=(group.authors||[]).map(function(author){return author.post&&author.post.id;});
+        container.innerHTML='';history.posts.forEach(function(post){if(latest.indexOf(post.id)<0) container.appendChild(postCard(post));});
+        if(history.error){var error=document.createElement('p');error.setAttribute('role','status');error.textContent=history.error;container.appendChild(error);}
+        if(history.hasMore||history.error){
+          var more=document.createElement('button');more.className='secondary';more.type='button';more.disabled=history.loading;more.textContent=history.loading?'답변 불러오는 중…':(history.error?'다시 불러오기':'답변 더 보기');
+          more.addEventListener('click',function(){loadQuestionHistory(group,cache,true,container);});container.appendChild(more);
+        }
+      }
       var APPS_SCRIPT_EXEC='';
       // Supabase read path is deliberately off until staging parity is signed off.
       // Existing Apps Script remains the live fallback and the write path.
@@ -7433,6 +7652,7 @@
         });
       }
 
+
       function errorMessage(error){
         var value=error;
         if(error&&typeof error==='object'){
@@ -7482,6 +7702,6 @@
       if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
       else boot();
     })();
-  </script>
+</script>
 </body>
 </html>

@@ -4,6 +4,8 @@
 
 ## 반드시 함께 갱신하는 항목
 
+v4.9.8부터 원본은 `src/`에 있다. 화면/정적 버전은 `src/index.template.html`, 실행 버전·변경내역은 `src/app.js`에서 수정한 뒤 `npm run build`로 단일 `index.html`을 만든다. 생성된 HTML은 직접 수정하지 않는다. `npm run verify:release`는 원본과 생성물의 일치를 먼저 검사한다.
+
 1. `index.html`: `var VERSION`, `var RELEASE_INFO`의 `version`, `date` (형식 `YYYY-MM-DD`, Asia/Seoul), 최신 `notes`와 최근 변경 `history`. 로그인/앱 상단/설정의 **정적 HTML 버전·날짜** 및 `<meta name="ilkong-release-version">`, `<meta name="ilkong-release-date">`도 동기화한다. 새 버전을 릴리스할 때 이전 항목을 history에 옮긴다.
 2. `package.json`: `version`.
 3. `sw.js`: 주석의 릴리스 버전·한국시간 날짜 및 `CACHE` 키.
