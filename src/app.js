@@ -4,17 +4,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.8';
+      var VERSION = '4.9.9';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-26',
         timezone: 'Asia/Seoul',
         notes: [
+          '알림을 눌렀을 때 깃허브 사이트 주소로 빠져나가던 문제 수정',
+          '알림은 항상 일콩 기록 화면으로 열리고, 이미 열린 화면이 있으면 그 화면으로 이동',
+          '알림 주소가 앱 밖을 가리키면 무시하고 기본 화면으로 열도록 보호'
+        ],
+        history: [
+          {version:'4.9.8',date:'2026-10-26',notes:[
           '질문별로 두 사람의 답변·답변 여부를 모아 보고 작성·수정과 지난 답변 연결',
           '기록·댓글 검색과 분류·기간 조건을 서버에서 처리하고 결과만 페이지별로 표시',
           '화면·스타일·검색·질문·사진·API 소스를 기능별로 분리하고 단일 화면 빌드 검증 추가'
-        ],
-        history: [
+          ]},
           {version:'4.9.7',date:'2026-10-26',notes:[
           '모바일 기록 검색에서 상세 필터를 접고 분류·월별·기간 조건을 구분',
           '설명 글자와 버튼 영역을 키우고 밝은 화면·어두운 화면의 색상 대비 개선',
