@@ -67,7 +67,7 @@
         var feed=el('feed'); captureLoadedImageSources(feed); feed.innerHTML='';
         var refresh=el('loadAllRecords'); refresh.disabled=cache.loading; text(refresh,cache.loading?'검색 중…':'결과 새로고침');
         if(kind==='records'){
-          text(el('libraryCount'),cache.loading&&!cache.posts.length?'전체 기록에서 검색 중…':('전체 '+cache.total+'개 중 '+cache.posts.length+'개 표시'+(cache.loading?' · 더 불러오는 중…':'')));
+          text(el('libraryCount'),libraryResultText(cache));
           var lastGroup=null;
           cache.posts.forEach(function(post){
             var group=feedGroupLabel(post.recordDate);
@@ -92,4 +92,56 @@
         }
         renderLoadMore();
         return true;
+      }
+
+      function libraryResultText(cache){
+        if(cache.loading&&!cache.posts.length) return '전체 기록에서 검색 중…';
+        if(cache.error&&!cache.posts.length&&!cache.revision) return '검색 결과를 확인하지 못했어. 다시 불러와 줘.';
+        return '전체 '+cache.total+'개 중 '+cache.posts.length+'개 표시'+(cache.loading?' · 더 불러오는 중…':'');
+      }
+      function recordSearchQuery(){
+        return state.activeTab==='records'?String(state.searchQuery||'').trim():'';
+      }
+      function searchHighlightedHtml(value,query){
+        var source=String(value||''), needle=String(query||'').trim();
+        if(!needle) return escapeHtml(source);
+        var pattern=new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+        var output='', cursor=0, match;
+        while((match=pattern.exec(source))!==null){
+          output+=escapeHtml(source.slice(cursor,match.index))+'<mark class="search-hit">'+escapeHtml(match[0])+'</mark>';
+          cursor=match.index+match[0].length;
+        }
+        return output+escapeHtml(source.slice(cursor));
+      }
+      function searchCommentMatches(post,query){
+        var needle=String(query||'').trim().toLowerCase();
+        if(!needle) return [];
+        return (Array.isArray(post.comments)?post.comments:[]).filter(function(comment){
+          return !comment.deleted&&String(comment.content||'').toLowerCase().indexOf(needle)!==-1;
+        });
+      }
+      function searchSnippet(value,query){
+        var source=String(value||''), needle=String(query||'').trim();
+        var index=source.toLowerCase().indexOf(needle.toLowerCase());
+        if(index<0||!needle) return source;
+        var start=Math.max(0,index-28), end=Math.min(source.length,index+needle.length+60);
+        // Do not split an emoji surrogate pair at the excerpt boundaries.
+        if(start>0&&source.charCodeAt(start)>=0xDC00&&source.charCodeAt(start)<=0xDFFF) start--;
+        if(end<source.length&&source.charCodeAt(end-1)>=0xD800&&source.charCodeAt(end-1)<=0xDBFF) end++;
+        return (start?'…':'')+source.slice(start,end)+(end<source.length?'…':'');
+      }
+      function searchCommentSummaryHtml(post,query){
+        var matches=searchCommentMatches(post,query);
+        if(!matches.length) return '';
+        var first=matches[0];
+        return '<button class="search-comment-jump" type="button" aria-label="검색어와 일치하는 댓글 '+matches.length+'개 보기"><span class="search-match-label">댓글 '+matches.length+'개에서 찾았어 <span aria-hidden="true">↗</span></span><span class="search-match-snippet">'+escapeHtml(first.authorName||'댓글')+' · '+searchHighlightedHtml(searchSnippet(first.content,query),query)+'</span></button>';
+      }
+      function revealSearchComments(card){
+        var toggle=card.querySelector('.comment-toggle');
+        if(toggle&&toggle.getAttribute('aria-expanded')!=='true') toggle.click();
+        var match=card.querySelector('.search-comment-match');
+        if(!match) return;
+        try { match.scrollIntoView({block:'center',behavior:window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }
+        catch(error){ match.scrollIntoView(); }
+        try { match.focus({preventScroll:true}); } catch(error){ match.focus(); }
       }

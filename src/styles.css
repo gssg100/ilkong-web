@@ -168,7 +168,12 @@
 
 
     @media(max-width:540px){.overlay{align-items:stretch}.sheet{height:100%;max-height:100%;border-radius:0;padding-top:var(--safe-top)}.row{grid-template-columns:1fr}.library-tools{grid-template-columns:1fr 1fr}.library-tools input{grid-column:1/-1}.login-card{padding:24px 18px}.previews{grid-template-columns:repeat(3,1fr)}}
-  
+    .search-hit{background:#f7e6a1;color:#332d14;border-radius:3px;padding:0 1px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+    .search-comment-jump{display:block;width:100%;min-height:44px;text-align:left;border:1px solid var(--line);border-radius:13px;background:var(--accent2);color:var(--ink);padding:12px;margin:0 0 12px;cursor:pointer;overflow-wrap:anywhere;font:inherit}
+    .search-match-label{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:800;line-height:1.5}
+    .search-match-snippet{display:block;margin-top:5px;font-size:13px;line-height:1.65;white-space:pre-wrap}
+    .search-comment-jump:focus-visible,.search-comment-match:focus{outline:2px solid var(--accent);outline-offset:3px}
+    html[data-theme="dark"] .search-hit{background:#59632f;color:#fff6cf}
     .labor-signal{border-radius:14px;padding:11px 13px;font-size:13.5px;line-height:1.5;text-align:center;margin-bottom:11px}
     .labor-signal.on{background:rgba(220,38,38,.12);color:#b91c1c;border:1px solid rgba(220,38,38,.3)}
     .labor-signal.warn{background:rgba(217,119,6,.12);color:#b45309;border:1px solid rgba(217,119,6,.28)}
@@ -250,4 +255,4 @@
     .question-answer .post{margin:0;border:0;border-radius:0;box-shadow:none;background:transparent}.question-answer .post-head,.question-answer .post-body{padding-left:0;padding-right:0}.question-answer .post-head .avatar{display:none}.question-answer .post-actions{flex-wrap:wrap}
     .answer-empty{font-size:15px;line-height:1.6;color:var(--muted)}.answer-action{width:100%;margin-top:12px;min-height:44px}.question-history{border-top:1px solid var(--line);margin-top:16px;padding-top:10px}.question-history>summary{padding:10px 0;min-height:44px;font-weight:700;cursor:pointer}.question-history .post{margin-top:12px}
     @media(max-width:680px){.question-pair{grid-template-columns:minmax(0,1fr)}.question-group{padding:14px}.question-group>h2{font-size:18px}}
-  
+

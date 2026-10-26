@@ -4,17 +4,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.9';
+      var VERSION = '4.9.10';
       var RELEASE_INFO = {
         version: VERSION,
-        date: '2026-10-26',
+        date: '2026-10-27',
         timezone: 'Asia/Seoul',
         notes: [
+          '기록 검색에서 제목·본문·댓글의 일치 문구를 강조해 찾기 쉽게 개선',
+          '댓글로 찾은 기록은 일치 댓글을 미리 보고 버튼 한 번으로 해당 댓글로 이동',
+          '검색 연결 실패를 검색 결과 0개로 표시하지 않도록 안내 보완'
+        ],
+        history: [
+          {version:'4.9.9',date:'2026-10-26',notes:[
           '알림을 눌렀을 때 깃허브 사이트 주소로 빠져나가던 문제 수정',
           '알림은 항상 일콩 기록 화면으로 열리고, 이미 열린 화면이 있으면 그 화면으로 이동',
           '알림 주소가 앱 밖을 가리키면 무시하고 기본 화면으로 열도록 보호'
-        ],
-        history: [
+        ]},
           {version:'4.9.8',date:'2026-10-26',notes:[
           '질문별로 두 사람의 답변·답변 여부를 모아 보고 작성·수정과 지난 답변 연결',
           '기록·댓글 검색과 분류·기간 조건을 서버에서 처리하고 결과만 페이지별로 표시',
@@ -2215,12 +2220,13 @@
           else timeText=writtenClock;
         }
         var shownTitle=titleForDisplay(post.title,post.body);
-        var titleHtml=shownTitle?'<h3>'+escapeHtml(shownTitle)+'</h3>':'';
-        var bodyHtml=String(post.body||'').trim()?'<div class="post-text">'+escapeHtml(post.body)+'</div>':'';
+        var searchQuery=recordSearchQuery();
+        var titleHtml=shownTitle?'<h3>'+searchHighlightedHtml(shownTitle,searchQuery)+'</h3>':'';
+        var bodyHtml=String(post.body||'').trim()?'<div class="post-text">'+searchHighlightedHtml(post.body,searchQuery)+'</div>':'';
         var mine=state.session&&state.session.user.id===post.authorId;
         var actions='<div class="post-actions"><button class="post-action favorite'+(post.favorite?' active':'')+'" type="button" aria-pressed="'+(post.favorite?'true':'false')+'" aria-label="'+(post.favorite?'즐겨찾기 해제':'즐겨찾기에 담기')+'">'+(post.favorite?'★':'☆')+'</button>'+(mine?'<button class="post-action edit-post" type="button" aria-label="기록 수정">✎</button><button class="post-action delete-post" type="button" aria-label="기록 삭제">🗑</button>':'')+'</div>';
         card.innerHTML='<div class="post-head"><div class="author"><div class="avatar">'+emoji+'</div><div class="meta"><strong>'+escapeHtml(post.authorName)+'</strong><span>'+escapeHtml(date)+(timeText?' · '+escapeHtml(timeText):'')+(post.edited?'<em class="edited">수정됨</em>':'')+'</span></div></div>'+actions+'</div>'+ 
-          '<div class="post-body"><div class="badges">'+(isTripPost(post)?'<span class="badge trip">✈️ '+escapeHtml((tripInfo()&&tripInfo().name)||'여행')+'</span>':'')+'<span class="badge">'+escapeHtml(post.category||'일상')+'</span>'+(post.mood?'<span class="badge">'+escapeHtml(post.mood)+'</span>':'')+'</div>'+titleHtml+bodyHtml+'</div>';
+          '<div class="post-body"><div class="badges">'+(isTripPost(post)?'<span class="badge trip">✈️ '+escapeHtml((tripInfo()&&tripInfo().name)||'여행')+'</span>':'')+'<span class="badge">'+escapeHtml(post.category||'일상')+'</span>'+(post.mood?'<span class="badge">'+escapeHtml(post.mood)+'</span>':'')+'</div>'+titleHtml+searchCommentSummaryHtml(post,searchQuery)+bodyHtml+'</div>';
 
         if(post.images&&post.images.length){
           var grid=document.createElement('div');
@@ -2238,6 +2244,8 @@
           card.appendChild(grid);
         }
         card.appendChild(buildEngagement(post));
+        var searchJump=card.querySelector('.search-comment-jump');
+        if(searchJump) searchJump.addEventListener('click',function(){ revealSearchComments(card); });
         var favorite=card.querySelector('.favorite');
         if(favorite) favorite.addEventListener('click',function(){
           // v3.9.2: 오래된 카드 데이터가 아니라 항상 현재 기록 상태를 기준으로 토글한다.
@@ -2305,9 +2313,13 @@
 
       function commentNode(comment,post,isReply){
         var item=document.createElement('div'); item.className='comment-item'+(isReply?' reply':'');
+        var searchQuery=recordSearchQuery();
+        if(searchCommentMatches({comments:[comment]},searchQuery).length){
+          item.className+=' search-comment-match'; item.setAttribute('tabindex','-1');
+        }
         var emoji=comment.authorId==='HAKONG'?'🌼':'🌿';
         var mention=isReply&&comment.replyToName?'<span class="reply-mention">@'+escapeHtml(comment.replyToName)+'</span>':'';
-        var content=comment.deleted?'<div class="comment-deleted">삭제된 댓글이야.</div>':'<div class="comment-text">'+mention+escapeHtml(comment.content||'')+'</div>';
+        var content=comment.deleted?'<div class="comment-deleted">삭제된 댓글이야.</div>':'<div class="comment-text">'+mention+searchHighlightedHtml(comment.content||'',searchQuery)+'</div>';
         item.innerHTML='<div class="comment-avatar" aria-hidden="true">'+emoji+'</div><div class="comment-bubble"><div class="comment-meta"><strong>'+escapeHtml(comment.authorName||'')+'</strong><span>'+escapeHtml(shortDateTime(comment.createdAt))+'</span></div>'+content+'<div class="comment-actions"></div></div>';
         var actions=item.querySelector('.comment-actions');
         if(!comment.deleted){
