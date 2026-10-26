@@ -176,7 +176,7 @@ test('reversed date range gives an inline warning and avoids unnecessary loading
   assert.equal(attributes.to, 'false');
   assert.deepEqual(loaded, ['range']);
   assert.equal(shown.length, 2);
-  assert.match(html, /class="date-range-controls"/);
+  assert.match(html, /class="date-range-controls(?: hidden)?"/);
   assert.match(html, /@media\(max-width:540px\)\{\.date-range-controls\{display:grid/);
 });
 

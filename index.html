@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.6 — 날짜 최신성·검사 안내 상태·기록일 정렬 개선 -->
+<!-- 일콩 기록 v4.9.7 — 모바일 필터·가독성·개인 바로가기 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.6">
+  <meta name="ilkong-release-version" content="4.9.7">
   <meta name="ilkong-release-date" content="2026-10-26">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -20,11 +20,11 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <style>
     :root {
-      --bg:#f5efe6; --card:#fffdf9; --ink:#332d27; --muted:#7d746b;
-      --line:#e4d9cc; --accent:#71806b; --accent2:#e6ece1; --danger:#b45752;
+      --bg:#f5efe6; --card:#fffdf9; --ink:#332d27; --muted:#6d6257;
+      --line:#e4d9cc; --accent:#55684e; --accent2:#e6ece1; --on-accent:#ffffff; --danger:#b45752;
       --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
     }
-    html[data-theme="dark"]{--bg:#201c18;--card:#2a251f;--ink:#ece5db;--muted:#a1968a;--line:#3d362e;--accent:#8fa387;--accent2:#37402f;--danger:#e08a84}
+    html[data-theme="dark"]{--bg:#201c18;--card:#2a251f;--ink:#ece5db;--muted:#b3a79a;--line:#3d362e;--accent:#9caf91;--accent2:#37402f;--on-accent:#201c18;--danger:#e08a84}
     html[data-theme="dark"] .topbar{background:#201c18}
     html[data-theme="dark"] .login{background:radial-gradient(circle at 50% 12%,#2a251f 0,#201c18 60%,#1a1613 100%)}
     html[data-theme="dark"] .hero{background:linear-gradient(145deg,#2a251f,#241f1a)}
@@ -229,6 +229,37 @@
     .plan-q>strong{display:block;font-size:13px;margin-bottom:7px}
     .plan-opts{display:flex;flex-wrap:wrap;gap:6px}
     #downloadPhoto{width:auto;min-width:70px;white-space:nowrap;font-size:14px}
+    .brand span,.meta span,.comment-meta strong,.comment-meta span,.upload-note,.library-count,.guide-range,.release-footnote{font-size:13px;line-height:1.5}
+    .summary-card strong{font-size:14px;line-height:1.4;white-space:normal;min-height:39px;word-break:keep-all}
+    .summary-card small{font-size:13px;line-height:1.5;min-height:39px;word-break:keep-all}
+    .quick-main{padding:8px;font-size:15px}.photo-quick{flex:0 0 48px}.hero-toggle,.user-chip{min-height:44px}
+    .post-head{flex-wrap:wrap;gap:8px}.author{min-width:0;flex:1 1 160px}.avatar{flex:0 0 38px}.meta{min-width:0;overflow-wrap:anywhere}.post-actions{flex:0 0 auto;margin-left:auto}
+    .save,.comment-send,.hl-pill.on{color:var(--on-accent)}
+    html{color-scheme:light}html[data-theme="dark"]{color-scheme:dark}
+    .icon,.field input,.field textarea,.field select{color:var(--ink)}
+    input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
+    .chk-field span,.field label,.chk-sub{font-size:13px}.chk-field input,.chk-field select{font-size:16px;min-height:44px}
+    .hl-pill,.comment-action,.reaction-btn,.comment-toggle,.mood-btn,.seg,.comment-send,.note-actions button,.post-action,.reply-target button{min-height:44px;min-width:44px}
+    .hl-pill{font-size:14px;padding:10px 13px}.engagement-top{flex-wrap:wrap}.comment-action{font-size:13px}
+    .library-tools{display:block}.library-search-row{display:flex;gap:8px;align-items:stretch}.library-search-row input{flex:1;width:0;font-size:16px}
+    .library-filter-toggle{flex:0 0 auto;min-width:76px;min-height:48px;padding:9px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-weight:750}
+    .library-filter-toggle[aria-expanded="true"]{background:var(--accent2);border-color:var(--accent)}
+    .library-filter-panel{margin-top:10px;padding:13px;border:1px solid var(--line);border-radius:16px;background:var(--card);display:grid;gap:12px}
+    .library-filter-panel label,.shortcut-settings label{display:grid;gap:6px;font-size:14px;color:var(--ink);min-width:0}
+    .library-filter-panel input,.library-filter-panel select{width:100%;font-size:16px;min-height:44px;max-width:100%}
+    .date-range-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
+    .date-range-controls #rangeClear{grid-column:1/-1;justify-self:end}
+    .library-active-filters{margin:8px 2px 0;font-size:13px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+    .library-count{margin-top:8px}.library-actions{display:flex;flex-wrap:wrap}.library-actions button{min-height:44px;font-size:13px;flex:1 1 130px}
+    .more-section+.more-section{margin-top:22px}.more-section h3{margin:0 2px 10px;font-size:16px}.more-section p{font-size:13px;color:var(--muted);line-height:1.5}
+    #favoriteShortcuts{grid-template-columns:repeat(3,minmax(0,1fr))}#favoriteShortcuts .more-item{min-width:0;padding:14px 9px;font-size:13px;word-break:keep-all}#favoriteShortcuts>p{grid-column:1/-1}
+    .shortcut-settings{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:0 12px;background:var(--card)}
+    .shortcut-settings summary{min-height:44px;padding:12px 0;cursor:pointer;font-size:14px;font-weight:750}
+    .shortcut-settings select{width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:10px;font-size:16px}
+    .shortcut-settings fieldset{border:0;padding:12px 0;margin:0}.shortcut-settings legend{font-size:14px;padding-top:14px}
+    .shortcut-choices{display:grid;grid-template-columns:1fr 1fr;gap:6px}.shortcut-choices label{display:flex;align-items:center;min-height:44px;gap:8px;font-size:14px}
+    .shortcut-choices input{width:22px;height:22px;accent-color:var(--accent)}.shortcut-save-note{margin:0 0 12px;font-size:13px;color:var(--muted)}
+    @media(max-width:540px){.library-tools{display:block}.library-tools .date-range-controls input{grid-column:auto}.library-search-row input{grid-column:auto}.library-filter-panel input{grid-column:auto}}
   </style>
 </head>
 <body>
@@ -241,7 +272,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.6 · 2026.10.26 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.7 · 2026.10.26 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -250,7 +281,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.6 · 2026.10.26</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.7 · 2026.10.26</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -265,21 +296,33 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.6 · 2026.10.26 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.7 · 2026.10.26 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><p id="dateFreshness" class="hidden" style="margin:10px 0 0;color:var(--ink);font-size:13px;line-height:1.5" role="status"></p><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
       <div id="offlineBanner" class="offline-banner hidden" role="status"><span id="offlineText">인터넷이 끊겨서 기록을 이 기기에 보관 중이야.</span><button id="offlineRetry" type="button">지금 보내기</button></div>
       <div id="recoveryBanner" class="recovery hidden"><div><strong>저장 중 멈춘 기록이 있어</strong><span id="recoveryText">사진과 글을 이 기기에 안전하게 보관하고 있어.</span></div><div class="recovery-actions"><button id="resumePending" class="resume" type="button">이어쓰기</button><button id="discardPending" class="discard" type="button">버리기</button></div></div>
-      <div id="quickBar" class="quick"><button id="quickWrite" class="quick-main" type="button">오늘 무슨 일이 있었어?</button><button id="quickPhoto" class="photo-quick" type="button" aria-label="사진으로 빠르게 기록하기">📷</button><button id="quickKick" class="photo-quick hidden" type="button" aria-label="태동 세기">👣</button></div>
+      <div id="quickBar" class="quick"><button id="quickWrite" class="quick-main" type="button">오늘 기록 남기기</button><button id="quickPhoto" class="photo-quick" type="button" aria-label="사진으로 빠르게 기록하기">📷</button><button id="quickKick" class="photo-quick hidden" type="button" aria-label="태동 세기">👣</button></div>
       <section id="homeSummary" class="home-summary" aria-label="오늘의 빠른 기록과 준비 현황">
         <button id="openCheckin" class="summary-card" type="button"><span aria-hidden="true">☀️</span><strong id="summaryCheckinTitle">오늘 한 줄</strong><small id="summaryCheckinDesc">가볍게 마음을 남겨봐</small></button>
         <button id="summaryCheckup" class="summary-card" type="button"><span aria-hidden="true">🏥</span><strong id="summaryCheckupTitle">다음 검진</strong><small id="summaryCheckupDesc">일정을 확인해봐</small></button>
-        <button id="summaryChecklist" class="summary-card" type="button"><span aria-hidden="true">🍼</span><strong id="summaryChecklistTitle">출산 준비</strong><small id="summaryChecklistDesc">준비물을 확인해봐</small></button>
+        <button id="summaryChecklist" class="summary-card" type="button"><span id="summaryShortcutIcon" aria-hidden="true">🍼</span><strong id="summaryChecklistTitle">출산 준비</strong><small id="summaryChecklistDesc">준비물을 확인해봐</small></button>
       </section>
       <div id="recordsSeg" class="segbar hidden"><button class="seg active" data-seg="ALL" type="button">전체</button><button class="seg" data-seg="JISU" type="button">🌿 지수</button><button class="seg" data-seg="HAKONG" type="button">🌼 하콩</button><button class="seg" data-seg="PHOTO" type="button">📷 사진</button><button class="seg" data-seg="FAVORITE" type="button">★ 즐겨찾기</button><button id="segTrip" class="seg hidden" data-seg="TRIP" type="button">✈️ 여행</button></div>
       <div id="questionHead" class="question-head hidden"></div>
-      <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="PHOTO">📷 사진 있는 기록만</option><option value="MOOD:🥰">🥰 행복한 순간</option><option value="MOOD:🥹">🥹 뭉클한 순간</option><option value="MOOD:😂">😂 웃긴 순간</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:진통">⏱️ 진통</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div class="date-range-controls"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div><div id="rangeWarning" class="range-warning hidden" role="status" aria-live="polite"></div><div id="libraryCount" class="library-count" role="status" aria-live="polite"></div><div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div></div>
+      <div id="libraryTools" class="library-tools hidden">
+        <div class="library-search-row"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><button id="toggleLibraryFilters" class="library-filter-toggle" type="button" aria-label="검색 필터" aria-expanded="false" aria-controls="libraryFilterPanel">필터</button></div>
+        <div id="libraryFilterPanel" class="library-filter-panel hidden">
+          <label>기록 분류<select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="PHOTO">📷 사진 있는 기록만</option><option value="MOOD:🥰">🥰 행복한 순간</option><option value="MOOD:🥹">🥹 뭉클한 순간</option><option value="MOOD:😂">😂 웃긴 순간</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:진통">⏱️ 진통</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select></label>
+          <label>기간 선택<select id="libraryPeriodType" aria-label="기간 선택"><option value="all">전체 기간</option><option value="month">월별 보기</option><option value="range">기간 직접 지정</option></select></label>
+          <label id="monthFilterField" class="hidden">조회할 월<input id="monthFilter" type="month" aria-label="월별 기록"></label>
+          <div id="rangeFilterFields" class="date-range-controls hidden"><label>시작일<input id="rangeFrom" type="date" aria-label="검색 시작일"></label><label>종료일<input id="rangeTo" type="date" aria-label="검색 종료일"></label><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div>
+          <div id="rangeWarning" class="range-warning hidden" role="status" aria-live="polite"></div>
+          <div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div>
+        </div>
+        <p id="libraryActiveFilters" class="library-active-filters hidden" role="status" aria-live="polite"></p>
+        <div id="libraryCount" class="library-count" role="status" aria-live="polite"></div>
+      </div>
       <div id="feedStatus" class="status-card" role="status" aria-live="polite">최신 기록을 불러오는 중이야…</div>
       <p class="feed-order" style="margin:12px 19px 8px;color:var(--muted);font-size:13px">기록일 최신순</p>
       <div id="feed" class="feed"></div>
@@ -426,7 +469,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.6 · 2026.10.26</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.7 · 2026.10.26</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -456,7 +499,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.6 · 2026.10.26 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.7 · 2026.10.26 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -495,20 +538,27 @@
     <div class="sheet">
       <div class="sheet-head"><button id="closeMore" class="icon" type="button" aria-label="더보기 닫기">✕</button><h2 id="moreTitle">더보기</h2><span></span></div>
       <div class="form">
-        <div class="more-grid">
-          <button id="openTimelapse" class="more-item" type="button"><span>🤰</span>배 타임랩스</button>
-          <button id="openMemories" class="more-item" type="button"><span>🖼️</span>사진 추억함</button>
-          <button id="openCapsule" class="more-item" type="button"><span>💌</span>타임캡슐 편지</button>
+        <section class="more-section" aria-labelledby="shortcutSectionTitle"><h3 id="shortcutSectionTitle">내 바로가기</h3><div id="favoriteShortcuts" class="more-grid"></div>
+          <details class="shortcut-settings"><summary>바로가기 편집</summary><label>홈의 세 번째 카드<select id="homeShortcutSelect" aria-label="홈 바로가기"></select></label><fieldset><legend>더보기 상단 메뉴 · 최대 3개</legend><div id="shortcutChoices" class="shortcut-choices"></div></fieldset><p class="shortcut-save-note">이 기기의 내 계정에 자동으로 저장돼.</p></details>
+        </section>
+        <section class="more-section" aria-labelledby="moreGroup0"><h3 id="moreGroup0">건강 · 출산 준비</h3><div class="more-grid">
+          <button id="openHealthMore" class="more-item" type="button"><span>🩺</span>엄마 건강 기록</button>
           <button id="openCheckupNotes" class="more-item" type="button"><span>🏥</span>검진노트</button>
           <button id="openChecklist" class="more-item" type="button"><span>🍼</span>출산 준비물</button>
           <button id="openKickMore" class="more-item" type="button"><span>👣</span>태동 세기</button>
           <button id="openLaborMore" class="more-item" type="button"><span>⏱️</span>진통 간격</button>
-          <button id="openHealthMore" class="more-item" type="button"><span>🩺</span>엄마 건강 기록</button>
           <button id="openBirthPlanMore" class="more-item" type="button"><span>📝</span>출산 계획서</button>
+        </div></section>
+        <section class="more-section" aria-labelledby="moreGroup1"><h3 id="moreGroup1">기록 모아보기</h3><div class="more-grid">
+          <button id="openMemories" class="more-item" type="button"><span>🖼️</span>사진 추억함</button>
+          <button id="openTimelapse" class="more-item" type="button"><span>🤰</span>배 타임랩스</button>
+          <button id="openCapsule" class="more-item" type="button"><span>💌</span>타임캡슐 편지</button>
           <button id="openBook" class="more-item" type="button"><span>📖</span>기록을 책으로</button>
+        </div></section>
+        <section class="more-section" aria-labelledby="moreGroup2"><h3 id="moreGroup2">설정 · 기타</h3><div class="more-grid">
           <button id="openTrip" class="more-item" type="button"><span>✈️</span>여행 모드</button>
           <button id="openSettingsMore" class="more-item" type="button"><span>⚙️</span>설정</button>
-        </div>
+        </div></section>
       </div>
     </div>
   </div>
@@ -612,17 +662,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.6';
+      var VERSION = '4.9.7';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-26',
         timezone: 'Asia/Seoul',
         notes: [
+          '모바일 기록 검색에서 상세 필터를 접고 분류·월별·기간 조건을 구분',
+          '설명 글자와 버튼 영역을 키우고 밝은 화면·어두운 화면의 색상 대비 개선',
+          '홈 바로가기와 더보기 상단 메뉴를 계정별로 선택하고 전체 메뉴를 용도별로 정리'
+        ],
+        history: [
+          {version:'4.9.6',date:'2026-10-26',notes:[
           '검사 안내 시기와 실제 완료를 구분하고 지난 시기를 완료로 표시하지 않도록 수정',
           '저장된 주수와 검진 D-day를 오늘 기준으로 계산하고 날짜 변경 시 다시 확인',
           '기록일 최신순으로 서버 페이지와 화면의 월별 순서를 통일'
-        ],
-        history: [
+          ]},
           {version:'4.9.5',date:'2026-10-21',notes:[
           '로그아웃 또는 계정 전환 뒤 늦게 도착한 세션 교환 응답이 이전 로그인을 복구하지 못하도록 차단',
           '같은 구형 세션의 중복 교환 요청을 하나로 합치고 교환된 사용자 정보 일치 여부 확인',
@@ -1117,7 +1172,11 @@
         el('quickWrite').addEventListener('click',openComposer);
         el('openCheckin').addEventListener('click',openCheckin);
         el('summaryCheckup').addEventListener('click',openSettings);
-        el('summaryChecklist').addEventListener('click',openChecklist);
+        el('summaryChecklist').addEventListener('click',openHomeShortcut);
+        el('homeShortcutSelect').addEventListener('change',function(){
+          var prefs=shortcutPreferences();
+          if(!saveShortcutPreferences(this.value,prefs.favorites)) this.value=prefs.home;
+        });
         el('closeCheckin').addEventListener('click',function(){ if(!state.checkinBusy){ persistCheckinDraft(); closeOverlaySheet('checkin'); } });
         el('checkin').addEventListener('click',function(e){ if(e.target===el('checkin')&&!state.checkinBusy){ persistCheckinDraft(); closeOverlaySheet('checkin'); } });
         el('saveCheckin').addEventListener('click',saveCheckin);
@@ -1175,6 +1234,8 @@
         el('loadMore').addEventListener('click',loadMorePosts);
         el('searchInput').addEventListener('input',function(e){ state.lastInteractionAt=Date.now(); if(e.isComposing||isImeComposing(this)) return; scheduleSearchApply(this); });
         el('viewFilter').addEventListener('change',function(){ setLibraryCategoryFilter(this.value); });
+        el('toggleLibraryFilters').addEventListener('click',toggleLibraryFilters);
+        el('libraryPeriodType').addEventListener('change',function(){ setLibraryPeriod(this.value); });
         el('monthFilter').addEventListener('change',function(){ state.monthFilter=this.value; if(this.value) ensureAllPostsForLibrary('month'); renderPosts(state.home&&state.home.posts||[]); });
         function applyRange(){
           state.rangeFrom=el('rangeFrom').value||''; state.rangeTo=el('rangeTo').value||'';
@@ -1188,7 +1249,7 @@
         }
         el('rangeFrom').addEventListener('change',applyRange);
         el('rangeTo').addEventListener('change',applyRange);
-        el('rangeClear').addEventListener('click',function(){ el('rangeFrom').value=''; el('rangeTo').value=''; el('monthFilter').value=''; state.monthFilter=''; applyRange(); });
+        el('rangeClear').addEventListener('click',function(){ setLibraryPeriod('all'); });
         el('loadAllRecords').addEventListener('click',function(){ ensureAllPostsForLibrary('manual'); });
         el('clearLibraryFilters').addEventListener('click',resetLibraryFilters);
         el('feed').addEventListener('click',function(e){
@@ -2154,6 +2215,95 @@
         return false;
       }
 
+      function shortcutOptions(){
+        return [
+          {key:'health',icon:'🩺',title:'엄마 건강 기록',description:'체중 · 혈압 · 영양제',sheet:'healthSheet'},
+          {key:'notes',icon:'🏥',title:'검진노트',description:'질문과 검진 메모',sheet:'checkupNotes'},
+          {key:'checklist',icon:'🍼',title:'출산 준비',description:'준비물 모아보기',sheet:'checklist'},
+          {key:'kick',icon:'👣',title:'태동 세기',description:'움직임 기록하기',sheet:'kickCounter'},
+          {key:'memories',icon:'🖼️',title:'사진 추억함',description:'우리 사진 모아보기',sheet:'memories'}
+        ];
+      }
+
+      function normalizeShortcutPreferences(value){
+        var keys=shortcutOptions().map(function(item){ return item.key; });
+        value=value&&typeof value==='object'?value:{};
+        var favorites=Array.isArray(value.favorites)?value.favorites:['health','notes','checklist'];
+        favorites=favorites.filter(function(key,index){ return keys.indexOf(key)>=0&&favorites.indexOf(key)===index; }).slice(0,3);
+        return {home:keys.indexOf(value.home)>=0?value.home:'checklist',favorites:favorites};
+      }
+
+      function shortcutPreferences(){
+        var prefs=null, user=currentUserId();
+        try{ if(user) prefs=JSON.parse(storageGet('ilkong_shortcuts_v1_'+user.toUpperCase())||'null'); }catch(error){}
+        return normalizeShortcutPreferences(prefs);
+      }
+
+      function saveShortcutPreferences(home,favorites){
+        var user=currentUserId();
+        if(!user) return false;
+        var prefs=normalizeShortcutPreferences({home:home,favorites:favorites});
+        if(!storageSet('ilkong_shortcuts_v1_'+user.toUpperCase(),JSON.stringify(prefs))){
+          toast('바로가기를 저장하지 못했어. 기기 저장 공간을 확인해 줘.');
+          return false;
+        }
+        renderFavoriteShortcuts();
+        renderHomeSummary(state.home&&state.home.app&&state.home.app.pregnancy);
+        return true;
+      }
+
+      function openShortcut(key,fromMore){
+        var item=shortcutOptions().filter(function(option){ return option.key===key; })[0];
+        if(!item) return;
+        if(fromMore) hide(el('moreSheet'));
+        if(key==='health') openHealthSheet();
+        else if(key==='notes') openCheckupNotes();
+        else if(key==='checklist') openChecklist();
+        else if(key==='kick') openKickCounter();
+        else if(key==='memories') openMemories();
+        if(fromMore) state.sheetReturn[item.sheet]='moreSheet';
+      }
+
+      function openHomeShortcut(){
+        openShortcut(shortcutPreferences().home,false);
+      }
+
+      function renderFavoriteShortcuts(){
+        var box=el('favoriteShortcuts');
+        if(!box) return;
+        box.innerHTML='';
+        var prefs=shortcutPreferences(), options=shortcutOptions();
+        if(!prefs.favorites.length){
+          var note=document.createElement('p'); note.textContent='바로가기 편집에서 자주 쓰는 메뉴를 골라 줘.'; box.appendChild(note);
+        }
+        prefs.favorites.forEach(function(key){
+          var item=options.filter(function(option){ return option.key===key; })[0];
+          var button=document.createElement('button'); button.type='button'; button.className='more-item';
+          button.innerHTML='<span aria-hidden="true">'+item.icon+'</span>'+escapeHtml(item.title);
+          button.addEventListener('click',function(){ openShortcut(key,true); });
+          box.appendChild(button);
+        });
+      }
+
+      function renderShortcutSettings(){
+        var prefs=shortcutPreferences(), options=shortcutOptions(), select=el('homeShortcutSelect'), choices=el('shortcutChoices');
+        select.innerHTML=''; choices.innerHTML='';
+        options.forEach(function(item){
+          var option=document.createElement('option'); option.value=item.key; option.textContent=item.title; select.appendChild(option);
+          var label=document.createElement('label'), checkbox=document.createElement('input');
+          checkbox.type='checkbox'; checkbox.checked=prefs.favorites.indexOf(item.key)>=0;
+          checkbox.addEventListener('change',function(){
+            var old=shortcutPreferences(), next=old.favorites.filter(function(key){ return key!==item.key; });
+            if(this.checked) next.push(item.key);
+            if(next.length>3){ this.checked=false; toast('상단 메뉴는 최대 3개까지 고를 수 있어.'); return; }
+            if(!saveShortcutPreferences(old.home,next)) this.checked=old.favorites.indexOf(item.key)>=0;
+          });
+          label.appendChild(checkbox); label.appendChild(document.createTextNode(item.title)); choices.appendChild(label);
+        });
+        select.value=prefs.home;
+        renderFavoriteShortcuts();
+      }
+
       function renderHomeSummary(pregnancy){
         if(!el('homeSummary')) return;
         var wroteToday=hasTodayRecordForCurrentUser();
@@ -2170,6 +2320,14 @@
           text(el('summaryCheckupDesc'),'일정을 정해두면 알려줄게');
         }
 
+        var shortcut=shortcutPreferences().home;
+        var item=shortcutOptions().filter(function(option){ return option.key===shortcut; })[0];
+        text(el('summaryShortcutIcon'),item.icon);
+        if(shortcut!=='checklist'){
+          text(el('summaryChecklistTitle'),item.title);
+          text(el('summaryChecklistDesc'),item.description);
+          return;
+        }
         var items=Array.isArray(state.homeSummaryChecklist)?state.homeSummaryChecklist:[];
         var remaining=[];
         for(var i=0;i<items.length;i++) if(!items[i].done) remaining.push(items[i]);
@@ -2360,6 +2518,7 @@
       }
       function renderPosts(posts,options){
         options=options||{};
+        renderLibraryFilterSummary();
         if(!options.force&&feedInputIsActive()){
           state.pendingFeedRender={posts:Array.isArray(posts)?posts.slice():[]};
           schedulePendingFeedRender();
@@ -3765,7 +3924,7 @@
       // ===== v3.5.0 탭 UI =====
       function activateTab(name){
         if(name==='guide'){ openGuidebook(); return; }
-        if(name==='more'){ openOverlaySheet('moreSheet'); return; }
+        if(name==='more'){ renderShortcutSettings(); openOverlaySheet('moreSheet'); return; }
         if(name===state.activeTab){ scrollFeedTop(); return; }
         state.tabViews=state.tabViews||{};
         if(state.activeTab) state.tabViews[state.activeTab]=captureFeedView();
@@ -3808,6 +3967,40 @@
         renderPosts(state.home&&state.home.posts||[]);
         scrollFeedTop();
       }
+      function toggleLibraryFilters(){
+        var panel=el('libraryFilterPanel'), expanded=panel.classList.contains('hidden');
+        panel.classList.toggle('hidden',!expanded);
+        el('toggleLibraryFilters').setAttribute('aria-expanded',expanded?'true':'false');
+      }
+
+      function setLibraryPeriod(value){
+        var mode=value==='month'||value==='range'?value:'all';
+        el('libraryPeriodType').value=mode;
+        el('monthFilterField').classList.toggle('hidden',mode!=='month');
+        el('rangeFilterFields').classList.toggle('hidden',mode!=='range');
+        if(mode!=='month'){ state.monthFilter=''; el('monthFilter').value=''; }
+        if(mode!=='range'){
+          state.rangeFrom=''; state.rangeTo=''; el('rangeFrom').value=''; el('rangeTo').value='';
+          text(el('rangeWarning'),''); hide(el('rangeWarning'));
+          el('rangeFrom').removeAttribute('aria-invalid'); el('rangeTo').removeAttribute('aria-invalid');
+        }
+        renderPosts(state.home&&state.home.posts||[]);
+      }
+
+      function renderLibraryFilterSummary(){
+        var parts=[], count=0;
+        if(state.searchQuery) parts.push('검색: '+state.searchQuery);
+        if(state.catFilter){
+          var select=el('viewFilter'), option=select&&select.options&&select.options[select.selectedIndex];
+          parts.push(option?option.textContent:'분류 선택됨'); count++;
+        }
+        if(state.monthFilter){ parts.push(state.monthFilter+' 월별'); count++; }
+        if(state.rangeFrom||state.rangeTo){ parts.push((state.rangeFrom||'처음')+' ~ '+(state.rangeTo||'오늘')); count++; }
+        var button=el('toggleLibraryFilters'), summary=el('libraryActiveFilters');
+        if(button) text(button,count?'필터 '+count:'필터');
+        if(summary){ text(summary,parts.join(' · ')); summary.classList.toggle('hidden',!parts.length); }
+      }
+
       function resetLibraryFilters(){
         if(state.searchApplyTimer){ clearTimeout(state.searchApplyTimer); state.searchApplyTimer=null; }
         state.searchApplyPending=false;
@@ -3815,6 +4008,9 @@
         el('searchInput').value=''; el('viewFilter').value='ALL'; el('monthFilter').value=''; el('rangeFrom').value=''; el('rangeTo').value='';
         text(el('rangeWarning'),''); hide(el('rangeWarning'));
         el('rangeFrom').removeAttribute('aria-invalid'); el('rangeTo').removeAttribute('aria-invalid');
+        if(el('libraryPeriodType')) el('libraryPeriodType').value='all';
+        if(el('monthFilterField')) hide(el('monthFilterField'));
+        if(el('rangeFilterFields')) hide(el('rangeFilterFields'));
         syncSegUI();
         if(state.home) renderPosts(state.home.posts||[]);
         scrollFeedTop();
@@ -6774,6 +6970,13 @@
         state.selectedUser='';
         state.dialogReturnFocus=null; state.composerMode='create'; state.editingPostId=''; state.editAttempt=null; state.composerBackup=null; state.searchQuery=''; state.viewFilter='ALL'; state.monthFilter=''; state.activeTab=''; state.tabViews={}; hide(el('recoveryBanner')); closePhotoViewer();
         el('searchInput').value=''; el('viewFilter').value='ALL'; el('monthFilter').value='';
+        state.catFilter=''; state.rangeFrom=''; state.rangeTo=''; state.recordSegment='ALL';
+        el('rangeFrom').value=''; el('rangeTo').value=''; el('libraryPeriodType').value='all';
+        hide(el('monthFilterField')); hide(el('rangeFilterFields')); hide(el('libraryFilterPanel')); hide(el('libraryActiveFilters')); hide(el('rangeWarning'));
+        text(el('libraryActiveFilters'),''); text(el('rangeWarning'),''); text(el('toggleLibraryFilters'),'필터');
+        el('toggleLibraryFilters').setAttribute('aria-expanded','false');
+        el('rangeFrom').removeAttribute('aria-invalid'); el('rangeTo').removeAttribute('aria-invalid');
+        el('favoriteShortcuts').innerHTML=''; el('shortcutChoices').innerHTML='';
         resetComposerView();
         el('pin').value='';
         var buttons=document.querySelectorAll('.user-btn');
