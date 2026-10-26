@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.5 — 로그아웃·계정 전환 시 세션 교환 경합 방지 -->
+<!-- 일콩 기록 v4.9.6 — 날짜 최신성·검사 안내 상태·기록일 정렬 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.5">
-  <meta name="ilkong-release-date" content="2026-10-21">
+  <meta name="ilkong-release-version" content="4.9.6">
+  <meta name="ilkong-release-date" content="2026-10-26">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -241,7 +241,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.5 · 2026.10.21 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.6 · 2026.10.26 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -250,7 +250,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.5 · 2026.10.21</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.6 · 2026.10.26</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -265,10 +265,10 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.5 · 2026.10.21 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.6 · 2026.10.26 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
-      <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
+      <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><p id="dateFreshness" class="hidden" style="margin:10px 0 0;color:var(--ink);font-size:13px;line-height:1.5" role="status"></p><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
       <div id="offlineBanner" class="offline-banner hidden" role="status"><span id="offlineText">인터넷이 끊겨서 기록을 이 기기에 보관 중이야.</span><button id="offlineRetry" type="button">지금 보내기</button></div>
       <div id="recoveryBanner" class="recovery hidden"><div><strong>저장 중 멈춘 기록이 있어</strong><span id="recoveryText">사진과 글을 이 기기에 안전하게 보관하고 있어.</span></div><div class="recovery-actions"><button id="resumePending" class="resume" type="button">이어쓰기</button><button id="discardPending" class="discard" type="button">버리기</button></div></div>
       <div id="quickBar" class="quick"><button id="quickWrite" class="quick-main" type="button">오늘 무슨 일이 있었어?</button><button id="quickPhoto" class="photo-quick" type="button" aria-label="사진으로 빠르게 기록하기">📷</button><button id="quickKick" class="photo-quick hidden" type="button" aria-label="태동 세기">👣</button></div>
@@ -281,6 +281,7 @@
       <div id="questionHead" class="question-head hidden"></div>
       <div id="libraryTools" class="library-tools hidden"><input id="searchInput" type="search" placeholder="기록 내용 검색" aria-label="기록 내용 검색"><select id="viewFilter" aria-label="기록 보기"><option value="ALL">전체 분류</option><option value="PHOTO">📷 사진 있는 기록만</option><option value="MOOD:🥰">🥰 행복한 순간</option><option value="MOOD:🥹">🥹 뭉클한 순간</option><option value="MOOD:😂">😂 웃긴 순간</option><option value="CAT:병원">🏥 병원</option><option value="CAT:몸의 변화">🤰 몸의 변화</option><option value="CAT:태교">🎵 태교</option><option value="CAT:아기에게">💌 아기에게</option><option value="CAT:태동">👣 태동</option><option value="CAT:진통">⏱️ 진통</option><option value="CAT:여행">✈️ 여행</option><option value="CAT:웃긴 일">😂 웃긴 일</option><option value="CAT:걱정되는 일">😟 걱정되는 일</option><option value="CAT:배 사진">🤰 배 타임랩스</option><option value="CAT:일상">🌿 일상</option></select><input id="monthFilter" type="month" aria-label="월별 기록"><div class="date-range-controls"><input id="rangeFrom" type="date" aria-label="검색 시작일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><span style="color:var(--muted);font-size:12px">~</span><input id="rangeTo" type="date" aria-label="검색 종료일" style="flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 10px;color:var(--ink);font-size:13px"><button id="rangeClear" class="comment-action" type="button">기간 지우기</button></div><div id="rangeWarning" class="range-warning hidden" role="status" aria-live="polite"></div><div id="libraryCount" class="library-count" role="status" aria-live="polite"></div><div class="library-actions"><button id="loadAllRecords" class="secondary" type="button">전체 기록 불러오기</button><button id="clearLibraryFilters" class="secondary" type="button">검색·필터 초기화</button></div></div>
       <div id="feedStatus" class="status-card" role="status" aria-live="polite">최신 기록을 불러오는 중이야…</div>
+      <p class="feed-order" style="margin:12px 19px 8px;color:var(--muted);font-size:13px">기록일 최신순</p>
       <div id="feed" class="feed"></div>
       <div id="feedMore" class="feed-more hidden"><button id="loadMore" type="button">이전 기록 더 보기</button></div>
     </div>
@@ -425,7 +426,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.5 · 2026.10.21</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.6 · 2026.10.26</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -455,7 +456,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.5 · 2026.10.21 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.6 · 2026.10.26 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -611,17 +612,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.5';
+      var VERSION = '4.9.6';
       var RELEASE_INFO = {
         version: VERSION,
-        date: '2026-10-21',
+        date: '2026-10-26',
         timezone: 'Asia/Seoul',
         notes: [
+          '검사 안내 시기와 실제 완료를 구분하고 지난 시기를 완료로 표시하지 않도록 수정',
+          '저장된 주수와 검진 D-day를 오늘 기준으로 계산하고 날짜 변경 시 다시 확인',
+          '기록일 최신순으로 서버 페이지와 화면의 월별 순서를 통일'
+        ],
+        history: [
+          {version:'4.9.5',date:'2026-10-21',notes:[
           '로그아웃 또는 계정 전환 뒤 늦게 도착한 세션 교환 응답이 이전 로그인을 복구하지 못하도록 차단',
           '같은 구형 세션의 중복 교환 요청을 하나로 합치고 교환된 사용자 정보 일치 여부 확인',
           '로그아웃·계정 변경 시 세션 경합 회귀 테스트 추가'
-        ],
-        history: [
+          ]},
           {version:'4.9.4',date:'2026-10-21',notes:[
             '홈·기록·질문 탭을 오갈 때 각각 읽던 위치를 기억하고 다시 누르면 맨 위로 이동',
             '기록 작성 중 모바일 키보드 높이에 맞춰 작성 화면을 조정',
@@ -703,7 +709,7 @@
         selectedUser:'', session:null, home:null, images:[], saving:false,
         loginBusy:false, loginAttemptGeneration:0,
         openComments:{}, sheetReturn:{}, favoriteBusy:{}, commentDrafts:{}, replyTargets:{}, commentOperations:{}, engagementBusy:{}, commentReadMarking:{}, commentUnreadSeen:{}, pendingEngagementUpdates:{}, refreshing:false, refreshPromise:null,
-        revision:'', homeFingerprint:'', autoRefreshTimer:null, lastRefreshAt:0,
+        revision:'', homeFingerprint:'', autoRefreshTimer:null, lastRefreshAt:0, homeDateKey:'', homeFromSnapshot:false, dateRefreshNeeded:false,
         lastInteractionAt:0, autoRefreshFailures:0, lastAutoCheckAt:0, checkingUpdates:false, commentComposing:false, imeComposing:false, compositionTarget:null, compositionSerial:0, compositionWatchdogTimer:null, draftSaveTimer:null, draftSavePending:false, searchApplyTimer:null, searchApplyPending:false, pendingFeedRender:null, pendingFeedRenderTimer:null, homeApplyGeneration:0, pullStartY:0, pullDistance:0, pulling:false,
         hasMore:false, nextOffset:0, loadedCount:PAGE_SIZE, loadingMore:false, loadingAll:false, loadingAllPromise:null, selectedMood:'', saveAttempt:null,
         imageCache:{}, imageCacheOrder:[], imageInFlight:{}, imageObserver:null, dialogReturnFocus:null, viewerReturnFocus:null,
@@ -1309,7 +1315,8 @@
         for(var m=0;m<moodButtons.length;m++) moodButtons[m].addEventListener('click',function(){ selectMood(this.getAttribute('data-mood')); });
         initPullRefresh();
         document.addEventListener('visibilitychange',function(){
-          if(!document.hidden && state.session && Date.now()-state.lastRefreshAt>=AUTO_REFRESH_MS){
+          if(!document.hidden&&state.session) refreshDateContext();
+          if(!document.hidden && state.session && (state.dateRefreshNeeded||Date.now()-state.lastRefreshAt>=AUTO_REFRESH_MS)){
             setTimeout(checkForUpdates,250);
           }
         });
@@ -2011,14 +2018,85 @@
         } catch(e){}
       }
 
+      function calendarDay(value){
+        var key=String(value||'');
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) return NaN;
+        var date=new Date(key+'T00:00:00Z');
+        return isFinite(date.getTime())&&date.toISOString().slice(0,10)===key?date.getTime()/86400000:NaN;
+      }
+
+      function pregnancyForToday(value,asOfDate){
+        if(!value) return null;
+        var p=Object.assign({},value), now=calendarDay(today());
+        var due=calendarDay(p.dueDate), birth=calendarDay(p.birthDate);
+        if(String(p.phase||'').toUpperCase()==='BORN'){
+          p.valid=isFinite(birth); p.ageDays=p.valid?Math.max(0,now-birth):0;
+          p.week=0; p.day=0; p.dday=-p.ageDays; p.checkupDate=''; p.checkupDday=null;
+        }else{
+          var reference=calendarDay(p.referenceDate), baseline=calendarDay(p.calculatedOn||asOfDate);
+          var total=NaN;
+          if(isFinite(reference)&&isFinite(Number(p.referenceWeek))&&isFinite(Number(p.referenceDay))){
+            total=Number(p.referenceWeek)*7+Number(p.referenceDay)+now-reference;
+          }else if(p.valid!==false&&isFinite(baseline)&&isFinite(Number(p.week))&&isFinite(Number(p.day))){
+            total=Number(p.week)*7+Number(p.day)+now-baseline;
+          }
+          p.valid=p.valid!==false&&isFinite(total)&&isFinite(due);
+          p.week=p.valid?Math.floor(Math.max(0,total)/7):undefined;
+          p.day=p.valid?Math.max(0,total)%7:undefined;
+          p.dday=isFinite(due)?due-now:undefined;
+          var checkup=calendarDay(p.checkupDate);
+          p.checkupDday=isFinite(checkup)&&checkup>=now?checkup-now:null;
+          if(p.checkupDday===null) p.checkupDate='';
+        }
+        p.calculatedOn=today();
+        return p;
+      }
+
+      function homeForToday(value,options){
+        var home=Object.assign({},value), app=Object.assign({},home.app||{});
+        var baseline=home.asOfDate||(!options.fromSnapshot?today():'');
+        app.pregnancy=pregnancyForToday(app.pregnancy,baseline);
+        if(app.trip){
+          var trip=Object.assign({},app.trip), now=calendarDay(today()), from=calendarDay(trip.from), to=calendarDay(trip.to);
+          trip.dday=from-now; trip.dayIndex=now>=from&&now<=to?now-from+1:null;
+          app.trip=trip;
+        }
+        home.app=app; home.asOfDate=today();
+        if(!options.fromSnapshot&&!options.dateOnly) home.fetchedAt=Number(home.fetchedAt)||Date.now();
+        return home;
+      }
+
+      function renderDateFreshness(){
+        var node=el('dateFreshness');
+        if(!node) return;
+        if(!state.homeFromSnapshot&&!state.dateRefreshNeeded){ hide(node); return; }
+        var fetchedAt=Number(state.home&&state.home.fetchedAt)||0;
+        var known=state.home&&state.home.app&&state.home.app.pregnancy&&state.home.app.pregnancy.valid!==false;
+        text(node,(fetchedAt?'마지막 확인 '+formatOperationalTime(fetchedAt):'저장된 기록 · 마지막 확인 시각 없음')+(known?' · 날짜는 오늘 기준':' · 주수 확인 필요'));
+        show(node);
+      }
+
+      function refreshDateContext(){
+        if(!state.home||state.homeDateKey===today()) return false;
+        state.dateRefreshNeeded=true;
+        applyHome(state.home,{fromSnapshot:state.homeFromSnapshot,dateOnly:true,preserveScroll:true});
+        if(!el('guidebook').classList.contains('hidden')) renderGuidebook();
+        return true;
+      }
+
       function applyHome(home,options){
         options=options||{};
         home=home||{};
         adoptRenewedSession(home);
+        home=homeForToday(home,options);
         var nextFingerprint=fingerprintHome(home);
         var changed=!state.homeFingerprint||state.homeFingerprint!==nextFingerprint;
         var view=changed&&options.preserveScroll?captureFeedView():null;
         state.home=home;
+        state.homeDateKey=today();
+        state.homeFromSnapshot=!!options.fromSnapshot;
+        if(!options.fromSnapshot&&!options.dateOnly) state.dateRefreshNeeded=false;
+        renderDateFreshness();
         state.revision=String(home.revision||state.revision||'');
         state.hasMore=!!home.hasMore;
         state.nextOffset=Number(home.nextOffset||((home.posts||[]).length));
@@ -2051,11 +2129,11 @@
         renderTripBanner();
         renderTripSegment();
         renderHomeSummary(pregnancy);
-        refreshHomeSummaryChecklist();
+        if(!options.dateOnly) refreshHomeSummaryChecklist();
         if(state.activeTab==='question') renderQuestionHead();
-        if(!options.fromSnapshot) persistHomeSnapshot(home);
+        if(!options.fromSnapshot&&!options.dateOnly) persistHomeSnapshot(home);
         setTimeout(pushWidgetState,50);
-        hide(el('feedStatus'));
+        if(!options.dateOnly) hide(el('feedStatus'));
         if(changed){
           state.homeFingerprint=nextFingerprint;
           var rendered=renderPosts(home.posts||[]);
@@ -2222,6 +2300,9 @@
             if(hay.indexOf(state.searchQuery)<0) return false;
           }
           return true;
+        }).sort(function(a,b){
+          var left=String(a.recordDate||''), right=String(b.recordDate||'');
+          return left<right?1:(left>right?-1:0);
         });
       }
 
@@ -2493,12 +2574,14 @@
       }
 
       function checkForUpdates(){
+        refreshDateContext();
         if(shouldPauseAutoRefresh()) return;
         // v2.8.6: 연속 3회 이상 실패하면 60초 간격으로 물러난다(오프라인에서 소음·배터리 절약).
         // 성공하면 실패 횟수가 0이 되어 즉시 원래 30초 간격으로 복귀한다.
         // 수동 새로고침·아래로 당기기는 이 제한과 무관하게 항상 동작한다.
         if(state.autoRefreshFailures>=3&&Date.now()-state.lastAutoCheckAt<60000) return;
         state.lastAutoCheckAt=Date.now();
+        if(state.dateRefreshNeeded) return refreshHome({source:'day-change',silent:true,force:true});
         state.checkingUpdates=true;
         callApi('apiCheckUpdatesV240',[state.session.token,state.revision],12000)
           .then(unwrap)
@@ -3808,7 +3891,7 @@
         return 3;
       }
       function currentPregnancyWeekInfo(){
-        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||null;
+        var pregnancy=pregnancyForToday(state.home&&state.home.app&&state.home.app.pregnancy,state.home&&state.home.asOfDate);
         if(!pregnancy||pregnancy.valid===false) return null;
         var week=Number(pregnancy.week);
         if(!isFinite(week)) return null;
@@ -3844,10 +3927,11 @@
         }
         var tests=el('guideTests'); tests.innerHTML='';
         PRENATAL_TESTS.forEach(function(t){
-          var status=isFinite(week)?(week>t.to?'done':(week>=t.from?'now':'todo')):'todo';
+          var status=isFinite(week)?(week>t.to?'past':(week>=t.from?'now':'upcoming')):'unknown';
           var p=document.createElement('p');
-          p.className=status==='now'?'guide-now':(status==='done'?'guide-done':'');
-          p.innerHTML='<strong>'+(status==='done'?'✅ ':(status==='now'?'👉 ':'· '))+escapeHtml(t.name)+'<span class="guide-range">'+t.from+(t.to>t.from?'~'+t.to:'')+'주</span></strong><br>'+escapeHtml(t.desc);
+          p.className=status==='now'?'guide-now':'';
+          var label=status==='past'?'안내 시기 지남':(status==='now'?'현재 시기':(status==='upcoming'?'예정 시기':'시기 확인 전'));
+          p.innerHTML='<strong>'+(status==='now'?'👉 ':'· ')+escapeHtml(t.name)+'<span class="guide-range">'+t.from+(t.to>t.from?'~'+t.to:'')+'주 · '+label+'</span></strong><br>'+escapeHtml(t.desc);
           tests.appendChild(p);
         });
         renderGuideList(el('guideNutrition'),NUTRITION_GUIDE,isFinite(week)?weekStageIndex(week):-1);
@@ -4568,7 +4652,9 @@
             week:isFinite(Number(pregnancy.week))?Number(pregnancy.week):-1,
             day:isFinite(Number(pregnancy.day))?Number(pregnancy.day):-1,
             dday:isFinite(Number(pregnancy.dday))?Number(pregnancy.dday):-9999,
-            updatedAt:Date.now()
+            updatedAt:Date.now(),
+            sourceUpdatedAt:Number(state.home&&state.home.fetchedAt)||0,
+            calculatedOn:today()
           }));
         }catch(widgetError){}
       }
@@ -6648,6 +6734,8 @@
         show(el('feedStatus'));
         if(state.imageObserver) state.imageObserver.disconnect();
         state.home=null;
+        state.homeDateKey=''; state.homeFromSnapshot=false; state.dateRefreshNeeded=false;
+        hide(el('dateFreshness'));
         state.homeSummaryChecklist=[];
         state.homeSummaryChecklistAt=0;
         state.homeSummaryChecklistLoading=false;
