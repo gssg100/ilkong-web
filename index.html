@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.11 — 건강 기록·준비물 입력 화면 개선 -->
+<!-- 일콩 기록 v4.9.12 — 검진 일정·질문·결과 연결 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.11">
+  <meta name="ilkong-release-version" content="4.9.12">
   <meta name="ilkong-release-date" content="2026-10-27">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -282,6 +282,18 @@
     .answer-empty{font-size:15px;line-height:1.6;color:var(--muted)}.answer-action{width:100%;margin-top:12px;min-height:44px}.question-history{border-top:1px solid var(--line);margin-top:16px;padding-top:10px}.question-history>summary{padding:10px 0;min-height:44px;font-weight:700;cursor:pointer}.question-history .post{margin-top:12px}
     @media(max-width:680px){.question-pair{grid-template-columns:minmax(0,1fr)}.question-group{padding:14px}.question-group>h2{font-size:18px}}
 
+
+    /* 검진 준비: 일정과 노트 저장을 구분하고 질문부터 입력한다. */
+    .note-schedule{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px;margin-bottom:20px}
+    .note-schedule h3,.note-section-heading h3{font-size:15px;margin:0 0 8px}
+    .note-schedule-controls{display:flex;align-items:flex-end;gap:10px;margin:12px 0}
+    .note-schedule-controls .field{flex:1;min-width:0;margin:0}.note-schedule-controls button{min-height:46px;flex-shrink:0}
+    .note-section-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.note-section-heading h3{margin:0}
+    .note-section-heading button{font-size:13px;min-height:44px}
+    .note-details{border:1px solid var(--line);border-radius:14px;margin:12px 0;background:var(--card)}
+    .note-details summary{padding:14px;min-height:48px;cursor:pointer;font-size:14px;font-weight:700}.note-details-body{padding:0 14px 12px}
+    .note-status{margin:14px 0 10px;min-height:22px}.note-save-bottom{width:100%;min-height:48px;margin-top:10px}.note-draft-note{margin:10px 0 18px;line-height:1.6}
+    .checkup-form input,.checkup-form textarea{font-size:16px;min-width:0}.checkup-form .note-details .field:last-child{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -294,7 +306,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.11 · 2026.10.27 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.12 · 2026.10.27 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -303,7 +315,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.11 · 2026.10.27</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.12 · 2026.10.27</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -318,7 +330,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.11 · 2026.10.27 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.12 · 2026.10.27 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><p id="dateFreshness" class="hidden" style="margin:10px 0 0;color:var(--ink);font-size:13px;line-height:1.5" role="status"></p><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -496,7 +508,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.11 · 2026.10.27</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.12 · 2026.10.27</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -526,7 +538,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.11 · 2026.10.27 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.12 · 2026.10.27 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -644,19 +656,30 @@
 
   <div id="checkupNotes" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkupNotesTitle">
     <div class="sheet">
-      <div class="sheet-head"><button id="closeCheckupNotes" class="icon" type="button" aria-label="검진노트 닫기">✕</button><h2 id="checkupNotesTitle">검진노트 🏥</h2><button id="saveCheckupNote" class="save" type="button">저장</button></div>
-      <div class="form">
-        <div class="field"><label for="noteDate">검진 날짜</label><input id="noteDate" type="date"></div>
-        <div class="field"><label for="noteQuestions">의사선생님께 물어볼 것 · 한 줄에 하나씩</label><textarea id="noteQuestions" maxlength="3000" placeholder="예) 입덧이 심한데 약 먹어도 되나요?"></textarea></div>
-        <div class="row">
-          <div class="field"><label for="noteWeight">몸무게</label><input id="noteWeight" maxlength="20" placeholder="예) 52.3kg"></div>
-          <div class="field"><label for="noteBp">혈압</label><input id="noteBp" maxlength="20" placeholder="예) 110/70"></div>
-        </div>
-        <div class="field"><label for="noteBabySize">아기 크기·심장소리 등</label><input id="noteBabySize" maxlength="80" placeholder="예) 1.2cm · 심박 156회"></div>
-        <div class="field"><label for="noteResult">검진 결과 메모</label><textarea id="noteResult" maxlength="3000" placeholder="검진에서 들은 이야기를 남겨놔."></textarea></div>
-        <div id="noteStatus" class="upload-note"></div>
-        <div id="weightChartBox" class="hidden" style="margin-top:14px"><span class="upload-note">몸무게 변화 ⚖️</span><canvas id="weightChart" style="width:100%;height:150px;border:1px solid var(--line);border-radius:13px;background:var(--card);margin-top:6px"></canvas></div>
-        <div id="noteList" class="note-list"></div>
+      <div class="sheet-head"><button id="closeCheckupNotes" class="icon" type="button" aria-label="검진 준비 닫기">✕</button><h2 id="checkupNotesTitle">검진 준비 🏥</h2><button id="saveCheckupNote" class="save" type="button">노트 저장</button></div>
+      <div class="form checkup-form">
+        <section class="note-schedule" aria-labelledby="noteScheduleTitle">
+          <h3 id="noteScheduleTitle">다음 검진 일정</h3>
+          <p id="noteScheduleStatus" class="upload-note" role="status" aria-live="polite"></p>
+          <div class="note-schedule-controls"><div class="field"><label for="noteScheduleDate">다음 검진 날짜</label><input id="noteScheduleDate" type="date"></div><button id="noteScheduleSave" class="secondary" type="button">일정 저장</button></div>
+          <p class="upload-note">일정과 노트는 따로 저장해. 노트 날짜를 바꿔도 검진 일정은 그대로야.</p>
+        </section>
+        <div class="note-section-heading"><h3>질문과 검진노트</h3><button id="newCheckupNote" class="secondary" type="button">새 날짜 기록</button></div>
+        <div class="field"><label for="noteDate">이 노트의 검진 날짜</label><input id="noteDate" type="date"></div>
+        <div class="field"><label for="noteQuestions">의사선생님께 물어볼 것 · 한 줄에 하나씩</label><textarea id="noteQuestions" maxlength="3000" placeholder="검진 때 잊지 않고 물어볼 질문을 적어둬."></textarea></div>
+        <details id="noteResultDetails" class="note-details"><summary>검진 후 · 결과와 측정값 적기</summary><div class="note-details-body">
+          <div class="field"><label for="noteResult">검진 결과 메모</label><textarea id="noteResult" maxlength="3000" placeholder="질문에 들은 답과 다음에 확인할 내용을 남겨봐."></textarea></div>
+          <div class="row"><div class="field"><label for="noteWeight">몸무게</label><input id="noteWeight" maxlength="20" placeholder="예) 52.3kg"></div><div class="field"><label for="noteBp">혈압</label><input id="noteBp" maxlength="20" placeholder="예) 110/70"></div></div>
+          <div class="field"><label for="noteBabySize">아기 크기·심장소리 등</label><input id="noteBabySize" maxlength="80" placeholder="예) 1.2cm · 심박 156회"></div>
+        </div></details>
+        <p id="noteStatus" class="upload-note note-status" role="status" aria-live="polite"></p>
+        <button id="retryCheckupNotes" class="secondary hidden" type="button">노트 다시 불러오기</button>
+        <button id="saveCheckupNoteBottom" class="save note-save-bottom" type="button">노트 저장</button>
+        <p class="upload-note note-draft-note">앱을 닫기 전에는 노트를 저장해 줘. 저장한 질문과 결과는 두 사람이 함께 볼 수 있어.</p>
+        <details id="noteHistory" class="note-details"><summary id="noteHistoryCount">지난 노트</summary><div class="note-details-body">
+          <div id="weightChartBox" class="hidden"><span class="upload-note">몸무게 변화 ⚖️</span><canvas id="weightChart" style="width:100%;height:150px;border:1px solid var(--line);border-radius:13px;background:var(--card);margin-top:6px"></canvas></div>
+          <div id="noteList" class="note-list"></div>
+        </div></details>
       </div>
     </div>
   </div>
@@ -689,17 +712,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.11';
+      var VERSION = '4.9.12';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-27',
         timezone: 'Asia/Seoul',
         notes: [
+          '홈 다음 검진에서 일정·질문·검진 결과를 한 화면으로 연결',
+          '같은 날짜의 노트를 이어 쓰고 결과·지난 노트는 필요할 때 펼쳐 보기',
+          '노트 저장 상태와 재시도 안내, 아래쪽 저장 버튼 및 입력 보호 강화'
+        ],
+        history: [
+          {version:'4.9.11',date:'2026-10-27',notes:[
           '건강 기록 날짜 이동과 날짜별 입력 유지, 저장 중·저장됨 상태 표시',
           '체중·혈압 추세를 접어서 보고 아래쪽 저장 버튼으로 쉽게 저장',
           '준비물 기본 입력과 상세 정보를 나누고 저장 실패 시 편집 내용 유지'
-        ],
-        history: [
+        ]},
           {version:'4.9.10',date:'2026-10-27',notes:[
           '기록 검색에서 제목·본문·댓글의 일치 문구를 강조해 찾기 쉽게 개선',
           '댓글로 찾은 기록은 일치 댓글을 미리 보고 버튼 한 번으로 해당 댓글로 이동',
@@ -1217,7 +1245,7 @@
         el('heroToggle').addEventListener('click',function(){ setHeroExpanded(!state.heroExpanded,true); });
         el('quickWrite').addEventListener('click',openComposer);
         el('openCheckin').addEventListener('click',openCheckin);
-        el('summaryCheckup').addEventListener('click',openSettings);
+        el('summaryCheckup').addEventListener('click',openCheckupNotes);
         el('summaryChecklist').addEventListener('click',openHomeShortcut);
         el('homeShortcutSelect').addEventListener('change',function(){
           var prefs=shortcutPreferences();
@@ -1322,6 +1350,13 @@
         el('closeCheckupNotes').addEventListener('click',function(){ closeOverlaySheet('checkupNotes'); });
         el('checkupNotes').addEventListener('click',function(e){ if(e.target===el('checkupNotes')) closeOverlaySheet('checkupNotes'); });
         el('saveCheckupNote').addEventListener('click',saveCheckupNoteAction);
+        el('saveCheckupNoteBottom').addEventListener('click',saveCheckupNoteAction);
+        el('noteScheduleSave').addEventListener('click',saveNoteSchedule);
+        el('retryCheckupNotes').addEventListener('click',loadCheckupNotes);
+        el('newCheckupNote').addEventListener('click',newCheckupNote);
+        el('noteDate').addEventListener('change',changeNoteDate);
+        ['noteQuestions','noteResult','noteWeight','noteBp','noteBabySize'].forEach(function(id){el(id).addEventListener('input',function(){noteState.error='';renderNoteFormState();});});
+        el('noteHistory').addEventListener('toggle',function(){if(this.open)renderWeightChart(noteState.notes);});
         el('openBook').addEventListener('click',openBookMaker);
         el('closeBook').addEventListener('click',function(){ closeOverlaySheet('bookMaker'); });
         el('bookMaker').addEventListener('click',function(e){ if(e.target===el('bookMaker')) closeOverlaySheet('bookMaker'); });
@@ -1696,25 +1731,25 @@
       }
 
       function setCheckupAction(checkupDate){
-        if(state.checkupBusy||!state.session) return;
-        invalidateHomeResponses();
-        state.checkupBusy=true;
-        var saveButton=el('checkupSave'), clearButton=el('checkupClear');
-        if(saveButton) saveButton.disabled=true;
-        if(clearButton) clearButton.disabled=true;
-        callApi('apiSetCheckupV291',[state.session.token,checkupDate||''],20000)
-          .then(unwrap)
-          .then(function(){
-            toast(checkupDate?'검진일을 저장했어 🏥':'검진일을 지웠어.');
-            return refreshHome({source:'checkup',silent:true,force:true});
-          })
-          .then(function(){ renderCheckupSettings(); })
-          .catch(function(error){ toast(errorMessage(error)); })
-          .then(function(){
+        if(state.checkupBusy||!state.session) return Promise.resolve(false);
+        var token=state.session.token;
+        invalidateHomeResponses(); state.checkupBusy=true;
+        ['checkupSave','checkupClear','checkupDateInput','noteScheduleSave','noteScheduleDate'].forEach(function(id){if(el(id))el(id).disabled=true;});
+        text(el('noteScheduleStatus'),'일정을 저장하는 중…');
+        return callApi('apiSetCheckupV291',[token,checkupDate||''],20000).then(unwrap).then(function(){
+          if(!state.session||state.session.token!==token)return false;
+          var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy;
+          if(pregnancy){pregnancy.checkupDate=checkupDate||'';pregnancy.checkupDday=checkupDate?calendarDay(checkupDate)-calendarDay(today()):null;renderCheckup(pregnancy);renderHomeSummary(pregnancy);}
+          renderCheckupSettings();toast(checkupDate?'검진일을 저장했어 🏥':'검진일을 지웠어.');
+          return refreshHome({source:'checkup',silent:true,force:true}).then(function(){return true;},function(){return true;});
+        }).catch(function(error){if(state.session&&state.session.token===token)toast(errorMessage(error));return false;}).then(function(saved){
+          if(state.session&&state.session.token===token){
             state.checkupBusy=false;
-            if(saveButton) saveButton.disabled=false;
-            if(clearButton) clearButton.disabled=false;
-          });
+            ['checkupSave','checkupClear','checkupDateInput','noteScheduleSave','noteScheduleDate'].forEach(function(id){if(el(id))el(id).disabled=false;});
+            renderCheckupSettings();
+          }
+          return saved;
+        });
       }
 
       // ===== v2.9.0 태동 카운터 =====
@@ -2364,7 +2399,7 @@
         var checkupDday=pregnancy?Number(pregnancy.checkupDday):NaN;
         if(checkupDate&&isFinite(checkupDday)&&checkupDday>=0){
           text(el('summaryCheckupTitle'),checkupDday===0?'오늘 검진':'검진 D-'+checkupDday);
-          text(el('summaryCheckupDesc'),formatKoreanDate(checkupDate));
+          text(el('summaryCheckupDesc'),formatKoreanDate(checkupDate)+' · 질문 준비');
         }else{
           text(el('summaryCheckupTitle'),'다음 검진');
           text(el('summaryCheckupDesc'),'일정을 정해두면 알려줄게');
@@ -6113,80 +6148,168 @@
         .then(function(){ capsuleBusy=false; el('sealCapsule').disabled=false; });
       }
 
-      // --- 검진노트 ---
-      var noteState={busy:false,editingId:'',attempt:null};
-      function openCheckupNotes(){
-        openOverlaySheet('checkupNotes');
-        resetNoteForm();
-        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||{};
-        if(pregnancy.checkupDate) el('noteDate').value=pregnancy.checkupDate;
-        hide(el('weightChartBox'));
-        renderNoteList(null); loadCheckupNotes();
+      // 검진 일정과 질문·결과를 한 화면에서 이어 쓴다.
+      var noteState={owner:'',busy:false,loading:false,loaded:false,seq:0,editingId:'',attempt:null,notes:[],baseline:'',date:'',error:''};
+      function noteFormData(){
+        return {checkupDate:el('noteDate').value,questions:el('noteQuestions').value,result:el('noteResult').value,weight:el('noteWeight').value,bloodPressure:el('noteBp').value,babySize:el('noteBabySize').value};
       }
-      function resetNoteForm(){
-        noteState.editingId=''; noteState.attempt=null;
-        el('noteDate').value=''; el('noteQuestions').value=''; el('noteWeight').value=''; el('noteBp').value=''; el('noteBabySize').value=''; el('noteResult').value='';
-        text(el('noteStatus'),''); text(el('saveCheckupNote'),'저장');
+      function noteFormDirty(){
+        return JSON.stringify(noteFormData())!==noteState.baseline;
+      }
+      function fillNoteForm(note,date){
+        note=note||{};
+        noteState.editingId=note.id||''; noteState.attempt=null;
+        el('noteDate').value=note.checkupDate||date||'';
+        el('noteQuestions').value=note.questions||''; el('noteResult').value=note.result||'';
+        el('noteWeight').value=note.weight||''; el('noteBp').value=note.bloodPressure||''; el('noteBabySize').value=note.babySize||'';
+        noteState.date=el('noteDate').value; noteState.baseline=JSON.stringify(noteFormData());
+        el('noteResultDetails').open=!!(note.result||note.weight||note.bloodPressure||note.babySize);
+      }
+      function resetNoteContext(){
+        var token=state.session&&state.session.token||'';
+        if(noteState.owner===token) return;
+        noteState.owner=token; noteState.seq++; noteState.notes=[]; noteState.busy=false; noteState.loading=false; noteState.loaded=false; noteState.error='';
+        fillNoteForm(null,''); renderNoteList(null);
+        text(el('noteScheduleStatus'),''); el('noteScheduleDate').value='';
+        el('noteHistory').open=false;
+      }
+      function noteForDate(date){
+        return noteState.notes.filter(function(note){return note.checkupDate===date;}).sort(function(a,b){return String(b.updatedAt||'').localeCompare(String(a.updatedAt||''));})[0]||null;
+      }
+      function openCheckupNotes(){
+        if(!state.session) return;
+        resetNoteContext(); openOverlaySheet('checkupNotes');
+        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||{};
+        var date=pregnancy.valid!==false&&pregnancy.checkupDate||'';
+        el('noteScheduleDate').value=date;
+        text(el('noteScheduleStatus'),date?'다음 검진 · '+formatKoreanDate(date):'예정된 검진이 없어. 날짜를 정해두면 홈에서도 볼 수 있어.');
+        if(!el('noteDate').value) fillNoteForm(null,date||today());
+        hide(el('weightChartBox')); loadCheckupNotes();
+      }
+      function renderNoteFormState(message){
+        var locked=noteState.busy||noteState.loading||!noteState.loaded||state.checkupBusy;
+        ['noteDate','noteQuestions','noteResult','noteWeight','noteBp','noteBabySize','newCheckupNote','saveCheckupNote','saveCheckupNoteBottom'].forEach(function(id){el(id).disabled=locked;});
+        var status=message||noteState.error||(noteState.busy?'저장하는 중…':noteState.loading?'기존 노트를 확인하는 중…':noteFormDirty()?'아직 저장하지 않은 내용이 있어.':noteState.editingId?'저장된 노트를 이어 쓰는 중이야.':'질문을 먼저 저장하고 검진 후 결과를 덧붙여봐.');
+        text(el('noteStatus'),status);
+        var label=noteState.busy?'저장 중…':noteState.editingId?'수정 저장':'노트 저장';
+        text(el('saveCheckupNote'),label);text(el('saveCheckupNoteBottom'),label);
+        el('retryCheckupNotes').classList.toggle('hidden',!noteState.error||noteState.loaded);
+        text(el('noteHistoryCount'),noteState.loaded?'지난 노트 '+noteState.notes.length+'개':'지난 노트');
+        el('noteScheduleSave').disabled=!!(state.checkupBusy||noteState.busy||noteState.loading);
+        el('noteScheduleDate').disabled=!!(state.checkupBusy||noteState.busy||noteState.loading);
+        Array.prototype.forEach.call(el('noteList').querySelectorAll('button'),function(button){button.disabled=locked;});
+      }
+      function changeNoteDate(){
+        if(noteState.busy||noteState.loading||!noteState.loaded||state.checkupBusy) return;
+        var date=el('noteDate').value, previous=noteState.date;
+        el('noteDate').value=previous;
+        if(noteFormDirty()&&!confirm('작성 중인 노트를 저장하지 않고 다른 날짜를 볼까?')) return;
+        fillNoteForm(noteForDate(date),date); noteState.error=''; renderNoteFormState();
+      }
+      function newCheckupNote(){
+        if(noteState.busy||noteState.loading||!noteState.loaded||state.checkupBusy) return;
+        if(noteFormDirty()&&!confirm('작성 중인 노트를 저장하지 않고 새 날짜를 고를까?')) return;
+        fillNoteForm(null,'');noteState.error='';renderNoteFormState();el('noteDate').focus();
       }
       function loadCheckupNotes(){
-        if(!state.session) return;
-        callApi('apiGetCheckupNotesV310',[state.session.token],20000).then(unwrap).then(function(data){
-          if(el('checkupNotes').classList.contains('hidden')) return;
-          renderNoteList(data&&data.notes||[]);
-          renderWeightChart(data&&data.notes||[]);
-        }).catch(function(error){ text(el('noteStatus'),'노트를 불러오지 못했어: '+errorMessage(error)); });
+        if(!state.session||noteState.busy||state.checkupBusy) return Promise.resolve(false);
+        var token=state.session.token,seq=++noteState.seq,hadLoaded=noteState.loaded,scheduleInput=el('noteScheduleDate').value;
+        noteState.loading=true;noteState.error='';renderNoteFormState();
+        return callApi('apiGetCheckupNotesV310',[token],20000).then(unwrap).then(function(data){
+          if(!state.session||state.session.token!==token||noteState.owner!==token||seq!==noteState.seq) return false;
+          noteState.notes=data&&data.notes||[];noteState.loaded=true;noteState.loading=false;
+          var date=el('noteDate').value;
+          if(!noteFormDirty()){
+            if(!hadLoaded&&!noteState.editingId&&data&&data.nextCheckupDate&&data.nextCheckupDate>=today()) date=data.nextCheckupDate;
+            var current=noteState.editingId?noteState.notes.filter(function(note){return note.id===noteState.editingId;})[0]:noteForDate(date);
+            fillNoteForm(current,date);
+          }
+          if(!state.checkupBusy&&el('noteScheduleDate').value===scheduleInput){
+            var next=data&&data.nextCheckupDate>=today()?data.nextCheckupDate:'';
+            el('noteScheduleDate').value=next;
+            text(el('noteScheduleStatus'),next?'다음 검진 · '+formatKoreanDate(next):'예정된 검진이 없어. 날짜를 정해두면 홈에서도 볼 수 있어.');
+          }
+          renderNoteList(noteState.notes);renderWeightChart(noteState.notes);renderNoteFormState();return true;
+        }).catch(function(error){
+          if(!state.session||state.session.token!==token||noteState.owner!==token||seq!==noteState.seq) return false;
+          noteState.loading=false;noteState.error='노트를 불러오지 못했어: '+errorMessage(error);renderNoteFormState();return false;
+        });
+      }
+      function saveNoteSchedule(){
+        if(state.checkupBusy||noteState.busy||noteState.loading||!state.session) return;
+        var date=el('noteScheduleDate').value;
+        if(!date||date<today()){toast('오늘 이후의 검진 날짜를 골라 줘.');return;}
+        var token=state.session.token;
+        var pending=setCheckupAction(date);renderNoteFormState();
+        return pending.then(function(saved){
+          if(!state.session||state.session.token!==token) return;
+          text(el('noteScheduleStatus'),saved?'다음 검진 · '+formatKoreanDate(date):'일정을 저장하지 못했어. 다시 시도해 줘.');
+          if(saved&&!noteState.busy&&!noteState.loading&&!noteFormDirty()){
+            fillNoteForm(noteForDate(date),date);
+          }
+          renderNoteFormState();
+        });
       }
       function renderNoteList(notes){
-        var list=el('noteList'); list.innerHTML='';
-        if(notes===null){ list.innerHTML='<div class="comment-empty">지난 검진노트를 불러오는 중…</div>'; return; }
-        if(!notes.length){ list.innerHTML='<div class="comment-empty">아직 검진노트가 없어. 다음 검진 준비를 여기서 해봐 🏥</div>'; return; }
+        var list=el('noteList');list.innerHTML='';
+        if(notes===null){list.innerHTML='<div class="comment-empty">지난 검진노트를 불러오는 중…</div>';return;}
+        if(!notes.length){list.innerHTML='<div class="comment-empty">저장한 노트가 여기에 모여. 질문만 먼저 남겨도 좋아 🏥</div>';return;}
         notes.forEach(function(note){
-          var item=document.createElement('div'); item.className='note-item';
+          var item=document.createElement('div');item.className='note-item';
           var parts=[];
-          if(note.weight) parts.push('⚖️ '+note.weight);
-          if(note.bloodPressure) parts.push('🩺 '+note.bloodPressure);
-          if(note.babySize) parts.push('👶 '+note.babySize);
+          if(note.weight)parts.push('⚖️ '+note.weight);if(note.bloodPressure)parts.push('🩺 '+note.bloodPressure);if(note.babySize)parts.push('👶 '+note.babySize);
           var html='<h4>🏥 '+escapeHtml(note.checkupDate)+'</h4>';
-          if(parts.length) html+='<div>'+escapeHtml(parts.join(' · '))+'</div>';
-          if(note.questions) html+='<div style="margin-top:5px"><strong>물어볼 것</strong><div class="comment-text">'+escapeHtml(note.questions)+'</div></div>';
-          if(note.result) html+='<div style="margin-top:5px"><strong>결과 메모</strong><div class="comment-text">'+escapeHtml(note.result)+'</div></div>';
+          if(parts.length)html+='<div>'+escapeHtml(parts.join(' · '))+'</div>';
+          if(note.questions)html+='<div style="margin-top:5px"><strong>물어볼 것</strong><div class="comment-text">'+escapeHtml(note.questions)+'</div></div>';
+          if(note.result)html+='<div style="margin-top:5px"><strong>결과 메모</strong><div class="comment-text">'+escapeHtml(note.result)+'</div></div>';
           item.innerHTML=html;
-          var actions=document.createElement('div'); actions.className='note-actions';
-          var edit=document.createElement('button'); edit.type='button'; edit.textContent='수정';
+          var actions=document.createElement('div');actions.className='note-actions';
+          var edit=document.createElement('button');edit.type='button';edit.textContent='이어서 쓰기';
           edit.addEventListener('click',function(){
-            noteState.editingId=note.id; noteState.attempt=null;
-            el('noteDate').value=note.checkupDate; el('noteQuestions').value=note.questions; el('noteWeight').value=note.weight; el('noteBp').value=note.bloodPressure; el('noteBabySize').value=note.babySize; el('noteResult').value=note.result;
-            text(el('saveCheckupNote'),'수정 저장'); text(el('noteStatus'),note.checkupDate+' 노트를 수정하는 중이야.');
-            var sheet=el('checkupNotes').querySelector('.sheet'); if(sheet) sheet.scrollTop=0;
+            if(noteState.busy||noteState.loading) return;
+            if(noteFormDirty()&&!confirm('작성 중인 노트를 저장하지 않고 이 노트를 열까?'))return;
+            fillNoteForm(note);noteState.error='';renderNoteFormState();
+            var sheet=el('checkupNotes').querySelector('.sheet');if(sheet)sheet.scrollTop=0;el('noteQuestions').focus();
           });
-          var del=document.createElement('button'); del.type='button'; del.textContent='삭제';
-          del.addEventListener('click',function(){
-            if(!confirm(note.checkupDate+' 검진노트를 지울까?')) return;
-            callApi('apiDeleteCheckupNoteV310',[state.session.token,note.id],16000).then(unwrap).then(function(){ if(noteState.editingId===note.id) resetNoteForm(); loadCheckupNotes(); }).catch(function(error){ toast(errorMessage(error)); });
-          });
-          actions.appendChild(edit); actions.appendChild(del); item.appendChild(actions);
-          list.appendChild(item);
+          var del=document.createElement('button');del.type='button';del.textContent='삭제';
+          del.addEventListener('click',function(){ deleteCheckupNote(note); });
+          actions.appendChild(edit);actions.appendChild(del);item.appendChild(actions);list.appendChild(item);
+        });
+      }
+      function deleteCheckupNote(note){
+        if(!state.session||noteState.busy||noteState.loading||state.checkupBusy) return;
+        if(!confirm(note.checkupDate+' 검진노트를 지울까?'))return;
+        var token=state.session.token;noteState.busy=true;noteState.error='';renderNoteFormState('지우는 중…');
+        return callApi('apiDeleteCheckupNoteV310',[token,note.id],16000).then(unwrap).then(function(){
+          if(!state.session||state.session.token!==token||noteState.owner!==token)return;
+          noteState.notes=noteState.notes.filter(function(item){return item.id!==note.id;});
+          if(noteState.editingId===note.id)fillNoteForm(null,note.checkupDate);
+          noteState.busy=false;renderNoteList(noteState.notes);renderWeightChart(noteState.notes);renderNoteFormState('노트를 지웠어.');
+        }).catch(function(error){
+          if(!state.session||state.session.token!==token||noteState.owner!==token)return;
+          noteState.busy=false;noteState.error='지우지 못했어: '+errorMessage(error);renderNoteFormState();
         });
       }
       function saveCheckupNoteAction(){
-        if(noteState.busy||!state.session) return;
-        var payload={
-          noteId:noteState.editingId,
-          checkupDate:String(el('noteDate').value||'').trim(),
-          questions:String(el('noteQuestions').value||'').trim(),
-          result:String(el('noteResult').value||'').trim(),
-          weight:String(el('noteWeight').value||'').trim(),
-          bloodPressure:String(el('noteBp').value||'').trim(),
-          babySize:String(el('noteBabySize').value||'').trim()
-        };
-        if(!payload.checkupDate){ toast('검진 날짜를 먼저 골라 줘.'); return; }
+        if(noteState.busy||noteState.loading||!noteState.loaded||state.checkupBusy||!state.session) return Promise.resolve(false);
+        var payload=noteFormData();Object.keys(payload).forEach(function(key){payload[key]=String(payload[key]||'').trim();});
+        payload.noteId=noteState.editingId;
+        if(!payload.checkupDate){toast('검진 날짜를 먼저 골라 줘.');return Promise.resolve(false);}
         var signature=JSON.stringify(payload);
-        if(!noteState.attempt||noteState.attempt.signature!==signature) noteState.attempt={signature:signature,id:uuid()};
-        noteState.busy=true; el('saveCheckupNote').disabled=true; text(el('noteStatus'),'저장하는 중…');
-        callApi('apiSaveCheckupNoteV310',[state.session.token,payload,noteState.attempt.id],20000).then(unwrap).then(function(){
-          toast('검진노트를 저장했어 🏥'); resetNoteForm(); loadCheckupNotes();
-        }).catch(function(error){ text(el('noteStatus'),''); toast(errorMessage(error)); })
-        .then(function(){ noteState.busy=false; el('saveCheckupNote').disabled=false; });
+        if(!noteState.attempt||noteState.attempt.signature!==signature)noteState.attempt={signature:signature,id:uuid()};
+        var token=state.session.token;noteState.busy=true;noteState.error='';renderNoteFormState();
+        return callApi('apiSaveCheckupNoteV310',[token,payload,noteState.attempt.id],20000).then(unwrap).then(function(data){
+          if(!state.session||state.session.token!==token||noteState.owner!==token)return false;
+          var note=Object.assign({},payload,{id:data&&data.noteId||payload.noteId,updatedAt:new Date().toISOString()});
+          if(!note.id)throw new Error('저장 결과를 확인하지 못했어. 다시 저장해 줘.');
+          noteState.notes=noteState.notes.filter(function(item){return item.id!==note.id;});noteState.notes.push(note);
+          noteState.notes.sort(function(a,b){return b.checkupDate.localeCompare(a.checkupDate);});
+          fillNoteForm(note);noteState.busy=false;renderNoteList(noteState.notes);renderWeightChart(noteState.notes);renderNoteFormState('저장됨 ✓ · 검진 후 결과도 이 노트에 이어서 적어봐.');
+          toast('검진노트를 저장했어 🏥');return true;
+        }).catch(function(error){
+          if(!state.session||state.session.token!==token||noteState.owner!==token)return false;
+          noteState.busy=false;noteState.error='저장하지 못했어. 입력은 그대로 있어: '+errorMessage(error);renderNoteFormState();return false;
+        });
       }
 
       // --- 기록을 책으로(PDF) ---
@@ -7097,6 +7220,10 @@
         state.homeApplyGeneration++;
         state.pagedFeeds={};
         state.questionAnswerBusy=false;
+        state.checkupBusy=false;
+        hide(el('checkupNotes'));
+        if(typeof resetNoteContext==='function') resetNoteContext();
+        ['checkupSave','checkupClear','checkupDateInput'].forEach(function(id){if(el(id))el(id).disabled=false;});
         hide(el('settings'));
         hide(el('composer'));
         hide(el('checkin'));

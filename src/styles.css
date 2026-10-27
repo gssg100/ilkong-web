@@ -262,3 +262,15 @@
     .answer-empty{font-size:15px;line-height:1.6;color:var(--muted)}.answer-action{width:100%;margin-top:12px;min-height:44px}.question-history{border-top:1px solid var(--line);margin-top:16px;padding-top:10px}.question-history>summary{padding:10px 0;min-height:44px;font-weight:700;cursor:pointer}.question-history .post{margin-top:12px}
     @media(max-width:680px){.question-pair{grid-template-columns:minmax(0,1fr)}.question-group{padding:14px}.question-group>h2{font-size:18px}}
 
+
+    /* 검진 준비: 일정과 노트 저장을 구분하고 질문부터 입력한다. */
+    .note-schedule{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px;margin-bottom:20px}
+    .note-schedule h3,.note-section-heading h3{font-size:15px;margin:0 0 8px}
+    .note-schedule-controls{display:flex;align-items:flex-end;gap:10px;margin:12px 0}
+    .note-schedule-controls .field{flex:1;min-width:0;margin:0}.note-schedule-controls button{min-height:46px;flex-shrink:0}
+    .note-section-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.note-section-heading h3{margin:0}
+    .note-section-heading button{font-size:13px;min-height:44px}
+    .note-details{border:1px solid var(--line);border-radius:14px;margin:12px 0;background:var(--card)}
+    .note-details summary{padding:14px;min-height:48px;cursor:pointer;font-size:14px;font-weight:700}.note-details-body{padding:0 14px 12px}
+    .note-status{margin:14px 0 10px;min-height:22px}.note-save-bottom{width:100%;min-height:48px;margin-top:10px}.note-draft-note{margin:10px 0 18px;line-height:1.6}
+    .checkup-form input,.checkup-form textarea{font-size:16px;min-width:0}.checkup-form .note-details .field:last-child{margin-bottom:0}

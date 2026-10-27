@@ -4,17 +4,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.11';
+      var VERSION = '4.9.12';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-27',
         timezone: 'Asia/Seoul',
         notes: [
+          '홈 다음 검진에서 일정·질문·검진 결과를 한 화면으로 연결',
+          '같은 날짜의 노트를 이어 쓰고 결과·지난 노트는 필요할 때 펼쳐 보기',
+          '노트 저장 상태와 재시도 안내, 아래쪽 저장 버튼 및 입력 보호 강화'
+        ],
+        history: [
+          {version:'4.9.11',date:'2026-10-27',notes:[
           '건강 기록 날짜 이동과 날짜별 입력 유지, 저장 중·저장됨 상태 표시',
           '체중·혈압 추세를 접어서 보고 아래쪽 저장 버튼으로 쉽게 저장',
           '준비물 기본 입력과 상세 정보를 나누고 저장 실패 시 편집 내용 유지'
-        ],
-        history: [
+        ]},
           {version:'4.9.10',date:'2026-10-27',notes:[
           '기록 검색에서 제목·본문·댓글의 일치 문구를 강조해 찾기 쉽게 개선',
           '댓글로 찾은 기록은 일치 댓글을 미리 보고 버튼 한 번으로 해당 댓글로 이동',
@@ -532,7 +537,7 @@
         el('heroToggle').addEventListener('click',function(){ setHeroExpanded(!state.heroExpanded,true); });
         el('quickWrite').addEventListener('click',openComposer);
         el('openCheckin').addEventListener('click',openCheckin);
-        el('summaryCheckup').addEventListener('click',openSettings);
+        el('summaryCheckup').addEventListener('click',openCheckupNotes);
         el('summaryChecklist').addEventListener('click',openHomeShortcut);
         el('homeShortcutSelect').addEventListener('change',function(){
           var prefs=shortcutPreferences();
@@ -637,6 +642,13 @@
         el('closeCheckupNotes').addEventListener('click',function(){ closeOverlaySheet('checkupNotes'); });
         el('checkupNotes').addEventListener('click',function(e){ if(e.target===el('checkupNotes')) closeOverlaySheet('checkupNotes'); });
         el('saveCheckupNote').addEventListener('click',saveCheckupNoteAction);
+        el('saveCheckupNoteBottom').addEventListener('click',saveCheckupNoteAction);
+        el('noteScheduleSave').addEventListener('click',saveNoteSchedule);
+        el('retryCheckupNotes').addEventListener('click',loadCheckupNotes);
+        el('newCheckupNote').addEventListener('click',newCheckupNote);
+        el('noteDate').addEventListener('change',changeNoteDate);
+        ['noteQuestions','noteResult','noteWeight','noteBp','noteBabySize'].forEach(function(id){el(id).addEventListener('input',function(){noteState.error='';renderNoteFormState();});});
+        el('noteHistory').addEventListener('toggle',function(){if(this.open)renderWeightChart(noteState.notes);});
         el('openBook').addEventListener('click',openBookMaker);
         el('closeBook').addEventListener('click',function(){ closeOverlaySheet('bookMaker'); });
         el('bookMaker').addEventListener('click',function(e){ if(e.target===el('bookMaker')) closeOverlaySheet('bookMaker'); });
@@ -1011,25 +1023,25 @@
       }
 
       function setCheckupAction(checkupDate){
-        if(state.checkupBusy||!state.session) return;
-        invalidateHomeResponses();
-        state.checkupBusy=true;
-        var saveButton=el('checkupSave'), clearButton=el('checkupClear');
-        if(saveButton) saveButton.disabled=true;
-        if(clearButton) clearButton.disabled=true;
-        callApi('apiSetCheckupV291',[state.session.token,checkupDate||''],20000)
-          .then(unwrap)
-          .then(function(){
-            toast(checkupDate?'검진일을 저장했어 🏥':'검진일을 지웠어.');
-            return refreshHome({source:'checkup',silent:true,force:true});
-          })
-          .then(function(){ renderCheckupSettings(); })
-          .catch(function(error){ toast(errorMessage(error)); })
-          .then(function(){
+        if(state.checkupBusy||!state.session) return Promise.resolve(false);
+        var token=state.session.token;
+        invalidateHomeResponses(); state.checkupBusy=true;
+        ['checkupSave','checkupClear','checkupDateInput','noteScheduleSave','noteScheduleDate'].forEach(function(id){if(el(id))el(id).disabled=true;});
+        text(el('noteScheduleStatus'),'일정을 저장하는 중…');
+        return callApi('apiSetCheckupV291',[token,checkupDate||''],20000).then(unwrap).then(function(){
+          if(!state.session||state.session.token!==token)return false;
+          var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy;
+          if(pregnancy){pregnancy.checkupDate=checkupDate||'';pregnancy.checkupDday=checkupDate?calendarDay(checkupDate)-calendarDay(today()):null;renderCheckup(pregnancy);renderHomeSummary(pregnancy);}
+          renderCheckupSettings();toast(checkupDate?'검진일을 저장했어 🏥':'검진일을 지웠어.');
+          return refreshHome({source:'checkup',silent:true,force:true}).then(function(){return true;},function(){return true;});
+        }).catch(function(error){if(state.session&&state.session.token===token)toast(errorMessage(error));return false;}).then(function(saved){
+          if(state.session&&state.session.token===token){
             state.checkupBusy=false;
-            if(saveButton) saveButton.disabled=false;
-            if(clearButton) clearButton.disabled=false;
-          });
+            ['checkupSave','checkupClear','checkupDateInput','noteScheduleSave','noteScheduleDate'].forEach(function(id){if(el(id))el(id).disabled=false;});
+            renderCheckupSettings();
+          }
+          return saved;
+        });
       }
 
       // ===== v2.9.0 태동 카운터 =====
@@ -1679,7 +1691,7 @@
         var checkupDday=pregnancy?Number(pregnancy.checkupDday):NaN;
         if(checkupDate&&isFinite(checkupDday)&&checkupDday>=0){
           text(el('summaryCheckupTitle'),checkupDday===0?'오늘 검진':'검진 D-'+checkupDday);
-          text(el('summaryCheckupDesc'),formatKoreanDate(checkupDate));
+          text(el('summaryCheckupDesc'),formatKoreanDate(checkupDate)+' · 질문 준비');
         }else{
           text(el('summaryCheckupTitle'),'다음 검진');
           text(el('summaryCheckupDesc'),'일정을 정해두면 알려줄게');
@@ -4182,81 +4194,7 @@
         .then(function(){ capsuleBusy=false; el('sealCapsule').disabled=false; });
       }
 
-      // --- 검진노트 ---
-      var noteState={busy:false,editingId:'',attempt:null};
-      function openCheckupNotes(){
-        openOverlaySheet('checkupNotes');
-        resetNoteForm();
-        var pregnancy=state.home&&state.home.app&&state.home.app.pregnancy||{};
-        if(pregnancy.checkupDate) el('noteDate').value=pregnancy.checkupDate;
-        hide(el('weightChartBox'));
-        renderNoteList(null); loadCheckupNotes();
-      }
-      function resetNoteForm(){
-        noteState.editingId=''; noteState.attempt=null;
-        el('noteDate').value=''; el('noteQuestions').value=''; el('noteWeight').value=''; el('noteBp').value=''; el('noteBabySize').value=''; el('noteResult').value='';
-        text(el('noteStatus'),''); text(el('saveCheckupNote'),'저장');
-      }
-      function loadCheckupNotes(){
-        if(!state.session) return;
-        callApi('apiGetCheckupNotesV310',[state.session.token],20000).then(unwrap).then(function(data){
-          if(el('checkupNotes').classList.contains('hidden')) return;
-          renderNoteList(data&&data.notes||[]);
-          renderWeightChart(data&&data.notes||[]);
-        }).catch(function(error){ text(el('noteStatus'),'노트를 불러오지 못했어: '+errorMessage(error)); });
-      }
-      function renderNoteList(notes){
-        var list=el('noteList'); list.innerHTML='';
-        if(notes===null){ list.innerHTML='<div class="comment-empty">지난 검진노트를 불러오는 중…</div>'; return; }
-        if(!notes.length){ list.innerHTML='<div class="comment-empty">아직 검진노트가 없어. 다음 검진 준비를 여기서 해봐 🏥</div>'; return; }
-        notes.forEach(function(note){
-          var item=document.createElement('div'); item.className='note-item';
-          var parts=[];
-          if(note.weight) parts.push('⚖️ '+note.weight);
-          if(note.bloodPressure) parts.push('🩺 '+note.bloodPressure);
-          if(note.babySize) parts.push('👶 '+note.babySize);
-          var html='<h4>🏥 '+escapeHtml(note.checkupDate)+'</h4>';
-          if(parts.length) html+='<div>'+escapeHtml(parts.join(' · '))+'</div>';
-          if(note.questions) html+='<div style="margin-top:5px"><strong>물어볼 것</strong><div class="comment-text">'+escapeHtml(note.questions)+'</div></div>';
-          if(note.result) html+='<div style="margin-top:5px"><strong>결과 메모</strong><div class="comment-text">'+escapeHtml(note.result)+'</div></div>';
-          item.innerHTML=html;
-          var actions=document.createElement('div'); actions.className='note-actions';
-          var edit=document.createElement('button'); edit.type='button'; edit.textContent='수정';
-          edit.addEventListener('click',function(){
-            noteState.editingId=note.id; noteState.attempt=null;
-            el('noteDate').value=note.checkupDate; el('noteQuestions').value=note.questions; el('noteWeight').value=note.weight; el('noteBp').value=note.bloodPressure; el('noteBabySize').value=note.babySize; el('noteResult').value=note.result;
-            text(el('saveCheckupNote'),'수정 저장'); text(el('noteStatus'),note.checkupDate+' 노트를 수정하는 중이야.');
-            var sheet=el('checkupNotes').querySelector('.sheet'); if(sheet) sheet.scrollTop=0;
-          });
-          var del=document.createElement('button'); del.type='button'; del.textContent='삭제';
-          del.addEventListener('click',function(){
-            if(!confirm(note.checkupDate+' 검진노트를 지울까?')) return;
-            callApi('apiDeleteCheckupNoteV310',[state.session.token,note.id],16000).then(unwrap).then(function(){ if(noteState.editingId===note.id) resetNoteForm(); loadCheckupNotes(); }).catch(function(error){ toast(errorMessage(error)); });
-          });
-          actions.appendChild(edit); actions.appendChild(del); item.appendChild(actions);
-          list.appendChild(item);
-        });
-      }
-      function saveCheckupNoteAction(){
-        if(noteState.busy||!state.session) return;
-        var payload={
-          noteId:noteState.editingId,
-          checkupDate:String(el('noteDate').value||'').trim(),
-          questions:String(el('noteQuestions').value||'').trim(),
-          result:String(el('noteResult').value||'').trim(),
-          weight:String(el('noteWeight').value||'').trim(),
-          bloodPressure:String(el('noteBp').value||'').trim(),
-          babySize:String(el('noteBabySize').value||'').trim()
-        };
-        if(!payload.checkupDate){ toast('검진 날짜를 먼저 골라 줘.'); return; }
-        var signature=JSON.stringify(payload);
-        if(!noteState.attempt||noteState.attempt.signature!==signature) noteState.attempt={signature:signature,id:uuid()};
-        noteState.busy=true; el('saveCheckupNote').disabled=true; text(el('noteStatus'),'저장하는 중…');
-        callApi('apiSaveCheckupNoteV310',[state.session.token,payload,noteState.attempt.id],20000).then(unwrap).then(function(){
-          toast('검진노트를 저장했어 🏥'); resetNoteForm(); loadCheckupNotes();
-        }).catch(function(error){ text(el('noteStatus'),''); toast(errorMessage(error)); })
-        .then(function(){ noteState.busy=false; el('saveCheckupNote').disabled=false; });
-      }
+      // @include modules/checkup.js
 
       // --- 기록을 책으로(PDF) ---
       var bookBusy=false;

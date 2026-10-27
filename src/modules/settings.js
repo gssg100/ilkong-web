@@ -174,6 +174,10 @@
         state.homeApplyGeneration++;
         state.pagedFeeds={};
         state.questionAnswerBusy=false;
+        state.checkupBusy=false;
+        hide(el('checkupNotes'));
+        if(typeof resetNoteContext==='function') resetNoteContext();
+        ['checkupSave','checkupClear','checkupDateInput'].forEach(function(id){if(el(id))el(id).disabled=false;});
         hide(el('settings'));
         hide(el('composer'));
         hide(el('checkin'));
