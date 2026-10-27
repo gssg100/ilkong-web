@@ -19,8 +19,12 @@ const healthState = {
     { date: '2026-10-09', weight: null, systolic: 121, diastolic: null, memo: '', supplements: [] },
   ],
 };
-const health = { el: (id) => fields[id], healthState, renderSupplementPills() {} };
+const health = { el: (id) => fields[id], healthState, renderSupplementPills() {}, renderHealthFormState() {} };
 vm.createContext(health);
+for(const name of ['healthLogSnapshot','healthFormSignature']) {
+  const source=html.match(new RegExp('^      function '+name+'\\([^]*?^      }','m'))?.[0];
+  assert.ok(source);vm.runInContext(source,health);
+}
 vm.runInContext(sourceBetween('function fillHealthFormForDate(){', 'function renderSupplementPills(){'), health);
 
 fields.healthDate.value = '2026-10-07';

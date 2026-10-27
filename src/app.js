@@ -4,17 +4,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.10';
+      var VERSION = '4.9.11';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-27',
         timezone: 'Asia/Seoul',
         notes: [
+          '건강 기록 날짜 이동과 날짜별 입력 유지, 저장 중·저장됨 상태 표시',
+          '체중·혈압 추세를 접어서 보고 아래쪽 저장 버튼으로 쉽게 저장',
+          '준비물 기본 입력과 상세 정보를 나누고 저장 실패 시 편집 내용 유지'
+        ],
+        history: [
+          {version:'4.9.10',date:'2026-10-27',notes:[
           '기록 검색에서 제목·본문·댓글의 일치 문구를 강조해 찾기 쉽게 개선',
           '댓글로 찾은 기록은 일치 댓글을 미리 보고 버튼 한 번으로 해당 댓글로 이동',
           '검색 연결 실패를 검색 결과 0개로 표시하지 않도록 안내 보완'
-        ],
-        history: [
+        ]},
           {version:'4.9.9',date:'2026-10-26',notes:[
           '알림을 눌렀을 때 깃허브 사이트 주소로 빠져나가던 문제 수정',
           '알림은 항상 일콩 기록 화면으로 열리고, 이미 열린 화면이 있으면 그 화면으로 이동',
@@ -645,9 +650,14 @@
         el('openHealthMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.healthSheet='moreSheet'; openHealthSheet(); });
         el('closeHealth').addEventListener('click',function(){ closeOverlaySheet('healthSheet'); });
         el('saveHealth').addEventListener('click',saveHealthLog);
-        el('healthDate').addEventListener('change',function(){ fillHealthFormForDate(); renderHealthCharts(); });
-        el('healthSys').addEventListener('input',renderHealthAlert);
-        el('healthDia').addEventListener('input',renderHealthAlert);
+        el('saveHealthBottom').addEventListener('click',saveHealthLog);
+        el('healthDate').addEventListener('change',changeHealthDate);
+        el('healthPrevDay').addEventListener('click',function(){shiftHealthDate(-1);});
+        el('healthNextDay').addEventListener('click',function(){shiftHealthDate(1);});
+        el('healthToday').addEventListener('click',healthToday);
+        el('healthRetry').addEventListener('click',loadHealthLogs);
+        ['healthWeight','healthSys','healthDia','healthMemo'].forEach(function(id){el(id).addEventListener('input',healthInputChanged);});
+        el('healthTrends').addEventListener('toggle',function(){if(this.open)renderHealthCharts();});
         el('saveHealthProfile').addEventListener('click',saveHealthProfile);
         el('openBirthPlanMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.birthPlanSheet='moreSheet'; openBirthPlan(); });
         el('closeBirthPlan').addEventListener('click',function(){ closeOverlaySheet('birthPlanSheet'); });
@@ -3322,24 +3332,33 @@
             var nameWrap=field('이름',nameInput); nameWrap.className='chk-field chk-field-wide';
             form.appendChild(nameWrap);
             form.appendChild(field('수량',qtyInput));
-            form.appendChild(field('분류',catSelect));
             form.appendChild(field('예상 금액',priceInput));
             form.appendChild(field('실제 지출',spentInput));
-            form.appendChild(field('담당',ownerSelect));
-            form.appendChild(field('필요 주차',weekInput));
+            var detailsBox=document.createElement('details'); detailsBox.className='chk-edit-details';
+            var summary=document.createElement('summary');summary.textContent='자세히 · 분류·담당·필요 주차·메모';
+            detailsBox.appendChild(summary);
+            var extra=document.createElement('div');extra.className='chk-form chk-extra-fields';
+            extra.appendChild(field('분류',catSelect));
+            extra.appendChild(field('담당',ownerSelect));
+            extra.appendChild(field('필요 주차',weekInput));
             var memoWrap=field('메모',memoInput); memoWrap.className='chk-field chk-field-wide';
-            form.appendChild(memoWrap);
+            extra.appendChild(memoWrap);detailsBox.appendChild(extra);
+
+            var editStatus=document.createElement('p');editStatus.className='upload-note chk-edit-status';editStatus.setAttribute('role','status');editStatus.setAttribute('aria-live','polite');
+            editStatus.textContent='세부 정보는 자세히에서 바꿀 수 있어. 저장 전까지 기존 값은 유지돼.';
 
             var actions=document.createElement('div'); actions.className='chk-actions';
             var save=document.createElement('button'); save.type='button'; save.className='save'; save.textContent='저장';
             var cancel=document.createElement('button'); cancel.type='button'; cancel.className='comment-action'; cancel.textContent='취소';
             actions.appendChild(cancel); actions.appendChild(save);
 
-            row.appendChild(form); row.appendChild(actions);
+            row.appendChild(form); row.appendChild(detailsBox); row.appendChild(editStatus);row.appendChild(actions);
             nameInput.focus(); nameInput.select();
 
-            function restore(){ row.dataset.editing=''; row.classList.remove('chk-editing'); renderChecklist(items); }
+            var committing=false;
+            function restore(){if(committing)return;row.dataset.editing=''; row.classList.remove('chk-editing'); renderChecklist(items); }
             function commit(){
+              if(committing||!state.session) return;
               var next=String(nameInput.value||'').trim();
               if(!next){ toast('준비물 내용을 적어 줘.'); nameInput.focus(); return; }
               var details={
@@ -3351,23 +3370,27 @@
                 owner:ownerSelect.value||'',
                 memo:String(memoInput.value||'').trim()
               };
-              item.content=next;
-              item.quantity=details.quantity; item.price=details.price; item.spent=details.spent;
-              item.category=details.category; item.needWeek=details.needWeek; item.owner=details.owner; item.memo=details.memo;
-              restore();
-              callApi('apiUpdateChecklistItemV450',[state.session.token,item.id,next,details],16000)
-                .then(unwrap).then(loadChecklist)
+              var token=state.session.token;
+              committing=true;save.disabled=true;cancel.disabled=true;save.textContent='저장 중…';editStatus.textContent='서버에 저장 중…';
+              row.querySelectorAll('input,select').forEach(function(node){node.disabled=true;});
+              callApi('apiUpdateChecklistItemV450',[token,item.id,next,details],16000)
+                .then(unwrap).then(function(){
+                  if(!state.session||state.session.token!==token)return;
+                  item.content=next;item.quantity=details.quantity; item.price=details.price; item.spent=details.spent;
+                  item.category=details.category; item.needWeek=details.needWeek; item.owner=details.owner; item.memo=details.memo;
+                  committing=false;restore();state.homeSummaryChecklistAt=Date.now();toast('준비물 정보를 저장했어 🍼');
+                })
                 .catch(function(error){
-                  item.content=snapshot.content; item.quantity=snapshot.quantity; item.price=snapshot.price;
-                  item.spent=snapshot.spent; item.category=snapshot.category; item.needWeek=snapshot.needWeek;
-                  item.owner=snapshot.owner; item.memo=snapshot.memo;
-                  renderChecklist(items); toast(errorMessage(error));
+                  if(!state.session||state.session.token!==token)return;
+                  committing=false;save.disabled=false;cancel.disabled=false;save.textContent='다시 저장';
+                  row.querySelectorAll('input,select').forEach(function(node){node.disabled=false;});
+                  editStatus.textContent='저장하지 못했어. 입력은 그대로야. '+errorMessage(error);
                 });
             }
             save.addEventListener('click',commit);
             cancel.addEventListener('click',restore);
             nameInput.addEventListener('keydown',function(e){
-              if(e.key==='Enter'){ e.preventDefault(); commit(); }
+              if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229&&!isImeComposing(nameInput)){ e.preventDefault(); commit(); }
               else if(e.key==='Escape'){ e.preventDefault(); restore(); }
             });
           }

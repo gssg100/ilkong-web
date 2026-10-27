@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.10 — 검색어 강조·일치 댓글 바로가기 개선 -->
+<!-- 일콩 기록 v4.9.11 — 건강 기록·준비물 입력 화면 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.10">
+  <meta name="ilkong-release-version" content="4.9.11">
   <meta name="ilkong-release-date" content="2026-10-27">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -225,6 +225,12 @@
 
     .hl-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
     .hl-sect{margin-top:13px}
+    .health-date-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;margin-bottom:12px}.health-date-nav button{min-height:44px;padding:9px 12px;font-size:14px}
+    .health-date-field{margin-bottom:12px}.health-entry-summary{font-size:13px;line-height:1.7;color:var(--muted);margin:0 0 14px;overflow-wrap:anywhere}
+    #healthSheet .hl-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}.health-bp-pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:5px;align-items:end}.health-bp-divider{padding-bottom:13px;color:var(--muted)}
+    .health-savebar{display:grid;gap:9px;margin-top:16px}.health-savebar>.save{width:100%;min-height:48px;font-size:16px}.health-save-status{margin:0;font-size:14px;font-weight:700;line-height:1.6;color:var(--accent)}.health-save-status.health-unsaved{color:var(--ink)}
+    .health-draft-note{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.health-trends,.chk-edit-details{border:1px solid var(--line);border-radius:13px;margin-top:16px;min-width:0}.health-trends>summary,.chk-edit-details>summary{padding:12px;min-height:44px;cursor:pointer;font-weight:700;font-size:14px;line-height:1.6;overflow-wrap:anywhere}.health-trends[open]{padding:0 12px 12px}.health-trends[open]>summary{margin:0 -12px}.health-trend-note{margin:0;line-height:1.7}.chk-extra-fields{padding:0 12px 12px}.chk-edit-status{margin:10px 0 0;line-height:1.7}.chk-editing .chk-actions>.save{min-height:44px;min-width:110px}
+    @media(max-width:380px){#healthSheet .hl-grid{grid-template-columns:minmax(0,1fr)}.health-bp-pair{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}}
     .hl-pill{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer}
     .hl-pill.on{background:var(--accent,#71806b);color:#fff;border-color:var(--accent,#71806b)}
     .bp-row{display:flex;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:8px 11px;margin-bottom:6px;font-size:12.5px}
@@ -288,7 +294,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.10 · 2026.10.27 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.11 · 2026.10.27 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -297,7 +303,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.10 · 2026.10.27</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.11 · 2026.10.27</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -312,7 +318,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.10 · 2026.10.27 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.11 · 2026.10.27 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><p id="dateFreshness" class="hidden" style="margin:10px 0 0;color:var(--ink);font-size:13px;line-height:1.5" role="status"></p><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -409,22 +415,26 @@
     <div class="sheet">
       <div class="sheet-head"><button id="closeHealth" class="icon" type="button" aria-label="건강 기록 닫기">✕</button><h2 id="healthTitle">엄마 건강 기록 🩺</h2><button id="saveHealth" class="save" type="button">저장</button></div>
       <div class="form">
+        <div id="healthDateNav" class="health-date-nav" role="group" aria-label="건강 기록 날짜 이동"><button id="healthPrevDay" class="secondary" type="button" aria-label="하루 전 건강 기록">‹ 하루 전</button><button id="healthToday" class="secondary" type="button">오늘</button><button id="healthNextDay" class="secondary" type="button" aria-label="하루 뒤 건강 기록">하루 뒤 ›</button></div>
+        <label class="chk-field health-date-field"><span>기록 날짜</span><input id="healthDate" type="date"></label>
+        <p id="healthEntrySummary" class="health-entry-summary" role="status" aria-live="polite"></p>
         <div id="healthAlert" class="labor-signal hidden" role="status" aria-live="polite"></div>
 
         <div class="hl-grid">
-          <label class="chk-field"><span>날짜</span><input id="healthDate" type="date"></label>
           <label class="chk-field"><span>몸무게 (kg)</span><input id="healthWeight" inputmode="decimal" placeholder="예) 58.4"></label>
-          <label class="chk-field"><span>혈압 수축기</span><input id="healthSys" inputmode="numeric" placeholder="예) 112"></label>
-          <label class="chk-field"><span>혈압 이완기</span><input id="healthDia" inputmode="numeric" placeholder="예) 70"></label>
+          <div class="health-bp-pair"><label class="chk-field"><span>혈압 수축기</span><input id="healthSys" inputmode="numeric" placeholder="112"></label><span class="health-bp-divider" aria-hidden="true">/</span><label class="chk-field"><span>이완기</span><input id="healthDia" inputmode="numeric" placeholder="70"></label></div>
         </div>
 
         <div class="hl-sect">
-          <span class="upload-note">오늘 챙긴 영양제 💊</span>
+          <span class="upload-note">이 날짜에 챙긴 영양제 💊</span>
           <div id="healthSupplements" class="chk-filters"></div>
         </div>
 
         <label class="chk-field chk-field-wide" style="margin-top:10px"><span>메모</span><input id="healthMemo" maxlength="200" placeholder="컨디션·증상 등"></label>
 
+        <div class="health-savebar"><p id="healthSaveStatus" class="health-save-status" role="status" aria-live="polite"></p><button id="healthRetry" class="secondary hidden" type="button">기존 기록 다시 불러오기</button><button id="saveHealthBottom" class="save" type="button">이 날짜 기록 저장</button><p class="health-draft-note">날짜를 오가며 입력한 내용은 이 화면에서 유지돼. 앱을 닫기 전에는 저장해 줘.</p></div>
+
+        <details id="healthTrends" class="health-trends"><summary>체중·혈압 추세 보기</summary><p class="upload-note health-trend-note">체중 그래프는 2회 이상, 혈압 목록은 기록이 있을 때 표시돼.</p>
         <div id="healthWeightBox" class="hidden" style="margin-top:16px">
           <span class="upload-note">체중 변화 ⚖️ <small id="healthGainNote"></small></span>
           <canvas id="healthWeightChart" style="width:100%;height:170px;border:1px solid var(--line);border-radius:13px;background:var(--card);margin-top:6px"></canvas>
@@ -434,6 +444,7 @@
           <span class="upload-note">혈압 추세 🩺</span>
           <div id="healthBpList" class="labor-list" style="margin-top:6px"></div>
         </div>
+        </details>
 
         <details class="settlement-paste" style="margin-top:16px">
           <summary>임신 전 몸무게·키 설정</summary>
@@ -485,7 +496,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.10 · 2026.10.27</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.11 · 2026.10.27</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -515,7 +526,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.10 · 2026.10.27 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.11 · 2026.10.27 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
@@ -678,17 +689,22 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.10';
+      var VERSION = '4.9.11';
       var RELEASE_INFO = {
         version: VERSION,
         date: '2026-10-27',
         timezone: 'Asia/Seoul',
         notes: [
+          '건강 기록 날짜 이동과 날짜별 입력 유지, 저장 중·저장됨 상태 표시',
+          '체중·혈압 추세를 접어서 보고 아래쪽 저장 버튼으로 쉽게 저장',
+          '준비물 기본 입력과 상세 정보를 나누고 저장 실패 시 편집 내용 유지'
+        ],
+        history: [
+          {version:'4.9.10',date:'2026-10-27',notes:[
           '기록 검색에서 제목·본문·댓글의 일치 문구를 강조해 찾기 쉽게 개선',
           '댓글로 찾은 기록은 일치 댓글을 미리 보고 버튼 한 번으로 해당 댓글로 이동',
           '검색 연결 실패를 검색 결과 0개로 표시하지 않도록 안내 보완'
-        ],
-        history: [
+        ]},
           {version:'4.9.9',date:'2026-10-26',notes:[
           '알림을 눌렀을 때 깃허브 사이트 주소로 빠져나가던 문제 수정',
           '알림은 항상 일콩 기록 화면으로 열리고, 이미 열린 화면이 있으면 그 화면으로 이동',
@@ -1319,9 +1335,14 @@
         el('openHealthMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.healthSheet='moreSheet'; openHealthSheet(); });
         el('closeHealth').addEventListener('click',function(){ closeOverlaySheet('healthSheet'); });
         el('saveHealth').addEventListener('click',saveHealthLog);
-        el('healthDate').addEventListener('change',function(){ fillHealthFormForDate(); renderHealthCharts(); });
-        el('healthSys').addEventListener('input',renderHealthAlert);
-        el('healthDia').addEventListener('input',renderHealthAlert);
+        el('saveHealthBottom').addEventListener('click',saveHealthLog);
+        el('healthDate').addEventListener('change',changeHealthDate);
+        el('healthPrevDay').addEventListener('click',function(){shiftHealthDate(-1);});
+        el('healthNextDay').addEventListener('click',function(){shiftHealthDate(1);});
+        el('healthToday').addEventListener('click',healthToday);
+        el('healthRetry').addEventListener('click',loadHealthLogs);
+        ['healthWeight','healthSys','healthDia','healthMemo'].forEach(function(id){el(id).addEventListener('input',healthInputChanged);});
+        el('healthTrends').addEventListener('toggle',function(){if(this.open)renderHealthCharts();});
         el('saveHealthProfile').addEventListener('click',saveHealthProfile);
         el('openBirthPlanMore').addEventListener('click',function(){ hide(el('moreSheet')); state.sheetReturn.birthPlanSheet='moreSheet'; openBirthPlan(); });
         el('closeBirthPlan').addEventListener('click',function(){ closeOverlaySheet('birthPlanSheet'); });
@@ -4503,19 +4524,37 @@
       // 체중은 그동안 검진노트에 묶여 있어 4주에 한 점씩만 찍혔다.
       // 집에서 주 1회 재는 흐름을 만들고, 임신 전 BMI 기준 권장 증가 범위를 함께 그린다.
       var SUPPLEMENT_OPTIONS=['엽산','철분','비타민D','칼슘','오메가3','유산균'];
-      var healthState={logs:[],startWeight:0,heightCm:0,bmi:0,gainRange:null,picked:[],loaded:false};
+      var healthState={logs:[],startWeight:0,heightCm:0,bmi:0,gainRange:null,picked:[],loaded:false,owner:'',date:'',drafts:{},baseline:'',savedDates:{},loading:false,saving:false,loadSeq:0,loadError:'',saveError:''};
+
+      function resetHealthContext(){
+        var owner=String(state.session&&state.session.token||'');
+        if(healthState.owner===owner) return;
+        healthState.owner=owner;healthState.logs=[];healthState.picked=[];healthState.drafts={};healthState.savedDates={};
+        healthState.date='';healthState.baseline='';healthState.loaded=false;healthState.loading=false;healthState.saving=false;
+        healthState.startWeight=0;healthState.heightCm=0;healthState.bmi=0;healthState.gainRange=null;healthState.birthPlan='';
+        healthState.loadError='';healthState.saveError='';healthState.loadSeq++;
+        ['healthDate','healthWeight','healthSys','healthDia','healthMemo','healthStartWeight','healthHeight'].forEach(function(id){ if(el(id)) el(id).value=''; });
+        setHealthSaving(false);
+      }
 
       function openHealthSheet(){
+        resetHealthContext();
         openOverlaySheet('healthSheet');
         var dateInput=el('healthDate');
         if(dateInput&&!dateInput.value) dateInput.value=today();
-        renderSupplementPills();
-        loadHealthLogs();
+        fillHealthFormForDate();
+        return loadHealthLogs();
       }
 
       function loadHealthLogs(){
-        if(!state.session) return;
-        callApi('apiGetHealthLogsV470',[state.session.token],20000).then(unwrap).then(function(data){
+        if(!state.session) return Promise.resolve(false);
+        resetHealthContext();
+        if(healthState.saving) return Promise.resolve(false);
+        var token=state.session.token, sequence=++healthState.loadSeq;
+        healthState.loading=true;healthState.loadError='';renderHealthFormState();
+        return callApi('apiGetHealthLogsV470',[token],20000).then(unwrap).then(function(data){
+          if(!state.session||state.session.token!==token||healthState.owner!==token||sequence!==healthState.loadSeq) return false;
+          if(healthState.baseline) rememberHealthDraft();
           healthState.logs=(data&&data.logs)||[];
           healthState.startWeight=Number(data&&data.startWeight)||0;
           healthState.heightCm=Number(data&&data.heightCm)||0;
@@ -4527,7 +4566,80 @@
           if(el('healthHeight')&&!el('healthHeight').value&&healthState.heightCm) el('healthHeight').value=String(healthState.heightCm);
           fillHealthFormForDate();
           renderHealthCharts();
-        }).catch(function(error){ toast('건강 기록을 불러오지 못했어: '+errorMessage(error)); });
+          return true;
+        }).catch(function(error){
+          if(!state.session||state.session.token!==token||sequence!==healthState.loadSeq) return false;
+          healthState.loadError=errorMessage(error);return false;
+        }).then(function(result){
+          if(state.session&&state.session.token===token&&sequence===healthState.loadSeq){healthState.loading=false;renderHealthFormState();}
+          return result;
+        });
+      }
+
+      function healthFormSnapshot(){
+        return {weight:String(el('healthWeight').value||''),systolic:String(el('healthSys').value||''),diastolic:String(el('healthDia').value||''),memo:String(el('healthMemo').value||''),supplements:healthState.picked.slice()};
+      }
+      function healthLogSnapshot(log){
+        return {weight:log&&log.weight!=null?String(log.weight):'',systolic:log&&log.systolic!=null?String(log.systolic):'',diastolic:log&&log.diastolic!=null?String(log.diastolic):'',memo:log&&log.memo||'',supplements:log&&Array.isArray(log.supplements)?log.supplements.slice():[]};
+      }
+      function healthFormSignature(value){
+        return JSON.stringify([value.weight,value.systolic,value.diastolic,value.memo,value.supplements.slice().sort()]);
+      }
+      function rememberHealthDraft(){
+        var date=healthState.date;
+        if(!date) return;
+        var snapshot=healthFormSnapshot();
+        if(healthFormSignature(snapshot)!==healthState.baseline){
+          var baseline=healthState.baseline?JSON.parse(healthState.baseline):['','','','',[]];
+          snapshot.changedFields=['weight','systolic','diastolic','memo','supplements'].filter(function(key,index){
+            var current=key==='supplements'?snapshot[key].slice().sort():snapshot[key];
+            return JSON.stringify(current)!==JSON.stringify(baseline[index]);
+          });
+          healthState.drafts[date]=snapshot;
+        }
+        else delete healthState.drafts[date];
+      }
+      function healthInputChanged(){
+        healthState.saveError='';rememberHealthDraft();renderHealthFormState();renderHealthAlert();
+      }
+      function changeHealthDate(){
+        if(healthState.saving){el('healthDate').value=healthState.date;return;}
+        rememberHealthDraft();healthState.saveError='';fillHealthFormForDate();renderHealthAlert();
+      }
+      function shiftHealthDate(amount){
+        if(healthState.saving) return;
+        var value=String(el('healthDate').value||today());
+        var date=new Date(value+'T12:00:00Z');
+        if(!isFinite(date.getTime())) return;
+        date.setUTCDate(date.getUTCDate()+amount);
+        var next=date.toISOString().slice(0,10);
+        if(amount>0&&next>today()) return;
+        el('healthDate').value=next;changeHealthDate();
+      }
+      function healthToday(){
+        if(healthState.saving) return;
+        el('healthDate').value=today();changeHealthDate();
+      }
+      function setHealthSaving(busy){
+        healthState.saving=busy;
+        ['saveHealth','saveHealthBottom'].forEach(function(id){var button=el(id);if(button){button.disabled=busy;text(button,busy?'저장 중…':id==='saveHealth'?'저장':'이 날짜 기록 저장');}});
+        document.querySelectorAll('#healthSheet input, #healthDateNav button, #healthSupplements button, #saveHealthProfile').forEach(function(node){node.disabled=busy;});
+        renderHealthFormState();
+      }
+      function renderHealthFormState(){
+        var summary=el('healthEntrySummary'), status=el('healthSaveStatus');
+        if(!summary||!status) return;
+        var value=healthFormSnapshot(),date=String(el('healthDate').value||today());
+        var dirty=!!healthState.baseline&&healthFormSignature(value)!==healthState.baseline;
+        var dateLabel=date===today()?'오늘':date;
+        text(summary,dateLabel+' 입력 · 몸무게 '+(value.weight?'입력함':'미입력')+' · 혈압 '+(value.systolic&&value.diastolic?'입력함':value.systolic||value.diastolic?'한쪽만 입력':'미입력')+' · 영양제 '+value.supplements.length+'개 선택');
+        var message=healthState.saving?'서버에 저장 중…':healthState.saveError?'저장하지 못했어. 입력은 그대로야. '+healthState.saveError:
+          dirty?'수정한 내용이 있어 · 아직 저장하지 않았어':healthState.loading?'저장된 기록을 확인하는 중…':
+          healthState.loadError?'기존 기록을 확인하지 못했어. 다시 불러와 줘.':
+          healthState.savedDates[date]?'저장됨 ✓':healthState.loaded&&(healthState.logs||[]).some(function(log){return log.date===date;})?'저장된 기록이야':'이 날짜에 저장된 기록이 없어';
+        text(status,message);status.classList.toggle('health-unsaved',dirty||!!healthState.saveError||!!healthState.loadError);
+        if(el('healthNextDay')) el('healthNextDay').disabled=healthState.saving||date>=today();
+        if(el('healthRetry')) el('healthRetry').classList.toggle('hidden',!healthState.loadError||healthState.loading);
       }
 
       // 이미 그 날짜에 적어둔 값이 있으면 폼에 채워서 이어 쓰게 한다.
@@ -4536,12 +4648,16 @@
         var found=null;
         healthState.logs.forEach(function(log){ if(log.date===target) found=log; });
         // 날짜별 폼은 그 날짜의 값만 표시한다. 기록이 없으면 이전 날짜 값까지 비운다.
-        if(el('healthWeight')) el('healthWeight').value=found&&found.weight!=null?String(found.weight):'';
-        if(el('healthSys')) el('healthSys').value=found&&found.systolic!=null?String(found.systolic):'';
-        if(el('healthDia')) el('healthDia').value=found&&found.diastolic!=null?String(found.diastolic):'';
-        if(el('healthMemo')) el('healthMemo').value=found&&found.memo||'';
-        healthState.picked=found&&Array.isArray(found.supplements)?found.supplements.slice():[];
+        var baseline=healthLogSnapshot(found),draft=healthState.drafts&&healthState.drafts[target],value=Object.assign({},baseline);
+        if(draft) (draft.changedFields||['weight','systolic','diastolic','memo','supplements']).forEach(function(key){value[key]=draft[key];});
+        healthState.date=target;healthState.baseline=healthFormSignature(baseline);
+        if(el('healthWeight')) el('healthWeight').value=value.weight;
+        if(el('healthSys')) el('healthSys').value=value.systolic;
+        if(el('healthDia')) el('healthDia').value=value.diastolic;
+        if(el('healthMemo')) el('healthMemo').value=value.memo;
+        healthState.picked=value.supplements.slice();
         renderSupplementPills();
+        renderHealthFormState();
       }
 
       function renderSupplementPills(){
@@ -4552,12 +4668,15 @@
           var on=healthState.picked.indexOf(name)>=0;
           var pill=document.createElement('button');
           pill.type='button'; pill.className='hl-pill'+(on?' on':'');
+          pill.disabled=!!healthState.saving;
           pill.textContent=(on?'✓ ':'')+name;
           pill.setAttribute('aria-pressed',on?'true':'false');
           pill.addEventListener('click',function(){
+            if(healthState.saving) return;
             var idx=healthState.picked.indexOf(name);
             if(idx>=0) healthState.picked.splice(idx,1); else healthState.picked.push(name);
             renderSupplementPills();
+            healthInputChanged();
           });
           box.appendChild(pill);
         });
@@ -4593,8 +4712,8 @@
       }
 
       function saveHealthLog(){
-        if(!state.session) return;
-        var button=el('saveHealth');
+        if(!state.session||healthState.saving) return Promise.resolve(false);
+        var token=state.session.token;
         var payload={
           date:String((el('healthDate')&&el('healthDate').value)||today()),
           weight:String((el('healthWeight')&&el('healthWeight').value)||'').replace(/[^0-9.]/g,''),
@@ -4606,12 +4725,23 @@
         if(!payload.weight&&!payload.systolic&&!payload.diastolic&&!payload.supplements.length&&!payload.memo){
           toast('기록할 내용을 하나는 넣어 줘.'); return;
         }
-        if(button){ button.disabled=true; text(button,'저장 중…'); }
-        callApi('apiSaveHealthLogV470',[state.session.token,payload],20000).then(unwrap).then(function(){
+        if(healthState.loading||healthState.loadError){
+          toast('기존 기록을 먼저 확인해 줘. 입력한 내용은 유지할게.');return Promise.resolve(false);
+        }
+        healthState.saveError='';setHealthSaving(true);
+        return callApi('apiSaveHealthLogV470',[token,payload],20000).then(unwrap).then(function(){
+          if(!state.session||state.session.token!==token||healthState.owner!==token) return false;
+          var existing=healthState.logs.filter(function(log){return log.date===payload.date;})[0]||{};
+          var saved=Object.assign({},existing,{date:payload.date,weight:payload.weight?Number(payload.weight):null,systolic:payload.systolic?Number(payload.systolic):null,diastolic:payload.diastolic?Number(payload.diastolic):null,memo:payload.memo,supplements:payload.supplements});
+          healthState.logs=healthState.logs.filter(function(log){return log.date!==payload.date;}).concat([saved]).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+          delete healthState.drafts[payload.date];healthState.savedDates[payload.date]=Date.now();
+          fillHealthFormForDate();renderHealthCharts();
           toast('건강 기록을 저장했어 🩺');
-          return loadHealthLogs();
-        }).catch(function(error){ toast('저장하지 못했어: '+errorMessage(error)); })
-        .then(function(){ if(button){ button.disabled=false; text(button,'저장'); } });
+          return true;
+        }).catch(function(error){
+          if(state.session&&state.session.token===token&&healthState.owner===token){healthState.saveError=errorMessage(error);rememberHealthDraft();toast('저장하지 못했어: '+healthState.saveError);}
+          return false;
+        }).then(function(result){if(state.session&&state.session.token===token&&healthState.owner===token) setHealthSaving(false);return result;});
       }
 
       function saveHealthProfile(){
@@ -5133,24 +5263,33 @@
             var nameWrap=field('이름',nameInput); nameWrap.className='chk-field chk-field-wide';
             form.appendChild(nameWrap);
             form.appendChild(field('수량',qtyInput));
-            form.appendChild(field('분류',catSelect));
             form.appendChild(field('예상 금액',priceInput));
             form.appendChild(field('실제 지출',spentInput));
-            form.appendChild(field('담당',ownerSelect));
-            form.appendChild(field('필요 주차',weekInput));
+            var detailsBox=document.createElement('details'); detailsBox.className='chk-edit-details';
+            var summary=document.createElement('summary');summary.textContent='자세히 · 분류·담당·필요 주차·메모';
+            detailsBox.appendChild(summary);
+            var extra=document.createElement('div');extra.className='chk-form chk-extra-fields';
+            extra.appendChild(field('분류',catSelect));
+            extra.appendChild(field('담당',ownerSelect));
+            extra.appendChild(field('필요 주차',weekInput));
             var memoWrap=field('메모',memoInput); memoWrap.className='chk-field chk-field-wide';
-            form.appendChild(memoWrap);
+            extra.appendChild(memoWrap);detailsBox.appendChild(extra);
+
+            var editStatus=document.createElement('p');editStatus.className='upload-note chk-edit-status';editStatus.setAttribute('role','status');editStatus.setAttribute('aria-live','polite');
+            editStatus.textContent='세부 정보는 자세히에서 바꿀 수 있어. 저장 전까지 기존 값은 유지돼.';
 
             var actions=document.createElement('div'); actions.className='chk-actions';
             var save=document.createElement('button'); save.type='button'; save.className='save'; save.textContent='저장';
             var cancel=document.createElement('button'); cancel.type='button'; cancel.className='comment-action'; cancel.textContent='취소';
             actions.appendChild(cancel); actions.appendChild(save);
 
-            row.appendChild(form); row.appendChild(actions);
+            row.appendChild(form); row.appendChild(detailsBox); row.appendChild(editStatus);row.appendChild(actions);
             nameInput.focus(); nameInput.select();
 
-            function restore(){ row.dataset.editing=''; row.classList.remove('chk-editing'); renderChecklist(items); }
+            var committing=false;
+            function restore(){if(committing)return;row.dataset.editing=''; row.classList.remove('chk-editing'); renderChecklist(items); }
             function commit(){
+              if(committing||!state.session) return;
               var next=String(nameInput.value||'').trim();
               if(!next){ toast('준비물 내용을 적어 줘.'); nameInput.focus(); return; }
               var details={
@@ -5162,23 +5301,27 @@
                 owner:ownerSelect.value||'',
                 memo:String(memoInput.value||'').trim()
               };
-              item.content=next;
-              item.quantity=details.quantity; item.price=details.price; item.spent=details.spent;
-              item.category=details.category; item.needWeek=details.needWeek; item.owner=details.owner; item.memo=details.memo;
-              restore();
-              callApi('apiUpdateChecklistItemV450',[state.session.token,item.id,next,details],16000)
-                .then(unwrap).then(loadChecklist)
+              var token=state.session.token;
+              committing=true;save.disabled=true;cancel.disabled=true;save.textContent='저장 중…';editStatus.textContent='서버에 저장 중…';
+              row.querySelectorAll('input,select').forEach(function(node){node.disabled=true;});
+              callApi('apiUpdateChecklistItemV450',[token,item.id,next,details],16000)
+                .then(unwrap).then(function(){
+                  if(!state.session||state.session.token!==token)return;
+                  item.content=next;item.quantity=details.quantity; item.price=details.price; item.spent=details.spent;
+                  item.category=details.category; item.needWeek=details.needWeek; item.owner=details.owner; item.memo=details.memo;
+                  committing=false;restore();state.homeSummaryChecklistAt=Date.now();toast('준비물 정보를 저장했어 🍼');
+                })
                 .catch(function(error){
-                  item.content=snapshot.content; item.quantity=snapshot.quantity; item.price=snapshot.price;
-                  item.spent=snapshot.spent; item.category=snapshot.category; item.needWeek=snapshot.needWeek;
-                  item.owner=snapshot.owner; item.memo=snapshot.memo;
-                  renderChecklist(items); toast(errorMessage(error));
+                  if(!state.session||state.session.token!==token)return;
+                  committing=false;save.disabled=false;cancel.disabled=false;save.textContent='다시 저장';
+                  row.querySelectorAll('input,select').forEach(function(node){node.disabled=false;});
+                  editStatus.textContent='저장하지 못했어. 입력은 그대로야. '+errorMessage(error);
                 });
             }
             save.addEventListener('click',commit);
             cancel.addEventListener('click',restore);
             nameInput.addEventListener('keydown',function(e){
-              if(e.key==='Enter'){ e.preventDefault(); commit(); }
+              if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229&&!isImeComposing(nameInput)){ e.preventDefault(); commit(); }
               else if(e.key==='Escape'){ e.preventDefault(); restore(); }
             });
           }

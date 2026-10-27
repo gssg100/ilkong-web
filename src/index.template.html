@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- 일콩 기록 v4.9.10 — 검색어 강조·일치 댓글 바로가기 개선 -->
+<!-- 일콩 기록 v4.9.11 — 건강 기록·준비물 입력 화면 개선 -->
 <html lang="ko">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
   <title>일콩 기록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="ilkong-release-version" content="4.9.10">
+  <meta name="ilkong-release-version" content="4.9.11">
   <meta name="ilkong-release-date" content="2026-10-27">
   <meta name="theme-color" content="#f5efe6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -32,7 +32,7 @@
       <div class="logo">🌱</div>
       <h1>우리 둘과 일콩의 기록</h1>
       <p class="login-desc">지수와 하콩이 편하게 남기는<br>우리 셋의 작은 기록장</p>
-      <div id="loginVersion" class="login-version">일콩 기록 v4.9.10 · 2026.10.27 업데이트 (KST)</div>
+      <div id="loginVersion" class="login-version">일콩 기록 v4.9.11 · 2026.10.27 업데이트 (KST)</div>
       <div class="users">
         <button type="button" class="user-btn" data-user="JISU">지수</button>
         <button type="button" class="user-btn" data-user="HAKONG">하콩</button>
@@ -41,7 +41,7 @@
       <button id="loginButton" class="primary login-go" type="button">들어가기</button>
       <div id="loginStatus" class="login-status" role="status" aria-live="polite"></div>
       <div class="release-box login-release" aria-label="일콩 기록 업데이트 정보">
-        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.10 · 2026.10.27</div>
+        <div id="loginReleaseStamp" class="release-stamp">최신 버전 v4.9.11 · 2026.10.27</div>
         <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul)</p>
         <details class="release-details" id="releaseHistory">
           <summary>버전별 업데이트 내역 보기</summary>
@@ -56,7 +56,7 @@
   <section id="appPage" class="page hidden">
     <div class="wrap">
       <header class="topbar">
-            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.10 · 2026.10.27 업데이트 (KST)</span></div></div>
+            <div class="brand"><div class="brand-icon" aria-hidden="true">🌱</div><div><strong>우리 둘과 일콩의 기록</strong><span id="versionText">v4.9.11 · 2026.10.27 업데이트 (KST)</span></div></div>
         <button id="settingsButton" class="user-chip" type="button">지수</button>
       </header>
       <div id="heroSection" class="hero"><div class="hero-head"><div><small>오늘의 일콩</small><h2 id="pregnancyText">우리 기록을 불러오는 중…</h2></div><button id="heroToggle" class="hero-toggle" type="button" aria-expanded="false">오늘 정보 보기</button></div><p id="dateFreshness" class="hidden" style="margin:10px 0 0;color:var(--ink);font-size:13px;line-height:1.5" role="status"></p><div id="heroDetails"><p id="ddayText">화면은 먼저 열고, 내용만 뒤에서 가져와.</p><p id="dailyTip" class="hidden" style="margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6"></p><div id="pregProgress" class="preg-progress hidden" aria-hidden="true"></div><div id="tripBanner" class="trip-banner hidden" role="status"></div><div id="milestoneBanner" class="milestone hidden" role="status"></div><div id="checkupBanner" class="checkup hidden" role="status"></div><div id="weekGuide" class="week-guide hidden"></div><button id="weeklyPrompt" class="checkup hidden" type="button" style="width:100%;cursor:pointer;text-align:center"></button></div></div>
@@ -153,22 +153,26 @@
     <div class="sheet">
       <div class="sheet-head"><button id="closeHealth" class="icon" type="button" aria-label="건강 기록 닫기">✕</button><h2 id="healthTitle">엄마 건강 기록 🩺</h2><button id="saveHealth" class="save" type="button">저장</button></div>
       <div class="form">
+        <div id="healthDateNav" class="health-date-nav" role="group" aria-label="건강 기록 날짜 이동"><button id="healthPrevDay" class="secondary" type="button" aria-label="하루 전 건강 기록">‹ 하루 전</button><button id="healthToday" class="secondary" type="button">오늘</button><button id="healthNextDay" class="secondary" type="button" aria-label="하루 뒤 건강 기록">하루 뒤 ›</button></div>
+        <label class="chk-field health-date-field"><span>기록 날짜</span><input id="healthDate" type="date"></label>
+        <p id="healthEntrySummary" class="health-entry-summary" role="status" aria-live="polite"></p>
         <div id="healthAlert" class="labor-signal hidden" role="status" aria-live="polite"></div>
 
         <div class="hl-grid">
-          <label class="chk-field"><span>날짜</span><input id="healthDate" type="date"></label>
           <label class="chk-field"><span>몸무게 (kg)</span><input id="healthWeight" inputmode="decimal" placeholder="예) 58.4"></label>
-          <label class="chk-field"><span>혈압 수축기</span><input id="healthSys" inputmode="numeric" placeholder="예) 112"></label>
-          <label class="chk-field"><span>혈압 이완기</span><input id="healthDia" inputmode="numeric" placeholder="예) 70"></label>
+          <div class="health-bp-pair"><label class="chk-field"><span>혈압 수축기</span><input id="healthSys" inputmode="numeric" placeholder="112"></label><span class="health-bp-divider" aria-hidden="true">/</span><label class="chk-field"><span>이완기</span><input id="healthDia" inputmode="numeric" placeholder="70"></label></div>
         </div>
 
         <div class="hl-sect">
-          <span class="upload-note">오늘 챙긴 영양제 💊</span>
+          <span class="upload-note">이 날짜에 챙긴 영양제 💊</span>
           <div id="healthSupplements" class="chk-filters"></div>
         </div>
 
         <label class="chk-field chk-field-wide" style="margin-top:10px"><span>메모</span><input id="healthMemo" maxlength="200" placeholder="컨디션·증상 등"></label>
 
+        <div class="health-savebar"><p id="healthSaveStatus" class="health-save-status" role="status" aria-live="polite"></p><button id="healthRetry" class="secondary hidden" type="button">기존 기록 다시 불러오기</button><button id="saveHealthBottom" class="save" type="button">이 날짜 기록 저장</button><p class="health-draft-note">날짜를 오가며 입력한 내용은 이 화면에서 유지돼. 앱을 닫기 전에는 저장해 줘.</p></div>
+
+        <details id="healthTrends" class="health-trends"><summary>체중·혈압 추세 보기</summary><p class="upload-note health-trend-note">체중 그래프는 2회 이상, 혈압 목록은 기록이 있을 때 표시돼.</p>
         <div id="healthWeightBox" class="hidden" style="margin-top:16px">
           <span class="upload-note">체중 변화 ⚖️ <small id="healthGainNote"></small></span>
           <canvas id="healthWeightChart" style="width:100%;height:170px;border:1px solid var(--line);border-radius:13px;background:var(--card);margin-top:6px"></canvas>
@@ -178,6 +182,7 @@
           <span class="upload-note">혈압 추세 🩺</span>
           <div id="healthBpList" class="labor-list" style="margin-top:6px"></div>
         </div>
+        </details>
 
         <details class="settlement-paste" style="margin-top:16px">
           <summary>임신 전 몸무게·키 설정</summary>
@@ -229,7 +234,7 @@
         <div class="settings-box"><h3 id="settingsUser">로그인 정보</h3><p id="sessionInfo">현재 로그인 상태를 이 기기에서 관리해.</p></div>
         <div id="releaseInfo" class="release-box settings-release" aria-label="앱 버전과 변경내역">
           <h3>앱 업데이트</h3>
-            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.10 · 2026.10.27</div>
+            <div id="settingsReleaseStamp" class="release-stamp">최신 버전 v4.9.11 · 2026.10.27</div>
           <p class="release-footnote">업데이트 기준: 한국 시간 (Asia/Seoul) · 오프라인에서도 변경내역을 볼 수 있어.</p>
           <details class="release-details">
             <summary>버전별 업데이트 내역 보기</summary>
@@ -259,7 +264,7 @@
         </div>
         <div class="settings-box"><h3>기록 데이터 내보내기 💾 (사진 원본 별도)</h3><p>기록·댓글 정보와 사진 목록을 JSON 파일로 받을 수 있어. 사진 원본은 Supabase Storage에 별도로 저장되며 파일에 포함되지 않아. 앱 전체를 복구하는 완전 백업은 아니야.</p><button id="exportData" class="secondary" type="button" style="width:100%">데이터 내보내기</button><p id="exportStatus" class="upload-note" style="margin-top:8px"></p><p id="backupStatus" class="upload-note" style="margin-top:8px"></p></div>
         <div class="settings-box"><h3>관리자 전체 백업 · 복원 점검 🛡️</h3><p>서버 DB와 사진 원본을 따로 보관하고 복원 검증하는 관리자용 도구를 준비했어. 2026.10.14에는 통합 백업 모의 성공·오류 차단과 비운영 복원 대상 확인 절차도 강화했어. 이 기기의 JSON 내보내기와는 별개야.</p><p class="upload-note" role="note">현재 실제 운영 DB·사진 전체 백업과 별도 환경의 실복원 완료는 확인되지 않았어. 이 화면은 관리자 백업 성공 여부를 실시간으로 확인하지 못하니 운영 기록에서 검증해 줘.</p></div>
-        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.10 · 2026.10.27 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
+        <div class="settings-box"><h3>연결 · 저장 점검</h3><p id="healthText">화면 v4.9.11 · 2026.10.27 업데이트 · Supabase 초고속 저장 활성화</p><p id="healthDetail" class="upload-note" style="margin-top:8px" role="status" aria-live="polite"></p><button id="retryFeed" class="secondary" type="button">최신 기록 다시 불러오기</button></div>
         <button id="logout" class="danger" type="button">이 기기에서 로그아웃</button>
       </div>
     </div>
