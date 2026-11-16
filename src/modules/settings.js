@@ -177,6 +177,7 @@
         state.checkupBusy=false;
         hide(el('checkupNotes'));
         if(typeof resetNoteContext==='function') resetNoteContext();
+        if(typeof resetPreparationContext==='function') resetPreparationContext();
         ['checkupSave','checkupClear','checkupDateInput'].forEach(function(id){if(el(id))el(id).disabled=false;});
         hide(el('settings'));
         hide(el('composer'));

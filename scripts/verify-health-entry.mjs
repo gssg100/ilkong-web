@@ -94,15 +94,7 @@ test('entry summary describes input separately from actual server-save status',(
   assert.match(f.nodes.healthEntrySummary.textContent,/혈압 한쪽만 입력/);assert.match(f.nodes.healthSaveStatus.textContent,/아직 저장하지 않았어/);
   f.nodes.healthSys.value='';f.c.healthInputChanged();assert.equal(Object.keys(f.healthState.drafts).length,0);
 });
-test('trends and checklist extra fields default to collapsed, and checklist failures retain editor inputs',()=>{
+test('health trends remain collapsed by default',()=>{
   assert.match(html,/<details id="healthTrends" class="health-trends">/);
   assert.doesNotMatch(html,/<details id="healthTrends"[^>]*\bopen\b/);
-  assert.match(html,/detailsBox\.className='chk-edit-details'/);
-  assert.match(html,/extra\.appendChild\(field\('분류',catSelect\)\)/);
-  const edit=html.slice(html.indexOf('          function beginEdit(){'),html.indexOf("          edit.addEventListener('click',beginEdit)"));
-  assert.ok(edit.indexOf('item.content=next')>edit.indexOf('.then(unwrap).then(function()'));
-  const failure=edit.slice(edit.indexOf('.catch(function(error)'),edit.indexOf("            save.addEventListener('click',commit)"));
-  assert.doesNotMatch(failure,/renderChecklist\(items\)|restore\(\)/);assert.match(failure,/입력은 그대로야/);
-  assert.match(edit,/!e\.isComposing&&e\.keyCode!==229/);
-  assert.doesNotMatch(edit,/toast\('준비물 정보를 저장했어 🍼'\);loadChecklist\(\)/);
 });

@@ -210,6 +210,7 @@
       }
 
       var SUPABASE_DIRECT_FUNCTIONS={
+        apiSaveChecklistItemV500:true,apiGetPreparationPlanV500:true,apiSavePreparationPlanV500:true,
         apiCheckUpdatesV240:true,apiGetCapsulesV310:true,apiGetCheckupNotesV310:true,apiGetChecklistV320:true,
         apiExportBookV310:true,apiExportDataV370:true,apiSetCheckupV291:true,apiSetBirthV289:true,apiSetTripV380:true,
         apiStartPostV221:true,apiUploadPostImageV221:true,apiFinishPostV221:true,apiDeletePostV221:true,apiUpdatePostV280:true,

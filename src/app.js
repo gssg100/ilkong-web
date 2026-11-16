@@ -4,17 +4,23 @@
 
       // The inline VERSION literal also identifies the OTA screen to older Android shells.
       // All visible release information and both change histories use one metadata record.
-      var VERSION = '4.9.12';
+      var VERSION = '5.0.0';
       var RELEASE_INFO = {
         version: VERSION,
-        date: '2026-10-27',
+        date: '2026-11-16',
         timezone: 'Asia/Seoul',
         notes: [
+          '출산 전 필수품 중심으로 보유·당근·새 제품·산후·보류 상태와 수량을 관리',
+          '준비물 수정 이력과 동시 수정 보호, 미확인 금액·무료 나눔 구분',
+          '산후도우미 상담·계약·예산과 출산 일정·할 일을 한 화면으로 연결'
+        ],
+        history: [
+          {version:'4.9.12',date:'2026-10-27',notes:[
           '홈 다음 검진에서 일정·질문·검진 결과를 한 화면으로 연결',
           '같은 날짜의 노트를 이어 쓰고 결과·지난 노트는 필요할 때 펼쳐 보기',
           '노트 저장 상태와 재시도 안내, 아래쪽 저장 버튼 및 입력 보호 강화'
-        ],
-        history: [
+        ]},
+
           {version:'4.9.11',date:'2026-10-27',notes:[
           '건강 기록 날짜 이동과 날짜별 입력 유지, 저장 중·저장됨 상태 표시',
           '체중·혈압 추세를 접어서 보고 아래쪽 저장 버튼으로 쉽게 저장',
@@ -1706,21 +1712,8 @@
           return;
         }
         var items=Array.isArray(state.homeSummaryChecklist)?state.homeSummaryChecklist:[];
-        var remaining=[];
-        for(var i=0;i<items.length;i++) if(!items[i].done) remaining.push(items[i]);
-        if(remaining.length){
-          text(el('summaryChecklistTitle'),'남은 준비 '+remaining.length+'개');
-          text(el('summaryChecklistDesc'),String(remaining[0].content||'준비물 확인하기'));
-        }else if(items.length){
-          text(el('summaryChecklistTitle'),'준비 완료');
-          text(el('summaryChecklistDesc'),'목록을 다시 확인해봐');
-        }else if(state.homeSummaryChecklistLoading){
-          text(el('summaryChecklistTitle'),'출산 준비');
-          text(el('summaryChecklistDesc'),'준비물 확인 중…');
-        }else{
-          text(el('summaryChecklistTitle'),'출산 준비');
-          text(el('summaryChecklistDesc'),'첫 준비물을 적어봐');
-        }
+        if(state.homeSummaryChecklistLoading&&!items.length){text(el('summaryChecklistTitle'),'출산 준비');text(el('summaryChecklistDesc'),'준비물 확인 중…');}
+        else renderPreparationHomeSummary(items);
       }
 
       function refreshHomeSummaryChecklist(force){
@@ -2247,7 +2240,7 @@
         var bodyHtml=String(post.body||'').trim()?'<div class="post-text">'+searchHighlightedHtml(post.body,searchQuery)+'</div>':'';
         var mine=state.session&&state.session.user.id===post.authorId;
         var actions='<div class="post-actions"><button class="post-action favorite'+(post.favorite?' active':'')+'" type="button" aria-pressed="'+(post.favorite?'true':'false')+'" aria-label="'+(post.favorite?'즐겨찾기 해제':'즐겨찾기에 담기')+'">'+(post.favorite?'★':'☆')+'</button>'+(mine?'<button class="post-action edit-post" type="button" aria-label="기록 수정">✎</button><button class="post-action delete-post" type="button" aria-label="기록 삭제">🗑</button>':'')+'</div>';
-        card.innerHTML='<div class="post-head"><div class="author"><div class="avatar">'+emoji+'</div><div class="meta"><strong>'+escapeHtml(post.authorName)+'</strong><span>'+escapeHtml(date)+(timeText?' · '+escapeHtml(timeText):'')+(post.edited?'<em class="edited">수정됨</em>':'')+'</span></div></div>'+actions+'</div>'+ 
+        card.innerHTML='<div class="post-head"><div class="author"><div class="avatar">'+emoji+'</div><div class="meta"><strong>'+escapeHtml(post.authorName)+'</strong><span>'+escapeHtml(date)+(timeText?' · '+escapeHtml(timeText):'')+(post.edited?'<em class="edited">수정됨</em>':'')+'</span></div></div>'+actions+'</div>'+
           '<div class="post-body"><div class="badges">'+(isTripPost(post)?'<span class="badge trip">✈️ '+escapeHtml((tripInfo()&&tripInfo().name)||'여행')+'</span>':'')+'<span class="badge">'+escapeHtml(post.category||'일상')+'</span>'+(post.mood?'<span class="badge">'+escapeHtml(post.mood)+'</span>':'')+'</div>'+titleHtml+searchCommentSummaryHtml(post,searchQuery)+bodyHtml+'</div>';
 
         if(post.images&&post.images.length){
@@ -3199,244 +3192,7 @@
         ctx.fillText(lastLabel,w-right-ctx.measureText(lastLabel).width,h-8);
       }
 
-      // --- 출산 준비물 체크리스트 ---
-      var checklistBusy=false;
-      function openChecklist(){
-        openOverlaySheet('checklist');
-        el('checkItemInput').value='';
-        text(el('checklistStatus'),'');
-        el('checklistList').innerHTML='<div class="comment-empty">불러오는 중…</div>';
-        loadChecklist();
-      }
-      function loadChecklist(){
-        if(!state.session) return;
-        callApi('apiGetChecklistV320',[state.session.token],20000).then(unwrap).then(function(data){
-          state.homeSummaryChecklist=Array.isArray(data&&data.items)?data.items:[];
-          state.homeSummaryChecklistAt=Date.now();
-          renderHomeSummary(state.home&&state.home.app&&state.home.app.pregnancy);
-          if(el('checklist').classList.contains('hidden')) return;
-          renderChecklist(state.homeSummaryChecklist);
-        }).catch(function(error){ text(el('checklistStatus'),'목록을 불러오지 못했어: '+errorMessage(error)); });
-      }
-      var CHECKLIST_CATS=['수유','위생','외출','침구','옷','엄마용품','병원','기타'];
-      var CHECKLIST_OWNERS=['엄마','아빠','함께'];
-      var checklistFilter='';
-
-      function checklistMoney(value){
-        var digits=String(value==null?'':value).replace(/[^0-9]/g,'');
-        return digits?Number(digits).toLocaleString('ko-KR'):'';
-      }
-
-      function checklistSubtitle(item){
-        var bits=[];
-        if(item.quantity) bits.push(item.quantity+'개');
-        if(item.category) bits.push(item.category);
-        if(item.owner) bits.push(item.owner);
-        if(item.needWeek) bits.push(item.needWeek+'주까지');
-        if(item.spent) bits.push('쓴 돈 '+checklistMoney(item.spent)+'원');
-        else if(item.price) bits.push('예상 '+checklistMoney(item.price)+'원');
-        if(item.memo) bits.push(item.memo);
-        return bits.join(' · ');
-      }
-
-      function renderChecklist(items){
-        var list=el('checklistList'); list.innerHTML='';
-        var doneCount=0, plan=0, spent=0, remainPlan=0;
-        items.forEach(function(item){
-          if(item.done) doneCount++;
-          var price=Number(String(item.price||'').replace(/[^0-9]/g,''))||0;
-          var used=Number(String(item.spent||'').replace(/[^0-9]/g,''))||0;
-          plan+=price; spent+=used;
-          if(!item.done&&!used) remainPlan+=price;
-        });
-        var summary='';
-        if(items.length){
-          summary='총 '+items.length+'개 중 '+doneCount+'개 준비 완료';
-          if(plan||spent){
-            summary+=' · 쓴 돈 '+spent.toLocaleString('ko-KR')+'원';
-            if(remainPlan) summary+=' · 남은 예상 '+remainPlan.toLocaleString('ko-KR')+'원';
-          }
-        }
-        text(el('checklistStatus'),summary);
-
-        var bar=el('checklistFilters');
-        if(bar){
-          var used={};
-          items.forEach(function(it){ if(it.category) used[it.category]=(used[it.category]||0)+1; });
-          var names=Object.keys(used);
-          if(names.length){
-            bar.classList.remove('hidden');
-            bar.innerHTML=['<button type="button" class="chk-chip'+(checklistFilter?'':' on')+'" data-cat="">전체 '+items.length+'</button>']
-              .concat(names.map(function(name){
-                return '<button type="button" class="chk-chip'+(checklistFilter===name?' on':'')+'" data-cat="'+escapeHtml(name)+'">'+escapeHtml(name)+' '+used[name]+'</button>';
-              })).join('');
-            Array.prototype.forEach.call(bar.querySelectorAll('.chk-chip'),function(chip){
-              chip.addEventListener('click',function(){ checklistFilter=chip.getAttribute('data-cat')||''; renderChecklist(items); });
-            });
-          } else { bar.classList.add('hidden'); bar.innerHTML=''; }
-        }
-
-        var shown=checklistFilter?items.filter(function(it){ return it.category===checklistFilter; }):items;
-        if(!shown.length){
-          list.innerHTML='<div class="comment-empty">'+(checklistFilter?'이 분류에는 아직 준비물이 없어':'첫 준비물을 추가해봐. 예) 배냇저고리, 속싸개, 아기 세제 🍼')+'</div>';
-          return;
-        }
-
-        shown.forEach(function(item){
-          var row=document.createElement('div'); row.className='note-item chk-item';
-
-          var toggle=document.createElement('button'); toggle.type='button'; toggle.className='chk-toggle';
-          toggle.textContent=item.done?'✅':'⬜';
-          toggle.setAttribute('aria-label',item.done?'준비 완료 해제':'준비 완료로 표시');
-          toggle.addEventListener('click',function(){
-            var prevDone=item.done;
-            item.done=!prevDone;
-            renderChecklist(items);
-            callApi('apiToggleChecklistItemV320',[state.session.token,item.id,item.done],16000)
-              .then(unwrap).then(loadChecklist)
-              .catch(function(error){ item.done=prevDone; renderChecklist(items); toast(errorMessage(error)); });
-          });
-
-          var main=document.createElement('div'); main.className='chk-main';
-          var label=document.createElement('div'); label.className='chk-name'; label.textContent=item.content;
-          if(item.done){ label.style.textDecoration='line-through'; label.style.color='var(--muted)'; }
-          main.appendChild(label);
-          var sub=checklistSubtitle(item);
-          if(sub){ var subEl=document.createElement('div'); subEl.className='chk-sub'; subEl.textContent=sub; main.appendChild(subEl); }
-
-          var edit=document.createElement('button'); edit.type='button'; edit.className='comment-action'; edit.textContent='수정';
-          edit.setAttribute('aria-label',item.content+' 수정');
-          var del=document.createElement('button'); del.type='button'; del.className='comment-action'; del.textContent='삭제';
-
-          function beginEdit(){
-            if(row.dataset.editing==='1') return;
-            row.dataset.editing='1';
-            var snapshot={content:item.content,quantity:item.quantity||0,price:item.price||'',spent:item.spent||'',category:item.category||'',needWeek:item.needWeek||0,owner:item.owner||'',memo:item.memo||''};
-            row.classList.add('chk-editing');
-            row.innerHTML='';
-            var form=document.createElement('div'); form.className='chk-form';
-            function field(labelText,node){
-              var wrap=document.createElement('label'); wrap.className='chk-field';
-              var span=document.createElement('span'); span.textContent=labelText;
-              wrap.appendChild(span); wrap.appendChild(node); return wrap;
-            }
-            function input(value,placeholder,mode){
-              var i=document.createElement('input'); i.type='text'; i.value=value==null?'':String(value);
-              if(placeholder) i.placeholder=placeholder;
-              if(mode) i.inputMode=mode;
-              return i;
-            }
-            var nameInput=input(snapshot.content,'준비물 이름'); nameInput.maxLength=200;
-            var qtyInput=input(snapshot.quantity||'','0','numeric');
-            var priceInput=input(checklistMoney(snapshot.price),'예상 금액','numeric');
-            var spentInput=input(checklistMoney(snapshot.spent),'실제 지출','numeric');
-            var memoInput=input(snapshot.memo,'구매처·메모'); memoInput.maxLength=200;
-            var weekInput=input(snapshot.needWeek||'','예: 36','numeric');
-            var catSelect=document.createElement('select');
-            catSelect.innerHTML='<option value="">분류 없음</option>'+CHECKLIST_CATS.map(function(c){
-              return '<option value="'+escapeHtml(c)+'"'+(snapshot.category===c?' selected':'')+'>'+escapeHtml(c)+'</option>';
-            }).join('');
-            var ownerSelect=document.createElement('select');
-            ownerSelect.innerHTML='<option value="">담당 없음</option>'+CHECKLIST_OWNERS.map(function(c){
-              return '<option value="'+escapeHtml(c)+'"'+(snapshot.owner===c?' selected':'')+'>'+escapeHtml(c)+'</option>';
-            }).join('');
-
-            var nameWrap=field('이름',nameInput); nameWrap.className='chk-field chk-field-wide';
-            form.appendChild(nameWrap);
-            form.appendChild(field('수량',qtyInput));
-            form.appendChild(field('예상 금액',priceInput));
-            form.appendChild(field('실제 지출',spentInput));
-            var detailsBox=document.createElement('details'); detailsBox.className='chk-edit-details';
-            var summary=document.createElement('summary');summary.textContent='자세히 · 분류·담당·필요 주차·메모';
-            detailsBox.appendChild(summary);
-            var extra=document.createElement('div');extra.className='chk-form chk-extra-fields';
-            extra.appendChild(field('분류',catSelect));
-            extra.appendChild(field('담당',ownerSelect));
-            extra.appendChild(field('필요 주차',weekInput));
-            var memoWrap=field('메모',memoInput); memoWrap.className='chk-field chk-field-wide';
-            extra.appendChild(memoWrap);detailsBox.appendChild(extra);
-
-            var editStatus=document.createElement('p');editStatus.className='upload-note chk-edit-status';editStatus.setAttribute('role','status');editStatus.setAttribute('aria-live','polite');
-            editStatus.textContent='세부 정보는 자세히에서 바꿀 수 있어. 저장 전까지 기존 값은 유지돼.';
-
-            var actions=document.createElement('div'); actions.className='chk-actions';
-            var save=document.createElement('button'); save.type='button'; save.className='save'; save.textContent='저장';
-            var cancel=document.createElement('button'); cancel.type='button'; cancel.className='comment-action'; cancel.textContent='취소';
-            actions.appendChild(cancel); actions.appendChild(save);
-
-            row.appendChild(form); row.appendChild(detailsBox); row.appendChild(editStatus);row.appendChild(actions);
-            nameInput.focus(); nameInput.select();
-
-            var committing=false;
-            function restore(){if(committing)return;row.dataset.editing=''; row.classList.remove('chk-editing'); renderChecklist(items); }
-            function commit(){
-              if(committing||!state.session) return;
-              var next=String(nameInput.value||'').trim();
-              if(!next){ toast('준비물 내용을 적어 줘.'); nameInput.focus(); return; }
-              var details={
-                quantity:Number(String(qtyInput.value||'').replace(/[^0-9]/g,''))||0,
-                price:String(priceInput.value||'').replace(/[^0-9]/g,''),
-                spent:String(spentInput.value||'').replace(/[^0-9]/g,''),
-                category:catSelect.value||'',
-                needWeek:Number(String(weekInput.value||'').replace(/[^0-9]/g,''))||0,
-                owner:ownerSelect.value||'',
-                memo:String(memoInput.value||'').trim()
-              };
-              var token=state.session.token;
-              committing=true;save.disabled=true;cancel.disabled=true;save.textContent='저장 중…';editStatus.textContent='서버에 저장 중…';
-              row.querySelectorAll('input,select').forEach(function(node){node.disabled=true;});
-              callApi('apiUpdateChecklistItemV450',[token,item.id,next,details],16000)
-                .then(unwrap).then(function(){
-                  if(!state.session||state.session.token!==token)return;
-                  item.content=next;item.quantity=details.quantity; item.price=details.price; item.spent=details.spent;
-                  item.category=details.category; item.needWeek=details.needWeek; item.owner=details.owner; item.memo=details.memo;
-                  committing=false;restore();state.homeSummaryChecklistAt=Date.now();toast('준비물 정보를 저장했어 🍼');
-                })
-                .catch(function(error){
-                  if(!state.session||state.session.token!==token)return;
-                  committing=false;save.disabled=false;cancel.disabled=false;save.textContent='다시 저장';
-                  row.querySelectorAll('input,select').forEach(function(node){node.disabled=false;});
-                  editStatus.textContent='저장하지 못했어. 입력은 그대로야. '+errorMessage(error);
-                });
-            }
-            save.addEventListener('click',commit);
-            cancel.addEventListener('click',restore);
-            nameInput.addEventListener('keydown',function(e){
-              if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229&&!isImeComposing(nameInput)){ e.preventDefault(); commit(); }
-              else if(e.key==='Escape'){ e.preventDefault(); restore(); }
-            });
-          }
-
-          edit.addEventListener('click',beginEdit);
-          label.addEventListener('click',beginEdit);
-          del.addEventListener('click',function(){
-            if(!confirm('"'+item.content+'" 항목을 지울까?')) return;
-            var removedId=item.id, removedName=item.content;
-            callApi('apiDeleteChecklistItemV320',[state.session.token,removedId],16000).then(unwrap).then(function(){
-              loadChecklist();
-              toast('"'+removedName+'" 삭제됨','되돌리기',function(){
-                callApi('apiRestoreChecklistItemV450',[state.session.token,removedId],16000)
-                  .then(unwrap).then(loadChecklist)
-                  .catch(function(error){ toast(errorMessage(error)); });
-              },6000);
-            }).catch(function(error){ toast(errorMessage(error)); });
-          });
-
-          row.appendChild(toggle); row.appendChild(main); row.appendChild(edit); row.appendChild(del);
-          list.appendChild(row);
-        });
-      }
-
-      function addChecklistItem(){
-        if(checklistBusy||!state.session) return;
-        var content=String(el('checkItemInput').value||'').trim();
-        if(!content){ toast('준비물 내용을 적어 줘.'); return; }
-        checklistBusy=true; el('addCheckItem').disabled=true;
-        callApi('apiAddChecklistItemV320',[state.session.token,content,uuid()],20000).then(unwrap).then(function(){
-          el('checkItemInput').value=''; loadChecklist();
-        }).catch(function(error){ toast(errorMessage(error)); })
-        .then(function(){ checklistBusy=false; el('addCheckItem').disabled=false; });
-      }
+      // @include modules/preparation.js
 
       // --- 사진 추억함 ---
       function memoryItems(){
@@ -5057,4 +4813,4 @@
       if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
       else boot();
     })();
-  
+

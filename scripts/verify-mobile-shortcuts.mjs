@@ -155,13 +155,14 @@ test('favorite shortcuts return to More while a home shortcut opens directly', (
 test('the chosen home card retains checklist counts or displays its selected destination', () => {
   const nodes = {}, el = id => nodes[id] ||= node();
   let selected = 'checklist';
-  const state = { homeSummaryChecklist: [{ done: false, content: '준비 항목' }, { done: true }] };
+  const state = { homeSummaryChecklist: [{ prepState:'planned',priority:'essential',timing:'before',content:'준비 항목' }, { prepState:'ready',priority:'essential',timing:'before' }, {prepState:'planned',priority:'optional',timing:'after'}] };
   const c = run(['shortcutOptions', 'renderHomeSummary'], {
     state, el, text, shortcutPreferences: () => ({ home: selected }), hasTodayRecordForCurrentUser: () => false,
     formatKoreanDate: date => date,
   });
+  vm.runInContext(readFileSync(new URL('../src/modules/preparation.js',import.meta.url),'utf8'),c);
   c.renderHomeSummary({ valid: true, checkupDate: '2026-11-20', checkupDday: 25 });
-  assert.equal(nodes.summaryChecklistTitle.textContent, '남은 준비 1개');
+  assert.equal(nodes.summaryChecklistTitle.textContent, '출산 전 필수 1/2');
   selected = 'health';
   c.renderHomeSummary({});
   assert.equal(nodes.summaryShortcutIcon.textContent, '🩺');
